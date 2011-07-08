@@ -48,3 +48,29 @@
 (global-set-key [f11]    'speedbar)
 ;; Ctrl+F4 : tue le buffer courant
 (global-set-key [\C-f4]    'kill-buffer)
+
+;; Window moves
+(windmove-default-keybindings 'meta)
+(global-set-key (kbd "C-M-j") 'windmove-down)
+(global-set-key (kbd "C-M-k") 'windmove-up)
+(global-set-key (kbd "C-M-l") 'windmove-left)
+(global-set-key (kbd "C-M-m") 'windmove-right)
+
+;; Iswitchb-mode
+(require 'edmacro)
+(iswitchb-mode t)
+(when (featurep 'iswitchb)
+  (defun iswitchb-local-keys ()
+    (mapc (lambda (K)
+	    (let* ((key (car K)) (fun (cdr K)))
+	      (define-key iswitchb-mode-map (edmacro-parse-keys key) fun)))
+	  '(("<right>" . iswitchb-next-match)
+	    ("<left>"  . iswitchb-prev-match)
+	    ("<up>"    . ignore             )
+	    ("<down>"  . ignore             ))))
+  (add-hook 'iswitchb-define-mode-map-hook 'iswitchb-local-keys))
+
+;;; Local Variables:
+;;; eval: (defun byte-compile-this-file () (write-region (point-min) (point-max) buffer-file-name nil 't) (byte-compile-file buffer-file-name) nil)
+;;; write-file-hooks: (byte-compile-this-file)
+;;; End:

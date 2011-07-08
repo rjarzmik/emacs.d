@@ -9,7 +9,7 @@
  '(auto-save-list-file-prefix "~/.emacs.d/auto-backup/auto-save-list/.saves-")
  '(backup-directory-alist (quote ((".*" . "~/.emacs.d/auto-backup/backup/"))))
  '(bbdb-file "~/.emacs.d/bbdb")
- '(c++-mode-hook (quote ((lambda (c-set-style "gnu")))) t)
+ '(c++-mode-hook (quote ((lambda (c-set-style "gnu")))))
  '(c-basic-offset (quote set-from-style))
  '(c-default-style nil)
  '(c-indent-comments-syntactically-p t)
@@ -36,6 +36,7 @@
  '(gnus-list-groups-with-ticked-articles nil)
  '(gnus-save-score t)
  '(hexl-iso "-iso")
+ '(inhibit-startup-screen t)
  '(ispell-highlight-face (quote highlight))
  '(ispell-personal-dictionary nil)
  '(ispell-silently-savep t)
@@ -77,26 +78,27 @@
 
 ;; Fonts
 (modify-frame-parameters nil '((wait-for-wm . nil)))
-; (set-default-font "7x13")
-
-; Maximum de decoration
-(setq font-lock-maximum-decoration t)
 
 ;; Config pour gnus local (5.8.3)
 (add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
 
-(setenv "MAILHOST" "pop3.free.fr")
-(setq rmail-primary-inbox-list
-    '("po:rjarzmik@free.fr") rmail-pop-password-required t)
+;; External packages load
+(defcustom package-to-load '("keyboard/general" "buffers/main" "lang/main" "command_line/main"
+			     "w3/main")
+  "List of my prefered packages"
+)
+(require 'w3m)
+(dolist (package package-to-load)
+  (when (not (load package nil t))
+    (message (concat (symbol-name package) " package is not available"))))
 
-; Keyboard
-(load "keyboard/general")
+(defcustom config-to-load '(my-w3m)
+  "List of my configurations"
+)
 
-; Buffers
-(load "buffers/main")
-
-; Languages
-(load "lang/main")
+(dolist (config config-to-load)
+  (when (not (require config nil t))
+    (message (concat (symbol-name config) " configuration is not available"))))
 
 ; Start maximized
 (if (not (eq window-system nil))
