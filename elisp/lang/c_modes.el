@@ -13,27 +13,6 @@
 (setq auto-mode-alist (cons '("/home/rj/.*/kernel.*/.*\\.[ch]$" . linux-c-mode)
 			    auto-mode-alist))
 
-(defun atos-icare-c-mode ()
-  "C++ mode with adjusted defaults for use with Atos Icare project."
-  (interactive)
-  (c++-mode)
-  (c-set-style "atos-icare")
-  (setq show-trailing-whitespace t)
-  (setq indent-tabs-mode nil)
-  )
-
-(c-add-style
- "atos-icare"
- '(
-   (c-basic-offset . 4)
-   (c-offsets-alist
-    (substatement-open . 0)
-    )
-   )
- )
-(setq auto-mode-alist (cons '(".*/icareng.*\\.[ch]p*$" . atos-icare-c-mode)
-			    auto-mode-alist))
-
 (defun clean-c-file ()
   "Cleaning blank and doubled lines"
   (interactive)

@@ -5,6 +5,7 @@
 ;; Load CEDET.
 ;; See cedet/common/cedet.info for configuration details.
 
+(require 'warnings)
 (load "lang/cedet-1.0/common/cedet")
 
 ;; Enable EDE (Project Management) features

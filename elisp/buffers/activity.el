@@ -37,7 +37,7 @@
   "Current stacked activitities.")
 
 (defvar activity-current-name
-  (concat "(" (car (first activity-stack)) ") ")
+  (concat "(" (car (car activity-stack)) ") ")
   "Current activity name, useful for activity-mode-line")
 
 (defun activity-push (&optional name)
@@ -46,11 +46,11 @@
     (setq name (completing-read "Activity name: " (mapcar 'car available-activities))))
   (let ((new-activity (search-activity name)))
     (when new-activity
-      (activity-save (first activity-stack))
+      (activity-save (car activity-stack))
       (activity-restore new-activity)
       (delq new-activity activity-stack)
       (push new-activity activity-stack)
-      (setq activity-current-name (concat "(" (car (first activity-stack)) ") ")))))
+      (setq activity-current-name (concat "(" (car (car activity-stack)) ") ")))))
 
 (defun activity-pop ()
   "Pop the current activity."
@@ -58,8 +58,8 @@
   (if (> (list-length activity-stack) 1)
       (progn
 	(activity-save (pop activity-stack))
-	(activity-restore (first activity-stack))
-	(setq activity-current-name (concat "(" (car (first activity-stack)) ") ")))
+	(activity-restore (car activity-stack))
+	(setq activity-current-name (concat "(" (car (car activity-stack)) ") ")))
     (message "No more activity.")))
 
 (defun toggle-activity (&optional name)
@@ -67,7 +67,7 @@
   (interactive)
   (unless name
     (setq name (completing-read "Activity name: " (mapcar 'car available-activities))))
-  (if (string= name (car (first activity-stack)))
+  (if (string= name (car (car activity-stack)))
       (activity-pop)
     (activity-push name)))
 
@@ -100,7 +100,7 @@
     (when activity
       (delq activity activity-stack)
       (push activity activity-stack)
-      (setq activity-current-name (concat "(" (car (first activity-stack)) ") ")))))
+      (setq activity-current-name (concat "(" (car (car activity-stack)) ") ")))))
 
 (defun activity-restore (activity)
   (let ((wconf (gethash (car activity) activities-wconf)))

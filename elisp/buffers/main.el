@@ -6,9 +6,7 @@
 ;; save the desktop file automatically if it already exists
 (if (or (<= (length command-line-args) 1)
 	(equal (car (cdr command-line-args)) "--no-splash"))
-    (progn (desktop-read)
-	   (setq desktop-save 'if-exists)
-	   (desktop-save-mode 1))
+    (progn (desktop-save-mode 1))
   )
 
 ;; save a bunch of variables to the desktop file
