@@ -25,10 +25,8 @@
 ;(add-to-list 'ac-dictionary-directories "~/.emacs.d/elisp/lang/m2ym-auto-complete-dc1bf2b/dict")
 ;(ac-config-default)
 
-;; CEDET
+;; CEDET / ECB
 (load "lang/cedet")
-;; ECB - Emacs Code Browser
-;; (load "lang/ecb")
 
 ;;; Local Variables:
 ;;; eval: (defun byte-compile-this-file () (write-region (point-min) (point-max) buffer-file-name nil 't) (byte-compile-file buffer-file-name) nil)

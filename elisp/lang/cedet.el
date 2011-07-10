@@ -4,8 +4,8 @@
 
 ;; Load CEDET.
 ;; See cedet/common/cedet.info for configuration details.
-(load "lang/cedet-1.0/common/cedet")
 
+(load "lang/cedet-1.0/common/cedet")
 
 ;; Enable EDE (Project Management) features
 (global-ede-mode 1)
@@ -13,6 +13,8 @@
 ;; Enable EDE for a pre-existing C++ project
 ;; (ede-cpp-root-project "NAME" :file "~/myproject/Makefile")
 
+;; Semantic tags storage directory
+(setq semanticdb-default-save-directory "~/.emacs.d/data/semanticdb/")
 
 ;; Enabling Semantic (code-parsing, smart completion) features
 ;; Select one of the following:

@@ -9,7 +9,6 @@
  '(auto-save-list-file-prefix "~/.emacs.d/auto-backup/auto-save-list/.saves-")
  '(backup-directory-alist (quote ((".*" . "~/.emacs.d/auto-backup/backup/"))))
  '(bbdb-file "~/.emacs.d/bbdb")
- '(c++-mode-hook (quote ((lambda (c-set-style "gnu")))))
  '(c-basic-offset (quote set-from-style))
  '(c-default-style nil)
  '(c-indent-comments-syntactically-p t)
@@ -79,15 +78,15 @@
 ;; Fonts
 (modify-frame-parameters nil '((wait-for-wm . nil)))
 
-;; Config pour gnus local (5.8.3)
-(add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
-
 ;; External packages load
 (defcustom package-to-load '("keyboard/general" "buffers/main" "lang/main" "command_line/main"
-			     "w3/main")
+			     "w3/main" "work/icare")
   "List of my prefered packages"
 )
+
 (require 'w3m)
+(provide 'work)
+
 (dolist (package package-to-load)
   (when (not (load package nil t))
     (message (concat (symbol-name package) " package is not available"))))
@@ -99,15 +98,16 @@
 (dolist (config config-to-load)
   (when (not (require config nil t))
     (message (concat (symbol-name config) " configuration is not available"))))
+(require 'work-atos-icare)
 
 ; Start maximized
-(if (not (eq window-system nil))
-    (progn
-  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
-			  '(2 "_NET_WM_STATE_MAXIMIZED_VERT" 0))
-  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
-			  '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
-  ))
+;(if (not (eq window-system nil))
+;    (progn
+;  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
+;			  '(2 "_NET_WM_STATE_MAXIMIZED_VERT" 0))
+;  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
+;			  '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
+;  ))
 
 ;; Tunnel seb mail
 ; (setq smtpmail-smtp-service 587)

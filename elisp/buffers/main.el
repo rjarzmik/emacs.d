@@ -2,15 +2,11 @@
 ;;; 2008-03-28
 ;;; Global buffers and destop functions
 
-;;; Save desktop
-(load "buffers/desktop")
-
 ;; save a list of open files in ~/.emacs.desktop
 ;; save the desktop file automatically if it already exists
 (if (or (<= (length command-line-args) 1)
 	(equal (car (cdr command-line-args)) "--no-splash"))
-    (progn (desktop-load-default)
-	   (desktop-read)
+    (progn (desktop-read)
 	   (setq desktop-save 'if-exists)
 	   (desktop-save-mode 1))
   )
@@ -43,23 +39,29 @@
 
 ;;; Font globals
 (set-language-environment 'utf-8)
-(cond ((eq system-type 'windows-nt)
-       (set-frame-font "-outline-Arial monospaced for SAP-normal-normal-normal-mono-*-*-*-*-c-*-iso10646-1")
-       (set-face-attribute 'default nil :height 80))
-      ((eq system-type 'gnu/linux)
-       (set-frame-font "-unknown-DejaVu Sans Mono-normal-normal-normal-*-10-*-*-*-m-0-iso10646-1")))
+;(cond ((eq system-type 'windows-nt)
+;       (set-frame-font "-outline-Arial monospaced for SAP-normal-normal-normal-mono-*-*-*-*-c-*-iso10646-1")
+;       (set-face-attribute 'default nil :height 80))
+;      ((eq system-type 'gnu/linux)
+;       (set-frame-font "-unknown-DejaVu Sans Mono-normal-normal-normal-*-10-*-*-*-m-0-iso10646-1")))
 
 (blink-cursor-mode t)
 (global-font-lock-mode t)
 (global-hl-line-mode t)
 (show-paren-mode t)
+(tool-bar-mode nil)
+
+(setq inhibit-startup-message t
+      inhibit-startup-echo-area-message t
+      initial-scratch-message nil
+      visible-bell t)
 
 ; Maximum de decoration
 (setq font-lock-maximum-decoration t)
 
 ;;; Activity
 (load "buffers/activity")
-(require 'activity)
+;(require 'activity)
 
 (when (featurep 'activity)
   (toggle-activity-mode-line)
