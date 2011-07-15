@@ -1,0 +1,14 @@
+# Ignored data files
+data/semanticdb
+data/auto-backup
+
+# Gnus
+gnus/.imap-authinfo
+gnus/.newsrc*
+gnus/.nnmail-cache
+gnus/News
+gnus/Mail
+
+# Main
+.emacs.desktop*
+
