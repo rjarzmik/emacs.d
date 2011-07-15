@@ -32,18 +32,17 @@
 	w3m-profile-directory "~/.emacs.d/data/w3m"
 	w3m-language "english"
 	w3m-use-japanese-menu nil)
-  (global-set-key (kbd "C-M-g") 'w3m-search-new-session)
   (defun w3m-search-next-page ()
     (interactive)
     (save-excursion
-      (end-of-buffer)
+      (goto-char (point-max))
       (search-backward "Suivan" nil t)
       (w3m-view-this-url)))
 
   (defun w3m-search-prev-page ()
     (interactive)
     (save-excursion
-      (end-of-buffer)
+      (goto-char (point-max))
       (search-backward "Précé" nil t)
       (w3m-view-this-url)))
 
@@ -75,8 +74,7 @@
 (when (featurep 'activity)
   (add-to-list 'available-activities '("Web" (lambda ()
 					       (delete-other-windows)
-					       (w3m))))
-  (global-set-key (kbd "C-` w") (lambda () (interactive) (toggle-activity "Web"))))
+					       (w3m)))))
 
 ;(setq w3m-command-arguments
 ;      (nconc w3m-command-arguments

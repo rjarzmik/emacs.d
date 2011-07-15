@@ -6,8 +6,8 @@
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
  '(auto-save-file-name-transforms (quote (("\\`/[^/]*:\\(.+/\\)*\\(.*\\)" "/tmp/\\2") ("\\(.+/\\)*\\(.*\\)" "/tmp/\\2"))))
- '(auto-save-list-file-prefix "~/.emacs.d/auto-backup/auto-save-list/.saves-")
- '(backup-directory-alist (quote ((".*" . "~/.emacs.d/auto-backup/backup/"))))
+ '(auto-save-list-file-prefix "~/.emacs.d/data/auto-backup/auto-save-list/.saves-")
+ '(backup-directory-alist (quote ((".*" . "~/.emacs.d/data/auto-backup/backup/"))))
  '(bbdb-file "~/.emacs.d/bbdb")
  '(c-basic-offset (quote set-from-style))
  '(c-default-style nil)
@@ -35,6 +35,8 @@
  '(gnus-list-groups-with-ticked-articles nil)
  '(gnus-save-score t)
  '(hexl-iso "-iso")
+ '(ibuffer-saved-filter-groups nil)
+ '(ibuffer-saved-filters (quote (("logs" ((name . "\\*.*"))) ("gnus" ((or (mode . message-mode) (mode . mail-mode) (mode . gnus-group-mode) (mode . gnus-summary-mode) (mode . gnus-article-mode)))) ("programming" ((or (mode . emacs-lisp-mode) (mode . cperl-mode) (mode . c-mode) (mode . java-mode) (mode . idl-mode) (mode . lisp-mode)))))))
  '(inhibit-startup-screen t)
  '(ispell-highlight-face (quote highlight))
  '(ispell-personal-dictionary nil)
@@ -64,41 +66,38 @@
  '(user-mail-address "robert.jarzmik@free.fr")
  '(visible-bell t))
 
-(custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- '(highlight-beyond-fill-column-face ((t (:background "red")))))
 (display-time)
 
 ;; Le path des fichiers .el et .elc
-(setq load-path (cons "/home/rj/.emacs.d/elisp" load-path))
+(when (not (boundp 'user-emacs-directory))
+  (setq 'user-emacs-directory "~/.emacs.d/"))
+(add-to-list 'load-path user-emacs-directory)
+(add-to-list 'load-path (concat user-emacs-directory "site-elisp"))
+(add-to-list 'load-path (concat user-emacs-directory "site-elisp/cedet-1.0/common"))
+(add-to-list 'load-path (concat user-emacs-directory "site-elisp/ecb-2.40"))
+(add-to-list 'load-path (concat user-emacs-directory "elisp"))
 
 ;; Fonts
 (modify-frame-parameters nil '((wait-for-wm . nil)))
 
-;; External packages load
-(defcustom package-to-load '("keyboard/general" "buffers/main" "lang/main" "command_line/main"
-			     "w3/main" "work/icare")
+(defcustom package-to-load '(activity egg w3m)
   "List of my prefered packages"
+  :group 'local
 )
 
-(require 'w3m)
-(provide 'work)
-
 (dolist (package package-to-load)
-  (when (not (load package nil t))
+  (when (not (require package nil t))
     (message (concat (symbol-name package) " package is not available"))))
 
-(defcustom config-to-load '(my-w3m)
+(defcustom config-to-load
+  '(my-buffers my-command-line my-git my-lang my-w3m my-keyboard my-work)
   "List of my configurations"
+  :group 'local
 )
 
 (dolist (config config-to-load)
   (when (not (require config nil t))
     (message (concat (symbol-name config) " configuration is not available"))))
-(require 'work-atos-icare)
 
 ; Start maximized
 (if (not (eq window-system nil))
@@ -109,10 +108,12 @@
 			  '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
   ))
 
-;; Tunnel seb mail
-; (setq smtpmail-smtp-service 587)
-; (setq smtpmail-smtp-server "smtp.free.fr")
-
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(highlight-beyond-fill-column-face ((t (:background "red")))))
 ;;; Local Variables:
 ;;; eval: (defun byte-compile-this-file () (write-region (point-min) (point-max) buffer-file-name nil 't) (byte-compile-file buffer-file-name) nil)
 ;;; write-file-hooks: (byte-compile-this-file)

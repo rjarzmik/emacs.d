@@ -26,15 +26,6 @@
                 tags-file-name
                 register-alist)))
 
-;;; Cycle buffers
-(load "buffers/cycle-buffer")
-(autoload 'cycle-buffer "cycle-buffer" "Cycle forward." t)
-(autoload 'cycle-buffer-backward "cycle-buffer" "Cycle backward." t)
-(global-set-key [\C-tab] 'cycle-buffer-backward)
-
-;;; Whitespace visualization
-(load "buffers/whitespace")
-
 ;;; Font globals
 (set-language-environment 'utf-8)
 ;(cond ((eq system-type 'windows-nt)
@@ -57,15 +48,39 @@
 ; Maximum de decoration
 (setq font-lock-maximum-decoration t)
 
-;;; Activity
-(load "buffers/activity")
-;(require 'activity)
+;; Faces
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(highlight-beyond-fill-column-face ((t (:background "red")))))
 
+;; Activity modeline
 (when (featurep 'activity)
-  (toggle-activity-mode-line)
-  (global-set-key (kbd "C-` `") 'activity-pop)
-  (global-set-key (kbd "C-` d") (lambda () (interactive)
-				  (toggle-activity "default"))))
+  (toggle-activity-mode-line))
+
+;; Iswitchb-mode
+(require 'edmacro)
+(iswitchb-mode t)
+(when (featurep 'iswitchb)
+  (defun iswitchb-local-keys ()
+    (mapc (lambda (K)
+	    (let* ((key (car K)) (fun (cdr K)))
+	      (define-key iswitchb-mode-map (edmacro-parse-keys key) fun)))
+	  '(("<right>" . iswitchb-next-match)
+	    ("<left>"  . iswitchb-prev-match)
+	    ("<up>"    . ignore             )
+	    ("<down>"  . ignore             ))))
+  (add-hook 'iswitchb-define-mode-map-hook 'iswitchb-local-keys))
+
+;; Dired unique window
+(when (featurep 'dired)
+  (add-hook 'dired-after-readin-hook
+	    (lambda () (rename-buffer (generate-new-buffer-name dired-directory))))
+  (setq dired-recursive-deletes 'always))
+
+(provide 'my-buffers)
 
 ;;; Local Variables:
 ;;; eval: (defun byte-compile-this-file () (write-region (point-min) (point-max) buffer-file-name nil 't) (byte-compile-file buffer-file-name) nil)

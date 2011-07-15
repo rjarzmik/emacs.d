@@ -18,20 +18,17 @@
 (global-set-key [\M-right] 'forward-sentence)
 (global-set-key [\M-up]    'beginning-of-buffer)
 (global-set-key [\M-down]  'end-of-buffer)
-; Touches de fonctions
+
+
+; Function keys
 ; F1 : lance l'apropos sur le mot ou se trouve le curseur
-(global-set-key [f1]     'vectra-apropos-on-word)
-;; Ctrl+F1 : lance man sur le mot ou se trouve le curseur
-(global-set-key [\C-f1]  'vectra-man-on-word)
+; Should be mode specific
 ;; F2 : coupe le buffer en 2 verticalement
 (global-set-key [f2]     'split-window-vertically)
 ;; Ctrl+F2 : coupe le buffer en 2 horizontalement
 (global-set-key [\C-f2]  'split-window-horizontally)
-;; F3 : non affecté
-;; F4 : commente la ligne courante  suivant le mode choisi (C++,C,...)
-(global-set-key [f4]     'vectra-comment-region)
-;; Ctrl + F4 : decommente la ligne courante  suivant le mode choisi (C++,C,...)
-;; (global-set-key [\C-f4]  'vectra-uncomment-region)
+;; F3 : not used
+;; F4 : not used
 ;; F5 : la complétion
 (global-set-key [f5]     'dabbrev-expand)
 ;; F6 : lance ispell
@@ -56,19 +53,17 @@
 (global-set-key (kbd "C-M-l") 'windmove-left)
 (global-set-key (kbd "C-M-m") 'windmove-right)
 
-;; Iswitchb-mode
-(require 'edmacro)
-(iswitchb-mode t)
-(when (featurep 'iswitchb)
-  (defun iswitchb-local-keys ()
-    (mapc (lambda (K)
-	    (let* ((key (car K)) (fun (cdr K)))
-	      (define-key iswitchb-mode-map (edmacro-parse-keys key) fun)))
-	  '(("<right>" . iswitchb-next-match)
-	    ("<left>"  . iswitchb-prev-match)
-	    ("<up>"    . ignore             )
-	    ("<down>"  . ignore             ))))
-  (add-hook 'iswitchb-define-mode-map-hook 'iswitchb-local-keys))
+;; W3M enabled emacs : Google search and activity
+(when (featurep 'w3m)
+  (global-set-key (kbd "C-M-g") 'w3m-search-new-session))
+(when (and (featurep 'w3m) (featurep 'activity))
+  (global-set-key (kbd "C-` w") (lambda () (interactive) (toggle-activity "Web"))))
+(when (featurep 'activity)
+  (global-set-key (kbd "C-` `") 'activity-pop)
+  (global-set-key (kbd "C-` d") (lambda () (interactive)
+				  (toggle-activity "default"))))
+
+(provide 'my-keyboard)
 
 ;;; Local Variables:
 ;;; eval: (defun byte-compile-this-file () (write-region (point-min) (point-max) buffer-file-name nil 't) (byte-compile-file buffer-file-name) nil)

@@ -6,10 +6,11 @@
 ;; See cedet/common/cedet.info for configuration details.
 
 (require 'warnings)
-(load "lang/cedet-1.0/common/cedet")
+(require 'cedet)
+(require 'ecb-autoloads)
 
 ;; Enable EDE (Project Management) features
-(global-ede-mode 1)
+;; (global-ede-mode 1)
 
 ;; Enable EDE for a pre-existing C++ project
 ;; (ede-cpp-root-project "NAME" :file "~/myproject/Makefile")
@@ -43,6 +44,7 @@
 ;; Enable SRecode (Template management) minor-mode.
 ;; (global-srecode-minor-mode 1)
 
+(provide 'my-cedet)
 
 ;;; Local Variables:
 ;;; eval: (defun byte-compile-this-file () (write-region (point-min) (point-max) buffer-file-name nil 't) (byte-compile-file buffer-file-name) nil)
