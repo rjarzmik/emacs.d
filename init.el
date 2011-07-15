@@ -90,7 +90,7 @@
     (message (concat (symbol-name package) " package is not available"))))
 
 (defcustom config-to-load
-  '(my-buffers my-command-line my-git my-lang my-w3m my-keyboard my-work)
+  '(my-buffers my-command-line my-emms my-git my-lang my-w3m my-keyboard my-work)
   "List of my configurations"
   :group 'local
 )
