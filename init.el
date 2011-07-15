@@ -59,7 +59,7 @@
  '(rmail-summary-window-size 10)
  '(send-mail-function (quote smtpmail-send-it))
  '(show-paren-mode t nil (paren))
- '(show-trailing-whitespace t)
+ '(show-trailing-whitespace nil)
  '(smtpmail-smtp-server "smtp.free.fr")
  '(standard-indent 8)
  '(transient-mark-mode t)
@@ -113,7 +113,7 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(highlight-beyond-fill-column-face ((t (:background "red")))))
+ )
 ;;; Local Variables:
 ;;; eval: (defun byte-compile-this-file () (write-region (point-min) (point-max) buffer-file-name nil 't) (byte-compile-file buffer-file-name) nil)
 ;;; write-file-hooks: (byte-compile-this-file)

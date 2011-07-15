@@ -46,6 +46,9 @@
 ;; Ctrl+F4 : tue le buffer courant
 (global-set-key [\C-f4]    'kill-buffer)
 
+;; C-x b and C-f4 for killing buffers
+(substitute-key-definition 'kill-buffer 'kill-this-buffer global-map)
+
 ;; Window moves
 (windmove-default-keybindings 'meta)
 (global-set-key (kbd "C-M-j") 'windmove-down)

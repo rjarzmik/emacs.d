@@ -37,7 +37,7 @@
 ;; (semantic-load-enable-all-exuberent-ctags-support)
 ;;   Or, use one of these two types of support.
 ;;   Add support for new languges only via ctags.
-;; (semantic-load-enable-primary-exuberent-ctags-support)
+(semantic-load-enable-primary-exuberent-ctags-support)
 ;;   Add support for using ctags as a backup parser.
 ;; (semantic-load-enable-secondary-exuberent-ctags-support)
 
