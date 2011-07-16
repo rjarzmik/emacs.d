@@ -35,8 +35,7 @@
 (when (featurep 'activity)
   (add-to-list 'available-activities '("emms" (lambda ()
 						(delete-other-windows)
-						(emms-browser))))
-  (global-set-key (kbd "C-~ e") (lambda () (interactive) (toggle-activity "emms"))))
+						(emms-browser)))))
 
 (provide 'my-emms)
 

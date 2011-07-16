@@ -59,12 +59,17 @@
 ;; W3M enabled emacs : Google search and activity
 (when (featurep 'w3m)
   (global-set-key (kbd "C-M-g") 'w3m-search-new-session))
-(when (and (featurep 'w3m) (featurep 'activity))
-  (global-set-key (kbd "C-` w") (lambda () (interactive) (toggle-activity "Web"))))
+
+;; Activity bindings
+
 (when (featurep 'activity)
   (global-set-key (kbd "C-` `") 'activity-pop)
   (global-set-key (kbd "C-` d") (lambda () (interactive)
-				  (toggle-activity "default"))))
+				  (toggle-activity "default")))
+  (when (featurep 'w3m)
+    (global-set-key (kbd "C-` w") (lambda () (interactive) (toggle-activity "Web"))))
+  (when (featurep 'emms)
+    (global-set-key (kbd "C-` e") (lambda () (interactive) (toggle-activity "emms")))))
 
 (provide 'my-keyboard)
 
