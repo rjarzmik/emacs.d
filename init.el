@@ -90,7 +90,8 @@
     (message (concat (symbol-name package) " package is not available"))))
 
 (defcustom config-to-load
-  '(my-buffers my-command-line my-emms my-git my-lang my-w3m my-keyboard my-work)
+  '(my-buffers my-command-line my-dired my-emms my-git my-lang my-w3m my-keyboard
+	       my-work)
   "List of my configurations"
   :group 'local
 )
@@ -108,12 +109,6 @@
 			  '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
   ))
 
-(custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- )
 ;;; Local Variables:
 ;;; eval: (defun byte-compile-this-file () (write-region (point-min) (point-max) buffer-file-name nil 't) (byte-compile-file buffer-file-name) nil)
 ;;; write-file-hooks: (byte-compile-this-file)
