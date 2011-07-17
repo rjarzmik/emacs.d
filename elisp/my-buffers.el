@@ -38,7 +38,7 @@
 (global-font-lock-mode t)
 (global-hl-line-mode t)
 (show-paren-mode t)
-(tool-bar-mode nil)
+(tool-bar-mode 0)
 
 (setq inhibit-startup-message t
       inhibit-startup-echo-area-message t
