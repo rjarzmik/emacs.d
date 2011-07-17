@@ -76,12 +76,13 @@
 (add-to-list 'load-path (concat user-emacs-directory "site-elisp/cedet-1.0/common"))
 (add-to-list 'load-path (concat user-emacs-directory "site-elisp/ecb-2.40"))
 (add-to-list 'load-path (concat user-emacs-directory "site-elisp/emms-3.0"))
+(add-to-list 'load-path (concat user-emacs-directory "site-elisp/emacs-w3m"))
 (add-to-list 'load-path (concat user-emacs-directory "elisp"))
 
 ;; Fonts
 (modify-frame-parameters nil '((wait-for-wm . nil)))
 
-(defcustom package-to-load '(activity egg w3m)
+(defcustom package-to-load '(activity egg w3m w3m-session)
   "List of my prefered packages"
   :group 'local
 )
