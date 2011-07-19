@@ -29,7 +29,8 @@
 	emms-info-functions '(emms-info-libtag)
 	emms-mode-line-format " %s "
 	emms-show-format "NP: %s"
-	emms-history-file "~/.emacs.d/data/emms-history")
+	emms-history-file (concat user-emacs-directory "data/emms-history")
+	emms-cache-file (concat user-emacs-directory "data/emms-cache"))
   (emms-devel)
   (emms-default-players))
 
