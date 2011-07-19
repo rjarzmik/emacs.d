@@ -67,6 +67,7 @@
  '(visible-bell t))
 
 (display-time)
+(server-mode 1)
 
 ;; Le path des fichiers .el et .elc
 (when (not (boundp 'user-emacs-directory))
