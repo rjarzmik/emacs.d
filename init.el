@@ -77,6 +77,7 @@
 (add-to-list 'load-path (concat user-emacs-directory "site-elisp/ecb-2.40"))
 (add-to-list 'load-path (concat user-emacs-directory "site-elisp/emms-3.0"))
 (add-to-list 'load-path (concat user-emacs-directory "site-elisp/emacs-w3m"))
+(add-to-list 'load-path (concat user-emacs-directory "site-elisp/gnus/lisp"))
 (add-to-list 'load-path (concat user-emacs-directory "elisp"))
 
 ;; Fonts
