@@ -1,25 +1,50 @@
 ;;; Update strings such as "my-isp.net" to yours.
 
-(setq gnus-select-method
-     '(nnml "private"))
+(require 'gnus-load)
+(require 'offlineimap)
 
+(defun internet-available-p ()
+  (eq (call-process "ping" nil nil t "-W" "5" "-c" "1" "google.fr") 0))
+
+(when (require 'gnus-demon nil t)
+  (defun gnus-demon-scan-mail-and-news ()
+    "Scan for new mail/news and update the *Group* buffer."
+    (when (and (gnus-alive-p) (internet-available-p))
+      (when (string= "arbois" (system-name))
+	(offlineimap))
+      (save-window-excursion
+	(set-buffer gnus-group-buffer)
+	(gnus-group-get-new-news))))
+
+  (add-hook 'gnus-group-mode-hook 'gnus-demon-init)
+  (gnus-demon-add-handler 'gnus-demon-scan-mail-and-news 5 t)
+  (require 'gnus-notify nil t))
+
+(when (string= "arbois" (system-name))
+  (add-hook 'gnus-before-startup-hook '(lambda () (when (internet-available-p) (offlineimap)))))
+
+(setq gnus-select-method '(nnnil ""))
 (setq gnus-secondary-select-methods
       '(
-	(nnimap "belgarath"
-		(nnimap-address "belgarath.local")
-		(nnimap-server-port 993)
-		(nnimap-stream ssl)
-		(nnimap-authinfo-file "~/.emacs.d/gnus/.imap-authinfo")
-		)
-	(nnimap "free"
-		(nnimap-stream network)
-		(nnimap-address "imap.free.fr")
-		(nnimap-server-port 143)
-		(imap-username "robert.jarzmik")
-		(remove-prefix "INBOX.")
-		(nnimap-list-pattern ("INBOX*" "ARCHIVES/*" "Mail/*" "ml*"))
-		(nnimap-authinfo-file "~/.emacs.d/gnus/.imap-authinfo")
-		)
+;	(nnimap "belgarath"
+;		(nnimap-address "belgarath.local")
+;		(nnimap-server-port 993)
+;		(nnimap-stream ssl)
+;		(nnimap-authinfo-file "~/.emacs.d/gnus/.imap-authinfo")
+;		)
+;	(nnimap "free"
+;		(nnimap-stream network)
+;		(nnimap-address "imap.free.fr")
+;		(nnimap-server-port 143)
+;		(imap-username "robert.jarzmik")
+;		(remove-prefix "INBOX.")
+;		(nnimap-list-pattern ("INBOX*" "ARCHIVES/*" "Mail/*" "ml*"))
+;		(nnimap-authinfo-file "~/.emacs.d/gnus/.imap-authinfo")
+;		)
+	(nnimap "free-offline"
+		  (nnimap-stream shell)
+		  (imap-shell-program "/usr/libexec/dovecot/imap -c ~/.offlineimap/dovecot.conf")
+		  (nnir-search-engine imap))
 ;	(nnimap "gmail"
 ;		  (nnimap-address "imap.gmail.com")
 ;		  (nnimap-server-port 993)
@@ -27,26 +52,9 @@
 ;		  (imap-username "robert.jarzmik@gmail.com")
 ;		  (nnimap-authinfo-file "~/.emacs.d/gnus/.imap-authinfo")
 ;		)
-	(nnml "archives"
-	      (nnml-directory ,(concat gnus-home-directory "/archives"))
-	      (nnml-active-file ,(concat gnus-home-directory "/archives/active"))
-	      (nnml-inhibit-expiry t)
-	      (nnml-get-new-mail nil)
-	      )
-	(nntp "news.free.fr")
 	))
 
-(setq nnimap-split-inbox '("INBOX"))
-
-(setq nnimap-split-rule
-	'(("INBOX/ml-linux-alsa" "^\\(To\\|Cc\\):.*alsa-devel@alsa-project.org.*")
-	  ("INBOX/ml-linux-haret" "^\\(To\\|Cc\\):.*haret@handhelds.org.*")
-	  ("INBOX/ml-linux-arm" "^\\(To\\|Cc\\):.*linux-arm-kernel@lists.arm.linux.org.uk.*")
-	  ("INBOX/ml-linux-usb" "^\\(To\\|Cc\\):.*linux-usb@vger.kernel.org.*")
-	  ("INBOX/ml-linux-mtd" "^\\(To\\|Cc\\):.*linux-mtd@lists.infradead.org.*")
-	  ("INBOX/ml-linux-v4l" "^\\(To\\|Cc\\):.*video4linux-list@redhat.com.*")
-	  ("INBOX/ego" "^From:.*[rR]obert.[jJ]arzmik")
-	  ))
+; (setq nnimap-split-inbox '("INBOX"))
 
 ;; Fetch only part of the article if we can.  I saw this in someone
 ;; else's .gnus
@@ -70,8 +78,8 @@
          (name "Robert Jarzmik")
          ("X-URL" "http://belgarath.falguerolles.org/")
 	 (signature "Robert"))
-	("work"
-         (address "rjarzmik@free.fr"))
+	("free"
+         (address "robert.jarzmik@free.fr"))
 	("gmail.com"
 	 (address "robert.jarzmik@gmail.com"))))
 
@@ -84,12 +92,12 @@
 
 ;; BBDB
 ;; Remember: in gnus, use ":" to add an entry
-(require 'bbdb)
-(bbdb-initialize 'gnus 'message)
-(add-hook 'gnus-startup-hook 'bbdb-insinuate-gnus)
-(add-hook 'gnus-startup-hook 'bbdb-insinuate-message)
-(setq bbdb-complete-name-allow-cycling t)
-(setq bbdb-use-pop-up nil)
+;(require 'bbdb)
+;(bbdb-initialize 'gnus 'message)
+;(add-hook 'gnus-startup-hook 'bbdb-insinuate-gnus)
+;(add-hook 'gnus-startup-hook 'bbdb-insinuate-message)
+;(setq bbdb-complete-name-allow-cycling t)
+;(setq bbdb-use-pop-up nil)
 
 ;;; summary and article buffer
 ;;; ##########################
@@ -106,8 +114,6 @@
 (setq gnus-group-line-format "%P  %(%~(pad-right 50)G%) %U/%y (unseen/unread)\n"
       gnus-summary-line-format "%U%R %d %*%5L%I %(%z%[%-23,23f%]%) %s\n"
       gnus-topic-line-format "%i[ %0{%(%n (new: %a)%)%} ]%v\n")
-
-(setq show-trailing-whitespace nil)
 
 ;; Wrap at 80 cols.
 (add-hook 'message-mode-hook
@@ -149,15 +155,15 @@
 ;;;--------------------------------------
 
 ; Old pop3 oriented mail splitting rules
-;(setq nnmail-split-methods
-;	'(("mail.lists.alsa-devel" "^\\(To\\|Cc\\):.*alsa-devel@alsa-project.org.*")
-;	  ("mail.lists.haret" "^\\(To\\|Cc\\):.*haret@handhelds.org.*")
-;	  ("mail.lists.arm-kernel" "^\\(To\\|Cc\\):.*linux-arm-kernel@lists.arm.linux.org.uk.*")
-;	  ("mail.lists.linux-usb" "^\\(To\\|Cc\\):.*linux-usb@vger.kernel.org.*")
-;	  ("mail.lists.linux-mtd" "^\\(To\\|Cc\\):.*linux-mtd@lists.infradead.org.*")
-;	  ("mail.perso" "^\\(From\\|To\\):rjarzmik@free.fr")
-;	  ("mail.other" "")))
-
+;(setq nnimap-split-rule
+;	'(("INBOX/ml-linux-alsa" "^\\(To\\|Cc\\):.*alsa-devel@alsa-project.org.*")
+;	  ("INBOX/ml-linux-haret" "^\\(To\\|Cc\\):.*haret@handhelds.org.*")
+;	  ("INBOX/ml-linux-arm" "^\\(To\\|Cc\\):.*linux-arm-kernel@lists.arm.linux.org.uk.*")
+;	  ("INBOX/ml-linux-usb" "^\\(To\\|Cc\\):.*linux-usb@vger.kernel.org.*")
+;	  ("INBOX/ml-linux-mtd" "^\\(To\\|Cc\\):.*linux-mtd@lists.infradead.org.*")
+;	  ("INBOX/ml-linux-v4l" "^\\(To\\|Cc\\):.*video4linux-list@redhat.com.*")
+;	  ("INBOX/ego" "^From:.*[rR]obert.[jJ]arzmik")
+;	  ))
 
 ;;; Local Variables:
 ;;; eval: (defun byte-compile-this-file () (write-region (point-min) (point-max) buffer-file-name nil 't) (byte-compile-file buffer-file-name) nil)
