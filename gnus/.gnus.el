@@ -3,6 +3,13 @@
 (require 'gnus-load)
 (require 'offlineimap)
 
+(custom-set-variables
+ '(gnus-home-directory "~/.emacs.d/gnus/")
+ '(gnus-list-groups-with-ticked-articles nil)
+ '(gnus-save-score t)
+ '(gnus-gcc-mark-as-read t)
+)
+
 (defun internet-available-p ()
   (eq (call-process "ping" nil nil t "-W" "5" "-c" "1" "google.fr") 0))
 
@@ -149,6 +156,64 @@
 				   (article 0.5)
 				   (message 1.0 point)))))
 
+;; Color customizations
+(defface gnus-summary-tremendously-interesting '((t (:background "red")))
+  "Face used for displaying high score articles."
+  :group 'gnus-summary-emphasis)
+
+(defface gnus-summary-very-interesting '((t (:background "orange")))
+  "Face used for displaying high score articles."
+  :group 'gnus-summary-emphasis)
+
+(defface gnus-summary-interesting '((t (:background "yellow")))
+  "Face used for displaying high score articles."
+  :group 'gnus-summary-emphasis)
+
+(setq gnus-summary-highlight
+      (quote (
+	      ((eq mark gnus-canceled-mark)
+	       . gnus-summary-cancelled)
+	      ((and uncached (> score default-high))
+	       . gnus-summary-high-undownloaded)
+	      ((and uncached (< score default-low))
+	       . gnus-summary-low-undownloaded)
+	      (uncached
+	       . gnus-summary-normal-undownloaded)
+	      ((and (> score default-high)
+		    (or (eq mark gnus-dormant-mark)
+			(eq mark gnus-ticked-mark)))
+	       . gnus-summary-high-ticked)
+	      ((and (< score default-low)
+		    (or (eq mark gnus-dormant-mark)
+			(eq mark gnus-ticked-mark)))
+	       . gnus-summary-low-ticked)
+	      ((or (eq mark gnus-dormant-mark)
+		   (eq mark gnus-ticked-mark))
+	       . gnus-summary-normal-ticked)
+
+	      ;; RJK special colors
+	      ((and (>= score 200) (eq mark gnus-unread-mark)) . gnus-summary-tremendously-interesting)
+	      ((and (>= score 100) (eq mark gnus-unread-mark)) . gnus-summary-very-interesting)
+	      ((and (>= score 30) (eq mark gnus-unread-mark)) . gnus-summary-interesting)
+
+	      ((and (> score default-high) (eq mark gnus-ancient-mark))
+	       . gnus-summary-high-ancient)
+	      ((and (< score default-low) (eq mark gnus-ancient-mark))
+	       . gnus-summary-low-ancient)
+	      ((eq mark gnus-ancient-mark)
+	       . gnus-summary-normal-ancient)
+	      ((and (> score default-high) (eq mark gnus-unread-mark))
+	       . gnus-summary-high-unread)
+	      ((and (< score default-low) (eq mark gnus-unread-mark))
+	       . gnus-summary-low-unread)
+	      ((eq mark gnus-unread-mark)
+	       . gnus-summary-normal-unread)
+	      ((> score default-high)
+	       . gnus-summary-high-read)
+	      ((< score default-low)
+	       . gnus-summary-low-read)
+	      (t
+	       . gnus-summary-normal-read))))
 
 ;;;--------------------------------------
 ;;; Deprecated used variables / functions
