@@ -1,7 +1,7 @@
 ;;; Update strings such as "my-isp.net" to yours.
 
 (require 'gnus-load)
-(require 'offlineimap)
+(require 'mbsync)
 
 (custom-set-variables
  '(gnus-home-directory "~/.emacs.d/gnus/")
@@ -13,22 +13,8 @@
 (defun internet-available-p ()
   (eq (call-process "ping" nil nil t "-W" "5" "-c" "1" "google.fr") 0))
 
-(when (require 'gnus-demon nil t)
-  (defun gnus-demon-scan-mail-and-news ()
-    "Scan for new mail/news and update the *Group* buffer."
-    (when (and (gnus-alive-p) (internet-available-p))
-      (when (string= "arbois" (system-name))
-	(offlineimap))
-      (save-window-excursion
-	(set-buffer gnus-group-buffer)
-	(gnus-group-get-new-news))))
-
-  (add-hook 'gnus-group-mode-hook 'gnus-demon-init)
-  (gnus-demon-add-handler 'gnus-demon-scan-mail-and-news 5 t)
-  (require 'gnus-notify nil t))
-
 (when (string= "arbois" (system-name))
-  (add-hook 'gnus-before-startup-hook '(lambda () (when (internet-available-p) (offlineimap)))))
+  (add-hook 'gnus-get-new-news-hook '(lambda () (when (internet-available-p) (mbsync)))))
 
 (setq gnus-select-method '(nnnil ""))
 (setq gnus-secondary-select-methods
@@ -48,10 +34,15 @@
 ;		(nnimap-list-pattern ("INBOX*" "ARCHIVES/*" "Mail/*" "ml*"))
 ;		(nnimap-authinfo-file "~/.emacs.d/gnus/.imap-authinfo")
 ;		)
-	(nnimap "free-offline"
+;	(nnimap "free-offline"
+;		  (nnimap-stream shell)
+;		  (imap-shell-program "/usr/libexec/dovecot/imap -c ~/.offlineimap/dovecot.conf")
+;		  (nnir-search-engine imap))
+	(nnimap "free-mbsync"
 		  (nnimap-stream shell)
-		  (imap-shell-program "/usr/libexec/dovecot/imap -c ~/.offlineimap/dovecot.conf")
+		  (imap-shell-program "/usr/libexec/dovecot/imap -c ~/Maildir/dovecot_mbsync.conf")
 		  (nnir-search-engine imap))
+
 ;	(nnimap "gmail"
 ;		  (nnimap-address "imap.gmail.com")
 ;		  (nnimap-server-port 993)
