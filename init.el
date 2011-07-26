@@ -14,7 +14,6 @@
  '(c-indent-comments-syntactically-p t)
  '(c-tab-always-indent nil)
  '(column-number-mode t)
- '(compilation-window-height 10)
  '(delete-auto-save-files nil)
  '(display-time-24hr-format t)
  '(display-time-day-and-date t)
@@ -48,15 +47,7 @@
  '(load-home-init-file t t)
  '(message-directory "~/.emacs.d/gnus/Mail/")
  '(message-send-mail-function (quote smtpmail-send-it))
- '(mew-imap-auth t)
- '(mew-imap-delete nil)
- '(mew-imap-server "imap.free.fr")
- '(mew-imap-user "robert.jarzmik")
  '(next-line-add-newlines nil)
- '(rmail-display-summary t)
- '(rmail-enable-mime t)
- '(rmail-redisplay-summary t)
- '(rmail-summary-window-size 10)
  '(send-mail-function (quote smtpmail-send-it))
  '(show-paren-mode t nil (paren))
  '(show-trailing-whitespace nil)
@@ -84,7 +75,7 @@
 ;; Fonts
 (modify-frame-parameters nil '((wait-for-wm . nil)))
 
-(defcustom package-to-load '(activity egg w3m w3m-session)
+(defcustom package-to-load '(activity egg gnus-load w3m w3m-session)
   "List of my prefered packages"
   :group 'local
 )
@@ -113,6 +104,12 @@
 			  '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
   ))
 
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(gnus-header-subject ((((class color) (background light)) (:background "dark orange" :foreground "red4")))))
 ;;; Local Variables:
 ;;; eval: (defun byte-compile-this-file () (write-region (point-min) (point-max) buffer-file-name nil 't) (byte-compile-file buffer-file-name) nil)
 ;;; write-file-hooks: (byte-compile-this-file)
