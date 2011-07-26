@@ -60,9 +60,8 @@
 			      auto-mode-alist))
 
   (when (featurep 'activity)
-    (add-to-list 'available-activities '("Icare" nil))
-    (global-set-key (kbd "C-` i") (lambda () (interactive)
-				    (toggle-activity "Icare"))))
+    (add-to-list 'available-activities
+		 (make-activity :name "Icare")))
 
   (provide 'work-atos-icare)
   )

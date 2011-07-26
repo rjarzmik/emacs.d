@@ -72,9 +72,10 @@
 	w3m-session-duplicate-tabs 'ask))
 
 (when (featurep 'activity)
-  (add-to-list 'available-activities '("Web" (lambda ()
-					       (delete-other-windows)
-					       (w3m)))))
+  (add-to-list 'available-activities (make-activity :name "Web"
+						    :open-hook (lambda ()
+								 (delete-other-windows)
+								 (w3m)))))
 
 ;(setq w3m-command-arguments
 ;      (nconc w3m-command-arguments

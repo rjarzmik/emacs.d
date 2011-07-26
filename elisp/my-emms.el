@@ -35,9 +35,16 @@
   (emms-default-players))
 
 (when (featurep 'activity)
-  (add-to-list 'available-activities '("emms" (lambda ()
-						(delete-other-windows)
-						(emms-browser)))))
+  (defun emms-filter-activity (buf)
+    (let ((bufmode (symbol-name major-mode)))
+      (string-match "^emms-" bufmode)))
+
+  (add-to-list 'available-activities
+	       (make-activity :name "emms"
+			      :open-hook (lambda ()
+					   (delete-other-windows)
+					   (emms-browser))
+			      :buffer-filter-p 'emms-filter-activity)))
 
 (provide 'my-emms)
 

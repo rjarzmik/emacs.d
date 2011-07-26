@@ -2,6 +2,8 @@
 ;;; 2008-03-28
 ;;; Global buffers and destop functions
 
+(require 'cl)
+
 ;; save a list of open files in ~/.emacs.desktop
 ;; save the desktop file automatically if it already exists
 (if (or (<= (length command-line-args) 1)
@@ -71,8 +73,34 @@
 	  '(("<right>" . iswitchb-next-match)
 	    ("<left>"  . iswitchb-prev-match)
 	    ("<up>"    . ignore             )
-	    ("<down>"  . ignore             ))))
-  (add-hook 'iswitchb-define-mode-map-hook 'iswitchb-local-keys))
+	    ("<down>"  . iswitchb-toggle-only-current-activity))))
+  (add-hook 'iswitchb-define-mode-map-hook 'iswitchb-local-keys)
+
+  ;; By default ignore from list buffers with a star
+  ;;(setq iswitchb-buffer-ignore '("^ " "^*"))
+  (defvar iswitchb-toggle-only-current-activity nil
+    "If t, only buffer of current activity are displayed")
+
+  (defun iswitchb-current-activity ()
+    "Filter out any buffer not in the current activity"
+    (if iswitchb-toggle-only-current-activity
+	(setq iswitchb-temp-buflist
+	      (delete-if-not 'activity-buffer-p iswitchb-temp-buflist))))
+
+  (defun iswitchb-toggle-only-current-activity ()
+    "Retain only activity buffers."
+    (interactive)
+    (setq iswitchb-toggle-only-current-activity (not iswitchb-toggle-only-current-activity))
+    (if iswitchb-toggle-only-current-activity
+	(add-hook 'iswitchb-make-buflist-hook 'iswitchb-current-activity)
+      (remove-hook 'iswitchb-make-buflist-hook 'iswitchb-current-activity))
+    (iswitchb-make-buflist iswitchb-default)
+    ;; ask for list to be regenerated.
+    (setq iswitchb-rescan t)
+    (delete-minibuffer-contents))
+
+  (add-hook 'iswitchb-make-buflist-hook 'iswitchb-current-activity)
+  )
 
 ;; Dired unique window
 (when (featurep 'dired)

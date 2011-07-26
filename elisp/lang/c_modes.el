@@ -20,6 +20,16 @@
 (setq auto-mode-alist (cons '("/home/rj/.*/kernel.*/.*\\.[ch]$" . linux-c-mode)
 			    auto-mode-alist))
 
+(defun linux-filter-activity (buf)
+    (let ((bufname (buffer-file-name (get-buffer buf))))
+      (when bufname
+	(string-match "linux/" bufname))))
+
+(when (featurep 'activity)
+  (add-to-list 'available-activities
+	       (make-activity :name "Linux"
+			      :buffer-filter-p 'linux-filter-activity)))
+
 (defun clean-c-file ()
   "Cleaning blank and doubled lines"
   (interactive)

@@ -56,20 +56,28 @@
 (global-set-key (kbd "C-M-l") 'windmove-left)
 (global-set-key (kbd "C-M-m") 'windmove-right)
 
+;; Buffer moves
+(when (featurep 'iswitchb)
+  (global-set-key [\C-tab] 'iswitchb-buffer))
+
 ;; W3M enabled emacs : Google search and activity
 (when (featurep 'w3m)
   (global-set-key (kbd "C-M-g") 'w3m-search-new-session))
 
 ;; Activity bindings
-
 (when (featurep 'activity)
   (global-set-key (kbd "C-` `") 'activity-pop)
   (global-set-key (kbd "C-` d") (lambda () (interactive)
-				  (toggle-activity "default")))
+				  (toggle-activity "Default")))
   (when (featurep 'w3m)
     (global-set-key (kbd "C-` w") (lambda () (interactive) (toggle-activity "Web"))))
   (when (featurep 'emms)
-    (global-set-key (kbd "C-` e") (lambda () (interactive) (toggle-activity "emms")))))
+    (global-set-key (kbd "C-` e") (lambda () (interactive) (toggle-activity "emms"))))
+  (global-set-key (kbd "C-` i") (lambda () (interactive)
+				  (toggle-activity "Icare")))
+  (global-set-key (kbd "C-` l") (lambda () (interactive)
+				  (toggle-activity "Linux"))))
+
 
 (provide 'my-keyboard)
 
