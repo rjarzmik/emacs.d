@@ -77,6 +77,7 @@
 				  (toggle-activity "Icare")))
   (global-set-key (kbd "C-` g") (lambda () (interactive)
 				  (toggle-activity "Gnus")))
+  (global-set-key (kbd "C-` j") (lambda () (interactive) (toggle-activity "Jabber")))
   (global-set-key (kbd "C-` l") (lambda () (interactive)
 				  (toggle-activity "Linux"))))
 
