@@ -31,15 +31,15 @@
   :group 'convenience)
 
 (defstruct activity
-  (name :read-only t)
-  (open-hook nil :read-only t)		; Called on first activity open
-  (terminate-hook nil :read-only t) 	; Called when closing the activity
-  (enable-hook nil :read-only t)	; Called when switching to this activity (even at open)
-  (disable-hook nil :read-only t)	; Called when exiting this activity
-  (buffer-filter-p (lambda (buf) (interactive) nil) :read-only t) ; Predicate for buffer filtering
-  ;; Internals
-  (buffer-list '())  ; Complementary buffer list for buffer filtering
-  (wconf nil)) ; Current 
+  name
+  (open-hook 'ignore)		    ; Called on first activity open
+  (terminate-hook 'ignore)	    ; Called when closing the activity
+  (enable-hook 'ignore)	; Called when switching to this activity (even at open)
+  (disable-hook 'ignore)	   ; Called when exiting this activity
+  (buffer-filter-p 'ignore)	   ; Predicate for buffer filtering
+  ;; Internal data
+  (buffer-list '())   ; Complementary buffer list for buffer filtering
+  (wconf nil))	      ; Activity saved window configuration
 
 (defcustom available-activities (list (make-activity :name "Default"))
   "Available activities."
@@ -50,8 +50,10 @@
 
 (defun current-activity () (first activity-stack))
 
-(defvar activity-current-name
-  (concat "(" (activity-name (current-activity)) ") ")
+(defcustom activity-mode-line-format "(%s) "
+  "Activity mode-line format")
+  
+(defvar activity-current-name (format activity-mode-line-format (activity-name (current-activity)))
   "Current activity name, useful for activity-mode-line")
 
 (defun activity-push (&optional name)
@@ -63,7 +65,7 @@
       (activity-save (current-activity))
       (delq new-activity activity-stack)
       (push new-activity activity-stack)
-      (setq activity-current-name (concat "(" (activity-name (current-activity)) ") "))
+      (activity-update-mode-line)
       (activity-restore new-activity))))
 
 (defun activity-pop ()
@@ -73,7 +75,7 @@
       (progn
 	(activity-save (pop activity-stack))
 	(activity-restore (current-activity))
-	(setq activity-current-name (concat "(" (activity-name (current-activity)) ") ")))
+	(activity-update-mode-line))
     (message "No more activity.")))
 
 (defun toggle-activity (&optional name)
@@ -102,9 +104,12 @@
     (when activity
       (delq activity activity-stack)
       (push activity activity-stack)
-      (activity-call-hook activity 'activity-enable-hook)
-      (setq activity-current-name (concat "(" (activity-name (current-activity)) ") ")))))
+      (funcall (activity-enable-hook activity))
+      (activity-update-mode-line))))
 
+(defun activity-update-mode-line ()
+  (setq activity-current-name (format activity-mode-line-format (activity-name (current-activity)))))
+  
 (defun activity-buffer-p (buf-name)
   (let ((activity (current-activity)))
     (or (funcall (activity-buffer-filter-p activity) buf-name)
@@ -119,39 +124,42 @@
 			     (delete-if-not 'activity-buffer-p iswitchb-temp-buflist)))))
 	(switch-to-buffer (iswitchb-read-buffer "activity-switchb: ")))))
 
+(defun new-activity (name key)
+  (interactive (list (read-string "Activity name: ")
+		     (read-key-sequence "Key sequence: ")))
+  (if (search-activity name)
+    (error "\"%s\" activity already exists." name)
+    (progn
+      (add-to-list 'available-activities (make-activity :name name))
+      (global-set-key key (lambda () (interactive) (toggle-activity name)))
+      (toggle-activity name))))
+
 (defun search-activity (name)
   (find name available-activities :test '(lambda (x y) (string= x (activity-name y)))))
 
-(defun activity-reset (&optional name)
-  "Reset NAME activity, it will be restarted on next push."
-  (unless name
-    (setq name (completing-read "Activity name: " (mapcar 'car available-activities))))
-  (setf (activity-wconf (search-activity name)) nil))
-
 (defun activity-save (activity)
-  (activity-call-hook activity 'activity-disable-hook)
+  (funcall (activity-disable-hook activity))
   (setf (activity-wconf activity) (current-window-configuration)))
 
 (defun activity-restore (activity)
   (let ((wconf (activity-wconf activity)))
     (if (window-configuration-p wconf)
 	(progn (set-window-configuration wconf)
-	       (activity-call-hook activity 'activity-enable-hook))
-      (progn (activity-call-hook activity 'activity-open-hook)
-	     (activity-call-hook activity 'activity-enable-hook)))))
-
-(defun activity-call-hook (activity hook-accessor)
-  (let ((func (funcall hook-accessor activity)))
-    (when func (funcall func))))
+	       (funcall (activity-enable-hook activity)))
+      (progn (funcall (activity-open-hook activity))
+	     (funcall (activity-enable-hook activity))))))
 
 (defun activity-add-buffer ()
   (interactive)
-  (unless (activity-buffer-p (buffer-name (current-buffer)))
-    (push (buffer-name (current-buffer)) (activity-buffer-list (current-activity)))))
+  (flet ((add-buffer (window)
+		     (let ((buffer (window-buffer window)))     
+		       (unless (activity-buffer-p (buffer-name buffer))
+			 (push (buffer-name buffer) (activity-buffer-list (current-activity)))))))
+    (walk-windows 'add-buffer)))
 
 (defun activity-remove-buffer ()
   (interactive)
-  (delete (buffer-name (current-buffer)) (activity-buffer-list (current-activity))))
+  (delq (buffer-name (current-buffer)) (activity-buffer-list (current-activity))))
 
 (add-to-list 'kill-buffer-hook 'activity-remove-buffer)
 (add-to-list 'window-configuration-change-hook 'activity-add-buffer)
