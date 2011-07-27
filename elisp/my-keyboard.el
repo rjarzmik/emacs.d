@@ -75,6 +75,8 @@
     (global-set-key (kbd "C-` e") (lambda () (interactive) (toggle-activity "emms"))))
   (global-set-key (kbd "C-` i") (lambda () (interactive)
 				  (toggle-activity "Icare")))
+  (global-set-key (kbd "C-` g") (lambda () (interactive)
+				  (toggle-activity "Gnus")))
   (global-set-key (kbd "C-` l") (lambda () (interactive)
 				  (toggle-activity "Linux"))))
 
