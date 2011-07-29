@@ -1,5 +1,7 @@
 ;; Emacs config file, Robert Jarzmik, oct. 1996
 
+(require 'cl)
+
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
@@ -63,12 +65,13 @@
 ;; Le path des fichiers .el et .elc
 (when (not (boundp 'user-emacs-directory))
   (setq 'user-emacs-directory "~/.emacs.d/"))
-(add-to-list 'load-path user-emacs-directory)
-(add-to-list 'load-path (concat user-emacs-directory "site-elisp"))
+
+
+;; Ajouter .emacs.d, .emacs.d/site-lisp et tous ses sous-repertoires
+(dolist (path (delete-if-not 'file-directory-p
+			     (directory-files (concat user-emacs-directory "site-elisp") t)))
+  (add-to-list 'load-path path))
 (add-to-list 'load-path (concat user-emacs-directory "site-elisp/cedet-1.0/common"))
-(add-to-list 'load-path (concat user-emacs-directory "site-elisp/ecb-2.40"))
-(add-to-list 'load-path (concat user-emacs-directory "site-elisp/emms-3.0"))
-(add-to-list 'load-path (concat user-emacs-directory "site-elisp/emacs-w3m"))
 (add-to-list 'load-path (concat user-emacs-directory "site-elisp/gnus/lisp"))
 (add-to-list 'load-path (concat user-emacs-directory "elisp"))
 
