@@ -13,8 +13,16 @@
 (defun internet-available-p ()
   (eq (call-process "ping" nil nil t "-W" "5" "-c" "1" "google.fr") 0))
 
-(when (string= "arbois" (system-name))
-  (add-hook 'gnus-get-new-news-hook '(lambda () (when (internet-available-p) (mbsync)))))
+;; When group refresh is asked for, launch mbsync
+(add-hook 'gnus-get-new-news-hook
+	  '(lambda () (when (internet-available-p) (mbsync))))
+
+;; When mbsync finishes, refresh unread articles in groups menu
+(defun mbsync-event (process msg)
+  (when (eq (process-status process) 'exit)
+    (gnus-get-unread-articles)
+    (gnus-group-list-groups)))
+(add-hook 'mbsync-event-hooks 'mbsync-event)
 
 (setq gnus-select-method '(nnnil ""))
 (setq gnus-secondary-select-methods

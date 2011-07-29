@@ -74,7 +74,7 @@ This is used when `mbsync-mode-line-style' is set to 'symbol."
   :group 'mbsync)
 
 (defcustom mbsync-event-hooks nil
-  "Hooks run when Mbsync state changes."
+  "Hooks run when Mbsync state changes : hook(process, msg)."
   :type 'hook
   :group 'mbsync)
 
@@ -160,13 +160,13 @@ This is used when `mbsync-mode-line-style' is set to 'symbol."
 	(let ((comint-buffer-maximum-size mbsync-buffer-maximum-size))
           (comint-truncate-buffer))))
     (mbsync-update-mode-line process)
-    (run-hook-with-args 'mbsync-event-hooks msg)))
+    (run-hook-with-args 'mbsync-event-hooks process msg)))
 
 (defun mbsync-process-sentinel (process state)
   "Monitor STATE change of PROCESS."
   (mbsync-insert process (concat "*** Process " (process-name process) " " state))
   (mbsync-update-mode-line process)
-  (run-hook-with-args 'mbsync-event-hooks state))
+  (run-hook-with-args 'mbsync-event-hooks process state))
 
 (defun mbsync-mode-line ()
   "Return a string to display in mode line."
