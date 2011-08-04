@@ -2,6 +2,7 @@
 
 (require 'gnus-load)
 (require 'mbsync)
+(require 'cl)
 
 (custom-set-variables
  '(gnus-home-directory "~/.emacs.d/gnus/")
@@ -24,15 +25,15 @@
     (gnus-group-list-groups)))
 (add-hook 'mbsync-event-hooks 'mbsync-event)
 
+;; Find the dovecot-imap executable
+(setq dovecot-imap
+      (car (remove-if-not 'file-exists-p
+			  '("/usr/local/libexec/dovecot/imap"
+			    " /usr/libexec/dovecot-imap"))))
+
 (setq gnus-select-method '(nnnil ""))
 (setq gnus-secondary-select-methods
       '(
-;	(nnimap "belgarath"
-;		(nnimap-address "belgarath.local")
-;		(nnimap-server-port 993)
-;		(nnimap-stream ssl)
-;		(nnimap-authinfo-file "~/.emacs.d/gnus/.imap-authinfo")
-;		)
 ;	(nnimap "free"
 ;		(nnimap-stream network)
 ;		(nnimap-address "imap.free.fr")
@@ -41,14 +42,14 @@
 ;		(remove-prefix "INBOX.")
 ;		(nnimap-list-pattern ("INBOX*" "ARCHIVES/*" "Mail/*" "ml*"))
 ;		(nnimap-authinfo-file "~/.emacs.d/gnus/.imap-authinfo")
-;		)
+ ;		)
 ;	(nnimap "free-offline"
 ;		  (nnimap-stream shell)
 ;		  (imap-shell-program "/usr/libexec/dovecot/imap -c ~/.offlineimap/dovecot.conf")
 ;		  (nnir-search-engine imap))
 	(nnimap "free-mbsync"
 		  (nnimap-stream shell)
-		  (imap-shell-program "/usr/libexec/dovecot/imap -c ~/Maildir/dovecot_mbsync.conf")
+		  (imap-shell-program (concat dovecot-imap " -c ~/Maildir/dovecot_mbsync.conf"))
 		  (nnir-search-engine imap))
 
 ;	(nnimap "gmail"
