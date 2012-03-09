@@ -10,6 +10,7 @@
  '(auto-save-file-name-transforms (quote (("\\`/[^/]*:\\(.+/\\)*\\(.*\\)" "/tmp/\\2") ("\\(.+/\\)*\\(.*\\)" "/tmp/\\2"))))
  '(auto-save-list-file-prefix "~/.emacs.d/data/auto-backup/auto-save-list/.saves-")
  '(backup-directory-alist (quote ((".*" . "~/.emacs.d/data/auto-backup/backup/"))))
+ '(battery-mode-line-format "[%b%p%%,%w,%t]")
  '(bbdb-file "~/.emacs.d/bbdb")
  '(c-basic-offset (quote set-from-style))
  '(c-default-style nil)
@@ -47,13 +48,14 @@
  '(ldap-host-parameters-alist (quote (("aww.tlse.titn.alcatel.fr" base "o=tlse.titn.alcatel.fr"))))
  '(line-number-mode t)
  '(load-home-init-file t t)
+ '(magit-commit-signoff t)
+ '(magit-process-popup-time 2)
+ '(mediawiki-site-alist (quote (("Wikipedia" "http://en.wikipedia.org/w/" "username" "password" "Main Page") ("belgarath" "http://belgarath.local/mediawiki/" "rjarzmik" "robert1" "Main Page"))))
  '(message-directory "~/.emacs.d/gnus/Mail/")
  '(message-send-mail-function (quote smtpmail-send-it))
  '(next-line-add-newlines nil)
- '(send-mail-function (quote smtpmail-send-it))
  '(show-paren-mode t nil (paren))
  '(show-trailing-whitespace nil)
- '(smtpmail-smtp-server "smtp.free.fr")
  '(standard-indent 8)
  '(transient-mark-mode t)
  '(user-mail-address "robert.jarzmik@free.fr")
@@ -63,22 +65,23 @@
 (server-mode 1)
 
 ;; Le path des fichiers .el et .elc
-(when (not (boundp 'user-emacs-directory))
-  (setq 'user-emacs-directory "~/.emacs.d/"))
-
+;;emacs24 (when (not (boundp 'user-emacs-directory))
+;;emacs24  (setq 'user-emacs-directory "~/.emacs.d/"))
 
 ;; Ajouter .emacs.d, .emacs.d/site-lisp et tous ses sous-repertoires
 (dolist (path (delete-if-not 'file-directory-p
 			     (directory-files (concat user-emacs-directory "site-elisp") t)))
   (add-to-list 'load-path path))
-(add-to-list 'load-path (concat user-emacs-directory "site-elisp/cedet-1.0/common"))
+;(add-to-list 'load-path (concat user-emacs-directory "site-elisp/cedet-1.0/common"))
 (add-to-list 'load-path (concat user-emacs-directory "site-elisp/gnus/lisp"))
+(add-to-list 'load-path (concat user-emacs-directory "site-elisp/muse/lisp"))
 (add-to-list 'load-path (concat user-emacs-directory "elisp"))
 
 ;; Fonts
 (modify-frame-parameters nil '((wait-for-wm . nil)))
 
-(defcustom package-to-load '(activity egg gnus-load w3m w3m-session)
+(defcustom package-to-load '(activity gnus-load magit mediawiki
+				      muse-mode muse-html muse-publish w3m w3m-session)
   "List of my prefered packages"
   :group 'local
 )
@@ -88,8 +91,8 @@
     (message (concat (symbol-name package) " package is not available"))))
 
 (defcustom config-to-load
-  '(my-buffers my-command-line my-dired my-emms my-git my-jabber my-lang
-	       my-w3m my-work my-keyboard)
+  '(my-buffers my-command-line my-dired my-emms my-git my-lang
+	       my-muse my-w3m my-work my-keyboard)
   "List of my configurations"
   :group 'local
 )
@@ -98,14 +101,14 @@
   (when (not (require config nil t))
     (message (concat (symbol-name config) " configuration is not available"))))
 
-; Start maximized
-(if (not (eq window-system nil))
-    (progn
-  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
-			  '(2 "_NET_WM_STATE_MAXIMIZED_VERT" 0))
-  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
-			  '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
-  ))
+;; Start maximized
+;;(if (not (eq window-system nil))
+;;    (progn
+;;  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
+;;			  '(2 "_NET_WM_STATE_MAXIMIZED_VERT" 0))
+;;  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
+;;			  '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
+;;  ))
 
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
