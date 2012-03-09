@@ -29,7 +29,7 @@
 (setq dovecot-imap
       (car (remove-if-not 'file-exists-p
 			  '("/usr/local/libexec/dovecot/imap"
-			    " /usr/libexec/dovecot-imap"))))
+			    "/usr/libexec/dovecot-imap"))))
 
 (setq gnus-select-method '(nnnil ""))
 (setq gnus-secondary-select-methods
@@ -49,7 +49,8 @@
 ;		  (nnir-search-engine imap))
 	(nnimap "free-mbsync"
 		  (nnimap-stream shell)
-		  (imap-shell-program (concat dovecot-imap " -c ~/Maildir/dovecot_mbsync.conf"))
+;		  (imap-shell-program (concat dovecot-imap " -c ~/Maildir/dovecot_mbsync.conf"))
+		  (imap-shell-program "/usr/local/libexec/dovecot/imap -c ~/Maildir/dovecot_mbsync.conf")
 		  (nnir-search-engine imap))
 
 ;	(nnimap "gmail"
@@ -61,7 +62,10 @@
 ;		)
 	))
 
-; (setq nnimap-split-inbox '("INBOX"))
+;; Configure out-going mail, through free.fr, without a local MTA
+(setq message-send-mail-function 'smtpmail-send-it
+      smtpmail-smtp-server "smtp.free.fr"
+      sendmail-program "/bin/false")
 
 ;; Fetch only part of the article if we can.  I saw this in someone
 ;; else's .gnus
@@ -95,7 +99,7 @@
 (setq gnus-message-archive-group
       '((if (message-news-p)
 	    "misc-news"
-	  "nnimap+free:INBOX/Sent")))
+	  "nnimap+free-mbsync:INBOX/Sent")))
 
 ;; BBDB
 ;; Remember: in gnus, use ":" to add an entry
