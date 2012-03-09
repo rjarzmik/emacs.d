@@ -50,7 +50,7 @@
  '(load-home-init-file t t)
  '(magit-commit-signoff t)
  '(magit-process-popup-time 2)
- '(mediawiki-site-alist (quote (("Wikipedia" "http://en.wikipedia.org/w/" "username" "password" "Main Page") ("belgarath" "http://belgarath.local/mediawiki/" "rjarzmik" "robert1" "Main Page"))))
+ '(mediawiki-site-alist (quote (("Wikipedia" "http://en.wikipedia.org/w/" "username" "password" "Main Page") ("belgarath" "http://belgarath.local/mediawiki/" "rjarzmik" "XXX" "Main Page"))))
  '(message-directory "~/.emacs.d/gnus/Mail/")
  '(message-send-mail-function (quote smtpmail-send-it))
  '(next-line-add-newlines nil)
