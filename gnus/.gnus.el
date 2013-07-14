@@ -1,6 +1,6 @@
 ;;; Update strings such as "my-isp.net" to yours.
 
-(require 'gnus-load)
+;(require 'gnus-load)
 (require 'mbsync)
 (require 'cl)
 
@@ -24,34 +24,30 @@
     (gnus-get-unread-articles)
     (gnus-group-list-groups)))
 (add-hook 'mbsync-event-hooks 'mbsync-event)
-
-;; Find the dovecot-imap executable
+;
+;;; Find the dovecot-imap executable
 (setq dovecot-imap
       (car (remove-if-not 'file-exists-p
 			  '("/usr/local/libexec/dovecot/imap"
-			    "/usr/libexec/dovecot-imap"))))
+			    "/usr/libexec/dovecot-imap"
+			    "/usr/lib/dovecot/imap" ))))
 
 (setq gnus-select-method '(nnnil ""))
 (setq gnus-secondary-select-methods
-      '(
+      (list
 ;	(nnimap "free"
 ;		(nnimap-stream network)
 ;		(nnimap-address "imap.free.fr")
 ;		(nnimap-server-port 143)
 ;		(imap-username "robert.jarzmik")
 ;		(remove-prefix "INBOX.")
-;		(nnimap-list-pattern ("INBOX*" "ARCHIVES/*" "Mail/*" "ml*"))
+;		(nnimap-list-pattern ("INBOX*" "ARCHIVES*" "Mail/*" "ml*"))
 ;		(nnimap-authinfo-file "~/.emacs.d/gnus/.imap-authinfo")
- ;		)
-;	(nnimap "free-offline"
-;		  (nnimap-stream shell)
-;		  (imap-shell-program "/usr/libexec/dovecot/imap -c ~/.offlineimap/dovecot.conf")
-;		  (nnir-search-engine imap))
-	(nnimap "free-mbsync"
-		  (nnimap-stream shell)
-;		  (imap-shell-program (concat dovecot-imap " -c ~/Maildir/dovecot_mbsync.conf"))
-		  (imap-shell-program "/usr/local/libexec/dovecot/imap -c ~/Maildir/dovecot_mbsync.conf")
-		  (nnir-search-engine imap))
+;		)
+	(list 'nnimap "free-mbsync"
+		  '(nnimap-stream shell)
+		  (list 'imap-shell-program (concat dovecot-imap " -c ~/Maildir/dovecot_mbsync.conf"))
+		  '(nnir-search-engine imap))
 
 ;	(nnimap "gmail"
 ;		  (nnimap-address "imap.gmail.com")
@@ -64,7 +60,7 @@
 
 ;; Configure out-going mail, through free.fr, without a local MTA
 (setq message-send-mail-function 'smtpmail-send-it
-      smtpmail-smtp-server "smtp.free.fr"
+      smtpmail-smtp-server "smtp.orange.fr"
       sendmail-program "/bin/false")
 
 ;; Fetch only part of the article if we can.  I saw this in someone
