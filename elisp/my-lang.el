@@ -23,6 +23,9 @@
 ;(add-to-list 'ac-dictionary-directories "~/.emacs.d/elisp/lang/m2ym-auto-complete-dc1bf2b/dict")
 ;(ac-config-default)
 
+;; CScope
+(require 'xcscope)
+
 (provide 'my-lang)
 
 ;;; Local Variables:

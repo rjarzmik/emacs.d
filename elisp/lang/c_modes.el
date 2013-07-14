@@ -1,5 +1,18 @@
 ;;; My personnal C modes
 
+(defun my-default-c-mode-hook ()
+  "My default setup for C mode"
+  (c-set-style "linux")
+					; Dirty workaround for labels in column 0
+  (remove-hook 'c-special-indent-hook 'c-gnu-impose-minimum)
+  (highlight-beyond-fill-column)
+  (setq show-trailing-whitespace t)
+  (define-key c++-mode-map "\M-/" 'semantic-ia-complete-symbol-menu)
+  (define-key c-mode-map "\M-." 'my-find-tag)
+  (define-key c-mode-map "\M-*" 'my-pop-tag-mark)
+)
+(add-hook 'c-mode-hook 'my-default-c-mode-hook)
+
 (defun linux-c-mode ()
   "C mode with adjusted defaults for use with the Linux kernel."
   (interactive)
@@ -58,6 +71,46 @@
 	      compilation-window-height 15
 	      compilation-auto-jump-to-first-error nil
 	      compilation-ask-about-save nil)
+
+;; Tags handling
+(defun ctags-db-available-p ()
+    (let ((cscope-dir (cscope-find-info default-directory)))
+      (and (featurep 'xcscope)
+	   (file-exists-p (concat (caar cscope-dir) cscope-database-file))
+)))
+
+(defun my-find-tag ()
+  "Find tag definition using cscope or tags.
+If cscope database file is found, it is used. Fallback on tags."
+  (interactive)
+  (progn
+    (if (ctags-db-available-p)
+	(call-interactively 'cscope-find-global-definition)
+      (call-interactively 'find-tag)
+)))
+
+(defun my-pop-tag-mark ()
+  "Pop back to where M-. was las invoked (see pop-tag-mark)"
+  (interactive)
+  (progn
+    (if (ctags-db-available-p)
+	(call-interactively 'cscope-pop-mark)
+      (call-interactively 'pop-tag-mark)
+)))
+
+(defun my-find-next-tag ()
+  "Find next tag definition using cscope or tags.
+If cscope database file is found, it is used. Fallback on tags."
+  (interactive)
+  (progn
+    (let ((cscope-dir (cscope-find-info default-directory)))
+      (if (file-exists-p (concat (caar cscope-dir) cscope-database-file))
+	  (call-interactively 'cscope-next-symbol)
+	(find-tag "" t)
+	)
+      )
+    )
+  )
 
 ;; GDB
 (setq-default gdb-many-windows t)
