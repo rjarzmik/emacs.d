@@ -80,7 +80,7 @@
 ;; Fonts
 (modify-frame-parameters nil '((wait-for-wm . nil)))
 
-(defcustom package-to-load '(activity gnus-load magit mediawiki
+(defcustom package-to-load '(activity gnus-load magit git-commit-mode mediawiki
 				      muse-mode muse-html muse-publish w3m w3m-session)
   "List of my prefered packages"
   :group 'local
