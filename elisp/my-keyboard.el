@@ -94,6 +94,10 @@
         (t nil)))
 (global-set-key (kbd "C-%") 'goto-match-paren)
 
+;; Magit bindings
+(when (featurep 'magit)
+  (global-set-key (kbd "C-c g") 'magit-status))
+
 (provide 'my-keyboard)
 
 ;;; Local Variables:
