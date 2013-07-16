@@ -1,0 +1,12 @@
+[submodule "site-elisp/git-modes"]
+	path = site-elisp/git-modes
+	url = https://github.com/lunaryorn/git-modes.git
+[submodule "site-elisp/magit"]
+	path = site-elisp/magit
+	url = https://github.com/artagnon/magit.git
+[submodule "site-elisp/gnus"]
+	path = site-elisp/gnus
+	url = http://git.gnus.org/gnus.git
+[submodule "site-elisp/muse"]
+	path = site-elisp/muse
+	url = git://repo.or.cz/muse-el.git
