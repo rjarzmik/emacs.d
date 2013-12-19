@@ -185,13 +185,19 @@ Must end with a newline.")
       ))
   )
 
+(defun ascope-select-unique-result ()
+  "Called when query returned only 1 result, and display window"
+  (with-current-buffer (get-buffer-create ascope-output-buffer-name)
+    (ascope-select-entry-other-window-delete-window)))
+
 (defun ascope-find-this-symbol (symbol)
   "Locate a symbol in source code."
   (interactive (ascope-interactive "Find this symbol: "))
   (setq query-command (concat "0" symbol "\n") )
   (ring-insert ascope-marker-ring (point-marker))
   (setq ascope-action-message (format "Find this symbol: %s" symbol))
-  (ascope-query query-command)
+  (when (= 1 (ascope-query query-command))
+    (ascope-select-unique-result))
   )
 
 (defun ascope-find-global-definition (symbol)
@@ -200,7 +206,8 @@ Must end with a newline.")
   (setq query-command (concat "1" symbol "\n") )
   (ring-insert ascope-marker-ring (point-marker))
   (setq ascope-action-message (format "Finding global definition: %s" symbol))
-  (ascope-query query-command)
+  (when (= 1 (ascope-query query-command))
+    (ascope-select-unique-result))
   )
 
 (defun ascope-find-called-functions (symbol)
@@ -209,7 +216,8 @@ Must end with a newline.")
   (setq query-command (concat "2" symbol "\n") )
   (ring-insert ascope-marker-ring (point-marker))
   (setq ascope-action-message (format "Find functions called by this function: %s" symbol))
-  (ascope-query query-command)
+  (when (= 1 (ascope-query query-command))
+    (ascope-select-unique-result))
   )
 
 (defun ascope-find-functions-calling-this-function (symbol)
@@ -218,7 +226,8 @@ Must end with a newline.")
   (setq query-command (concat "3" symbol "\n") )
   (ring-insert ascope-marker-ring (point-marker))
   (setq ascope-action-message (format "Find functions calling this function: %s" symbol))
-  (ascope-query query-command)
+  (when (= 1 (ascope-query query-command))
+    (ascope-select-unique-result))
   )
 
 (defun ascope-find-this-text-string (symbol)
@@ -227,7 +236,8 @@ Must end with a newline.")
   (setq query-command (concat "4" symbol "\n") )
   (ring-insert ascope-marker-ring (point-marker))
   (setq ascope-action-message (format "Find this text string: %s" symbol))
-  (ascope-query query-command)
+  (when (= 1 (ascope-query query-command))
+    (ascope-select-unique-result))
   )
 
 (defun ascope-find-files-including-file (symbol)
@@ -236,7 +246,8 @@ Must end with a newline.")
   (setq query-command (concat "8" symbol "\n") )
   (ring-insert ascope-marker-ring (point-marker))
   (setq ascope-action-message (format "Find files #including this file: %s" symbol))
-  (ascope-query query-command)
+  (when (= 1 (ascope-query query-command))
+    (ascope-select-unique-result))
   )
 
 (defun ascope-all-symbol-assignments (symbol)
@@ -245,7 +256,8 @@ Must end with a newline.")
   (setq query-command (concat "10" symbol "\n") )
   (ring-insert ascope-marker-ring (point-marker))
   (setq ascope-action-message (format "Find all assignments of symbol %s" symbol))
-  (ascope-query query-command)
+  (when (= 1 (ascope-query query-command))
+    (ascope-select-unique-result))
   )
 
 (defun ascope-pop-mark()
@@ -422,7 +434,9 @@ Point is not saved on mark ring, at late kill the result window"
   )
 
 (defun ascope-query (command)
-  (let ((proc (get-process "ascope")) outbuf
+  (let ((proc (get-process "ascope"))
+	(nb-lines 0)
+	outbuf
 	)
     (with-current-buffer (process-buffer proc)
 
@@ -431,7 +445,7 @@ Point is not saved on mark ring, at late kill the result window"
 
       (process-send-string "ascope" command)
 
-      (ascope-wait-for-output )
+      (setq nb-lines (ascope-wait-for-output))
 
       (ascope-process-output)
       )
@@ -448,7 +462,8 @@ Point is not saved on mark ring, at late kill the result window"
 	  (insert "\nNothing found!"))
 	(ascope-list-entry-mode)
 	)
-      ))
+      )
+    nb-lines)
   )
 
 
@@ -611,7 +626,9 @@ Point is not saved on mark ring, at late kill the result window"
   (let ((proc (get-buffer-process (current-buffer)))
 	(found nil)
 	(start-time (current-time))
-	(start-point (point)))
+	(start-point (point))
+	(nb-lines 0)
+	)
 
     (save-excursion
       (while (not found)
@@ -620,6 +637,13 @@ Point is not saved on mark ring, at late kill the result window"
 	(beginning-of-line) ;move the beginning of last line
 	(setq found (looking-at "^>>"))) ;looking for cscope prompt "^>>"
       )
+    ;; Find the number of results returned by the search
+    (save-excursion
+      (goto-char start-point)
+      (when (re-search-forward "^cscope: \\([0-9]+\\) lines$" nil t)
+	(setq nb-lines (string-to-number (match-string 1))))
+      )
+    nb-lines
     )
   )
 
