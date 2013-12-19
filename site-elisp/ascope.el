@@ -163,6 +163,21 @@ Must end with a newline.")
 
 (defvar ascope-marker-ring (make-ring ascope-marker-ring-length))
 
+(defvar ascope:map nil
+  "The ascope keymap.")
+(if ascope:map
+    nil
+  (setq ascope:map (make-sparse-keymap))
+  ;; The following line corresponds to be beginning of the "Cscope" menu.
+  (define-key ascope:map "\C-css" 'ascope-find-this-symbol)
+  (define-key ascope:map "\C-csd" 'ascope-find-global-definition)
+  (define-key ascope:map "\C-csg" 'ascope-find-global-definition)
+  (define-key ascope:map "\C-csc" 'ascope-find-functions-calling-this-function)
+  (define-key ascope:map "\C-csC" 'ascope-find-called-functions)
+  (define-key ascope:map "\C-cst" 'ascope-find-this-text-string)
+  (define-key ascope:map "\C-csi" 'ascope-find-files-including-file)
+)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun ascope-init (dir)
   (interactive "DCscope Initial Directory: ")
