@@ -664,5 +664,40 @@ Point is not saved on mark ring, at late kill the result window"
     )
   )
 
+(defvar cscope-minor-mode-hooks nil
+  "List of hooks to call when entering cscope-minor-mode.")
+
+;;; Minor mode
+(defvar ascope-minor-mode nil
+  "")
+(make-variable-buffer-local 'ascope-minor-mode)
+(put 'ascope-minor-mode 'permanent-local t)
+
+(defun ascope-minor-mode (&optional arg)
+  ""
+  (progn
+    (setq ascope-minor-mode (if (null arg) t (car arg)))
+    (when ascope-minor-mode
+      (run-hooks 'ascope-minor-mode-hooks)
+      )
+    ascope-minor-mode
+    ))
+
+
+(defun ascope:hook ()
+  ""
+  (progn
+    (ascope-minor-mode)
+    ))
+
+
+(or (assq 'ascope-minor-mode minor-mode-map-alist)
+    (setq minor-mode-map-alist (cons (cons 'ascope-minor-mode ascope:map)
+				     minor-mode-map-alist)))
+
+(add-hook 'c-mode-hook (function ascope:hook))
+(add-hook 'c++-mode-hook (function ascope:hook))
+(add-hook 'dired-mode-hook (function ascope:hook))
+
 (provide 'ascope)
 ;;; ascope.el ends here
