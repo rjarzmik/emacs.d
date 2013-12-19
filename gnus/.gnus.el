@@ -77,6 +77,9 @@
 ; (setq gnus-thread-hide-subtree t)
 (setq gnus-thread-ignore-subject t)
 
+;; Show the threads sorted by most recent received message
+;(setq gnus-thread-sort-functions 'gnus-thread-sort-by-most-recent-date)
+
 ;; Change email address for work folder.  This is one of the most
 ;; interesting features of Gnus.  I plan on adding custom .sigs soon
 ;; for different mailing lists.
