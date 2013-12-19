@@ -60,7 +60,7 @@
 
 ;; Configure out-going mail, through free.fr, without a local MTA
 (setq message-send-mail-function 'smtpmail-send-it
-      smtpmail-smtp-server "smtp.orange.fr"
+      smtpmail-smtp-server "smtp.free.fr"
       sendmail-program "/bin/false")
 
 ;; Fetch only part of the article if we can.  I saw this in someone
