@@ -1,7 +1,6 @@
-;;; battery.el --- display battery status information  -*- coding: iso-8859-1 -*-
+;;; battery.el --- display battery status information  -*- coding: utf-8 -*-
 
-;; Copyright (C) 1997, 1998, 2000, 2001, 2002, 2003, 2004,
-;;   2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
+;; Copyright (C) 1997-1998, 2000-2013 Free Software Foundation, Inc.
 
 ;; Author: Ralph Schleicher <rs@nunatak.allgaeu.org>
 ;; Keywords: hardware
@@ -32,13 +31,15 @@
 ;;; Code:
 
 (require 'timer)
-(eval-when-compile (require 'cl))
-
+(eval-when-compile (require 'cl-lib))
 
 (defgroup battery nil
   "Display battery status information."
   :prefix "battery-"
   :group 'hardware)
+
+;; Either BATn or yeeloong-bat, basically.
+(defconst battery--linux-sysfs-regexp "[bB][aA][tT][0-9]?$")
 
 (defcustom battery-status-function
   (cond ((and (eq system-type 'gnu/linux)
@@ -49,8 +50,12 @@
 	 'battery-linux-proc-acpi)
 	((and (eq system-type 'gnu/linux)
 	      (file-directory-p "/sys/class/power_supply/")
-	      (directory-files "/sys/class/power_supply/" nil "BAT[0-9]$"))
+	      (directory-files "/sys/class/power_supply/" nil
+                               battery--linux-sysfs-regexp))
 	 'battery-linux-sysfs)
+	((and (eq system-type 'berkeley-unix)
+	      (file-executable-p "/usr/sbin/apm"))
+	 'battery-bsd-apm)
 	((and (eq system-type 'darwin)
 	      (condition-case nil
 		  (with-temp-buffer
@@ -58,7 +63,7 @@
 			 (> (buffer-size) 0)))
 		(error nil)))
 	 'battery-pmset)
-	((eq system-type 'windows-nt)
+	((fboundp 'w32-battery-status)
 	 'w32-battery-status))
   "Function for getting battery status information.
 The function has to return an alist of conversion definitions.
@@ -75,7 +80,7 @@ introduced by a `%' character in a control string."
   (cond ((eq battery-status-function 'battery-linux-proc-acpi)
 	 "Power %L, battery %B at %r (%p%% load, remaining time %t)")
 	((eq battery-status-function 'battery-linux-sysfs)
-	 "Power %L, battery %B (%p%% load)")
+	 "Power %L, battery %B (%p%% load, remaining time %t)")
 	((eq battery-status-function 'battery-pmset)
 	 "%L power, battery %B (%p%% load, remaining time %t)")
 	(battery-status-function
@@ -104,9 +109,15 @@ string are substituted as defined by the current value of the variable
   "String to display in the mode line.")
 ;;;###autoload (put 'battery-mode-line-string 'risky-local-variable t)
 
+(defcustom battery-mode-line-limit 100
+  "Percentage of full battery load below which display battery status"
+  :version "24.1"
+  :type 'integer
+  :group 'battery)
+
 (defcustom battery-mode-line-format
   (cond ((eq battery-status-function 'battery-linux-proc-acpi)
-	 "[%b%p%%,%d°C]")
+	 "[%b%p%%,%dÂ°C]")
 	(battery-status-function
 	 "[%b%p%%]"))
   "Control string formatting the string to display in the mode line.
@@ -162,22 +173,29 @@ The text being displayed in the echo area is controlled by the variables
 
 ;;;###autoload
 (define-minor-mode display-battery-mode
-  "Display battery status information in the mode line.
-The text being displayed in the mode line is controlled by the variables
+  "Toggle battery status display in mode line (Display Battery mode).
+With a prefix argument ARG, enable Display Battery mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+The text displayed in the mode line is controlled by
 `battery-mode-line-format' and `battery-status-function'.
-The mode line will be updated automatically every `battery-update-interval'
+The mode line is be updated every `battery-update-interval'
 seconds."
   :global t :group 'battery
   (setq battery-mode-line-string "")
   (or global-mode-string (setq global-mode-string '("")))
   (and battery-update-timer (cancel-timer battery-update-timer))
-  (if (not display-battery-mode)
-      (setq global-mode-string
-	    (delq 'battery-mode-line-string global-mode-string))
-    (add-to-list 'global-mode-string 'battery-mode-line-string t)
-    (setq battery-update-timer (run-at-time nil battery-update-interval
-					    'battery-update-handler))
-    (battery-update)))
+  (if (and battery-status-function battery-mode-line-format)
+      (if (not display-battery-mode)
+	  (setq global-mode-string
+		(delq 'battery-mode-line-string global-mode-string))
+	(add-to-list 'global-mode-string 'battery-mode-line-string t)
+	(setq battery-update-timer (run-at-time nil battery-update-interval
+						'battery-update-handler))
+	(battery-update))
+    (message "Battery status not available")
+    (setq display-battery-mode nil)))
 
 (defun battery-update-handler ()
   (battery-update)
@@ -185,16 +203,21 @@ seconds."
 
 (defun battery-update ()
   "Update battery status information in the mode line."
-  (setq battery-mode-line-string
-	(propertize (if (and battery-mode-line-format
-			     battery-status-function)
-			(battery-format
-			 battery-mode-line-format
-			 (funcall battery-status-function))
-		      "")
-		    'help-echo "Battery status information"))
+  (let ((data (and battery-status-function (funcall battery-status-function))))
+    (setq battery-mode-line-string
+	  (propertize (if (and battery-mode-line-format
+			       (<= (car (read-from-string (cdr (assq ?p data))))
+				   battery-mode-line-limit))
+			  (battery-format
+			   battery-mode-line-format
+			   data)
+			"")
+		      'face
+		      (and (<= (car (read-from-string (cdr (assq ?p data))))
+				   battery-load-critical)
+			   'error)
+		      'help-echo "Battery status information")))
   (force-mode-line-update))
-
 
 ;;; `/proc/apm' interface for Linux.
 
@@ -212,7 +235,7 @@ seconds."
   "Regular expression matching contents of `/proc/apm'.")
 
 (defun battery-linux-proc-apm ()
-  "Get APM status information from Linux kernel.
+  "Get APM status information from Linux (the kernel).
 This function works only with the new `/proc/apm' format introduced
 in Linux version 1.3.58.
 
@@ -283,7 +306,7 @@ The following %-sequences are provided:
 ;;; `/proc/acpi/' interface for Linux.
 
 (defun battery-linux-proc-acpi ()
-  "Get ACPI status information from Linux kernel.
+  "Get ACPI status information from Linux (the kernel).
 This function works only with the `/proc/acpi/' format introduced
 in Linux version 2.4.20 and 2.6.0.
 
@@ -324,38 +347,34 @@ The following %-sequences are provided:
 	       (setq charging-state (match-string 1)))
 	  (when (re-search-forward "present rate: +\\([0-9]+\\) \\(m[AW]\\)$"
 				   nil t)
-	    (setq rate (+ (or rate 0) (string-to-number (match-string 1)))
-		  rate-type (or (and rate-type
+	    (setq rate (+ (or rate 0) (string-to-number (match-string 1))))
+	    (when (> rate 0)
+	      (setq rate-type (or (and rate-type
 				     (if (string= rate-type (match-string 2))
 					 rate-type
 				       (error
 					"Inconsistent rate types (%s vs. %s)"
 					rate-type (match-string 2))))
-				(match-string 2))))
+				  (match-string 2)))))
 	  (when (re-search-forward "remaining capacity: +\\([0-9]+\\) m[AW]h$"
 				   nil t)
 	    (setq capacity
-		  (+ (or capacity 0) (string-to-number (match-string 1)))))
-	  (when (re-search-forward "present voltage: +\\([0-9]+\\) m[V]$"
-				   nil t)
-	    (setq voltage
-		  (+ (or voltage 0) (string-to-number (match-string 1)))))
-	  (setq mwatts (/ (* rate voltage) 1000)))
+		  (+ (or capacity 0) (string-to-number (match-string 1))))))
 	(goto-char (point-max))
 	(ignore-errors (insert-file-contents (expand-file-name "info" dir)))
 	(when (re-search-forward "present: +yes$" nil t)
 	  (when (re-search-forward "design capacity: +\\([0-9]+\\) m[AW]h$"
 				   nil t)
-	    (incf design-capacity (string-to-number (match-string 1))))
+	    (cl-incf design-capacity (string-to-number (match-string 1))))
 	  (when (re-search-forward "last full capacity: +\\([0-9]+\\) m[AW]h$"
 				   nil t)
-	    (incf last-full-capacity (string-to-number (match-string 1))))
+	    (cl-incf last-full-capacity (string-to-number (match-string 1))))
 	  (when (re-search-forward
 		 "design capacity warning: +\\([0-9]+\\) m[AW]h$" nil t)
-	    (incf warn (string-to-number (match-string 1))))
+	    (cl-incf warn (string-to-number (match-string 1))))
 	  (when (re-search-forward "design capacity low: +\\([0-9]+\\) m[AW]h$"
 				   nil t)
-	    (incf low (string-to-number (match-string 1)))))))
+	    (cl-incf low (string-to-number (match-string 1)))))))
     (setq full-capacity (if (> last-full-capacity 0)
 			    last-full-capacity design-capacity))
     (and capacity rate
@@ -415,10 +434,15 @@ format introduced in Linux version 2.4.25.
 
 The following %-sequences are provided:
 %c Current capacity (mAh or mWh)
+%r Current rate
 %B Battery status (verbose)
+%d Temperature (in degrees Celsius)
 %p Battery load percentage
-%L AC line status (verbose)"
-  (let (charging-state
+%L AC line status (verbose)
+%m Remaining time (to charge or discharge) in minutes
+%h Remaining time (to charge or discharge) in hours
+%t Remaining time (to charge or discharge) in the form `h:min'"
+  (let (charging-state rate temperature hours
 	(charge-full 0.0)
 	(charge-now 0.0)
 	(energy-full 0.0)
@@ -429,7 +453,8 @@ The following %-sequences are provided:
     (with-temp-buffer
       (dolist (dir (ignore-errors
 		    (directory-files
-		     "/sys/class/power_supply/" t "BAT[0-9]$")))
+		     "/sys/class/power_supply/" t
+                     battery--linux-sysfs-regexp)))
 	(erase-buffer)
 	(ignore-errors (insert-file-contents
 			(expand-file-name "uevent" dir)))
@@ -438,6 +463,15 @@ The following %-sequences are provided:
 	  (and (re-search-forward "POWER_SUPPLY_STATUS=\\(.*\\)$" nil t)
 	       (member charging-state '("Unknown" "Full" nil))
 	       (setq charging-state (match-string 1)))
+	  (when (re-search-forward "POWER_SUPPLY_VOLTAGE_NOW=\\([0-9]*\\)$"
+				   nil t)
+	    (setq voltage (/ (float (string-to-number (match-string 1))) 1000000)))
+	  (when (re-search-forward
+                 "POWER_SUPPLY_\\(CURRENT\\|POWER\\)_NOW=\\([0-9]*\\)$"
+                 nil t)
+	    (setq rate (float (string-to-number (match-string 2)))))
+	  (when (re-search-forward "POWER_SUPPLY_TEMP=\\([0-9]*\\)$" nil t)
+	    (setq temperature (match-string 1)))
 	  (let (full-string now-string)
 	    ;; Sysfs may list either charge (mAh) or energy (mWh).
 	    ;; Keep track of both, and choose which to report later.
@@ -460,14 +494,37 @@ The following %-sequences are provided:
 		   (setq energy-full (+ energy-full
 					(string-to-number full-string))
 			 energy-now  (+ energy-now
-					(string-to-number now-string)))))))))
+					(string-to-number now-string))))))
+	  (setq mwatts (/ (* rate voltage) 1000000))
+	  (goto-char (point-min))
+	  (when (and energy-now rate voltage (not (zerop rate)))
+	    (let ((remaining (if (string= charging-state "Discharging")
+				 energy-now
+			       (- energy-full energy-now))))
+	      (setq hours (/ (/ (* remaining voltage)
+                                rate)
+			     10000000.0))))
+	  (when (and charge-now rate voltage (not (zerop rate)))
+	    (let ((remaining (if (string= charging-state "Discharging")
+				 charge-now (- charge-full charge-now))))
+	      (setq hours (/ (float remaining) rate))
+	      )))))
     (list (cons ?c (cond ((or (> charge-full 0) (> charge-now 0))
 			  (number-to-string charge-now))
 			 ((or (> energy-full 0) (> energy-now 0))
 			  (number-to-string energy-now))
 			 (t "N/A")))
+	  (cons ?r (if rate (format "%.1f" (/ rate 1000000.0)) "N/A"))
+	  (cons ?w (or (and mwatts (format "%.2f" (float mwatts)))
+		       "N/A"))
+	  (cons ?m (if hours (format "%d" (* hours 60)) "N/A"))
+	  (cons ?h (if hours (format "%d" hours) "N/A"))
+	  (cons ?t (if hours
+		       (format "%d:%02d" hours (* (- hours (floor hours)) 60))
+		     "N/A"))
+	  (cons ?d (or temperature "N/A"))
 	  (cons ?B (or charging-state "N/A"))
-	  (cons ?p (cond ((> charge-full 0)
+	  (cons ?p (cond ((and (> charge-full 0) (> charge-now 0))
 			  (format "%.1f"
 				  (/ (* 100 charge-now) charge-full)))
 			 ((> energy-full 0)
@@ -483,6 +540,73 @@ The following %-sequences are provided:
 			 "BAT")
 		     "N/A")))))
 
+
+;;; `apm' interface for BSD.
+(defun battery-bsd-apm ()
+  "Get APM status information from BSD apm binary.
+The following %-sequences are provided:
+%L AC line status (verbose)
+%B Battery status (verbose)
+%b Battery status, empty means high, `-' means low,
+ `!' means critical, and `+' means charging
+%P Advanced power saving mode state (verbose)
+%p Battery charge percentage
+%s Remaining battery charge time in seconds
+%m Remaining battery charge time in minutes
+%h Remaining battery charge time in hours
+%t Remaining battery charge time in the form `h:min'"
+  (let* ((os-name (car (split-string
+			(shell-command-to-string "/usr/bin/uname"))))
+	 (apm-flag (if (equal os-name "OpenBSD") "P" "s"))
+	 (apm-cmd (concat "/usr/sbin/apm -ablm" apm-flag))
+	 (apm-output (split-string (shell-command-to-string apm-cmd)))
+	 ;; Battery status
+	 (battery-status
+	  (let ((stat (string-to-number (nth 0 apm-output))))
+	    (cond ((eq stat 0) '("high" . ""))
+		  ((eq stat 1) '("low" . "-"))
+		  ((eq stat 2) '("critical" . "!"))
+		  ((eq stat 3) '("charging" . "+"))
+		  ((eq stat 4) '("absent" . nil)))))
+	 ;; Battery percentage
+	 (battery-percentage (nth 1 apm-output))
+	 ;; Battery life
+	 (battery-life (nth 2 apm-output))
+	 ;; AC status
+	 (line-status
+	  (let ((ac (string-to-number (nth 3 apm-output))))
+	    (cond ((eq ac 0) "disconnected")
+		  ((eq ac 1) "connected")
+		  ((eq ac 2) "backup power"))))
+	 ;; Advanced power savings mode
+	 (apm-mode
+	  (let ((apm (string-to-number (nth 4 apm-output))))
+	    (if (string= os-name "OpenBSD")
+		(cond ((eq apm 0) "manual")
+		      ((eq apm 1) "automatic")
+		      ((eq apm 2) "cool running"))
+	      (if (eq apm 1) "on" "off"))))
+	 seconds minutes hours remaining-time)
+    (unless (member battery-life '("unknown" "-1"))
+      (if (member os-name '("OpenBSD" "NetBSD"))
+	  (setq minutes (string-to-number battery-life)
+		seconds (* 60 minutes))
+	(setq seconds (string-to-number battery-life)
+	      minutes (truncate (/ seconds 60))))
+      (setq hours (truncate (/ minutes 60))
+	    remaining-time (format "%d:%02d" hours
+				   (- minutes (* 60 hours)))))
+    (list (cons ?L (or line-status "N/A"))
+	  (cons ?B (or (car battery-status) "N/A"))
+	  (cons ?b (or (cdr battery-status) "N/A"))
+	  (cons ?p (if (string= battery-percentage "255")
+		       "N/A"
+		     battery-percentage))
+	  (cons ?P (or apm-mode "N/A"))
+	  (cons ?s (or (and seconds (number-to-string seconds)) "N/A"))
+	  (cons ?m (or (and minutes (number-to-string minutes)) "N/A"))
+	  (cons ?h (or (and hours (number-to-string hours)) "N/A"))
+	  (cons ?t (or remaining-time "N/A")))))
 
 
 ;;; `pmset' interface for Darwin (OS X).
@@ -563,5 +687,4 @@ MATCH-NUM in the match.  Otherwise, return nil."
 
 (provide 'battery)
 
-;; arch-tag: 65916f50-4754-4b6b-ac21-0b510f545a37
 ;;; battery.el ends here
