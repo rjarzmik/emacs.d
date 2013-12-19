@@ -73,7 +73,7 @@
 			     (directory-files (concat user-emacs-directory "site-elisp") t)))
   (add-to-list 'load-path path))
 ;(add-to-list 'load-path (concat user-emacs-directory "site-elisp/cedet-1.0/common"))
-;(add-to-list 'load-path (concat user-emacs-directory "site-elisp/gnus/lisp"))
+(add-to-list 'load-path (concat user-emacs-directory "site-elisp/gnus/lisp"))
 (add-to-list 'load-path (concat user-emacs-directory "site-elisp/muse/lisp"))
 (add-to-list 'load-path (concat user-emacs-directory "elisp"))
 
@@ -91,7 +91,7 @@
     (message (concat (symbol-name package) " package is not available"))))
 
 (defcustom config-to-load
-  '(my-buffers my-command-line my-dired my-emms my-git my-lang
+  '(my-buffers my-command-line my-dired my-emms my-git my-lang my-mioa701
 	       my-muse my-w3m my-work my-keyboard)
   "List of my configurations"
   :group 'local
@@ -115,7 +115,10 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(gnus-header-subject ((((class color) (background light)) (:background "dark orange" :foreground "red4")))))
+ '(gnus-header-subject ((((class color) (background light)) (:background "dark orange" :foreground "red4"))))
+ '(highlight-changes ((((class color) (background light)) (:background "antique white" :foreground nil))))
+ '(highlight-changes-delete ((((class color) (background light)) (:background "antique white" :foreground nil))))
+ )
 ;;; Local Variables:
 ;;; eval: (defun byte-compile-this-file () (write-region (point-min) (point-max) buffer-file-name nil 't) (byte-compile-file buffer-file-name) nil)
 ;;; write-file-hooks: (byte-compile-this-file)
