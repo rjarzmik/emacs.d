@@ -282,10 +282,12 @@ Must end with a newline.")
 	      (setq marker-window (display-buffer marker-buffer))
 	      (set-window-point marker-window marker-point)
 	      (select-window marker-window))
-	  (switch-to-buffer marker-buffer))
+	  (progn
+	    (unless (buffer-modified-p old-buffer) (kill-buffer old-buffer))
+	    (switch-to-buffer marker-buffer)))
       (error "The marked buffer has been deleted"))
     (goto-char marker-point)
-    (set-buffer old-buffer)))
+    ))
 
 
 (defun ascope-clear-overlay-arrow ()
