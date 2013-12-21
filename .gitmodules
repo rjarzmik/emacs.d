@@ -10,3 +10,6 @@
 [submodule "site-elisp/muse"]
 	path = site-elisp/muse
 	url = git://repo.or.cz/muse-el.git
+[submodule "site-elisp/emacs-jabber"]
+	path = site-elisp/emacs-jabber
+	url = git://emacs-jabber.git.sourceforge.net/gitroot/emacs-jabber/emacs-jabber
