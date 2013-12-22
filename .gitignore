@@ -1,6 +1,5 @@
 # Ignored data files
-data/semanticdb
-data/auto-backup
+data/*
 
 # Gnus
 gnus/.imap-authinfo
