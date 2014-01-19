@@ -1,5 +1,7 @@
 ;;; My personnal C modes
 
+(require 'highlight-beyond-fill-column)
+
 (defun my-default-c-mode-hook ()
   "My default setup for C mode"
   (c-set-style "linux")
