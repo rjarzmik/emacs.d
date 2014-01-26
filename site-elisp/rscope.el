@@ -185,7 +185,9 @@ Must end with a newline.")
   (define-key rscope:map "i" 'rscope-find-files-including-file)
   )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; High-level user usable functions (init + queries)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun rscope-init (dir)
   (interactive "DCscope Initial Directory: ")
   (let* ((buffer-name (format "*rscope-%s*" dir))
@@ -259,11 +261,6 @@ Must end with a newline.")
   (setq rscope-action-message (format "Find all assignments of symbol %s" symbol))
   (rscope-handle-query query-command))
 
-(defun rscope-ring-bufferp (buffer)
-  "Check if buffer is on the cscope searches ring."
-  (member buffer
-	  (mapcar 'marker-buffer (ring-elements rscope-marker-ring))))
-
 (defun rscope-pop-mark()
   "Pop back to where cscope was last invoked."
   (interactive)
@@ -287,77 +284,94 @@ Must end with a newline.")
 	  (goto-char marker-point)))
     ))
 
-(defun get-strings-prefixed-by (prefix list)
-  (delq nil
-	(mapcar (lambda (x) (when (string-prefix-p prefix x) x)) list)))
+(defun rscope-interactive (prompt)
+  (list
+   (let (sym)
+     (setq sym (current-word))
+     (read-string
+      (if sym
+	  (format "%s (default %s): "
+		  (substring prompt 0 (string-match "[ :]+\\'" prompt))
+		  sym)
+	prompt)
+      nil nil sym)
+     ))
+  )
 
-(defun rscope-get-cscope-buffers ()
-  (get-strings-prefixed-by "*rscope-"
-			   (mapcar (function buffer-name) (buffer-list))))
-
-(defun rscope-find-cscope-process (buffer)
-  "Find the initialized (through rscope-init) cscope buffer for buffer.
-The match is done by matching the buffer absolute path of the
-file with the absolute path of each rscope initialized buffer,
-and see if a match appears.
-
-By default, if no match found and if exactly one cscope is launched,
-use it."
-  (let* ((filename (buffer-file-name buffer))
-	(rscope-buffers (rscope-get-cscope-buffers))
-	(exact-match))
-    (when filename
-      (setq exact-match
-	    (car (delq nil (mapcar (lambda(buf)
-				     (when (string-prefix-p
-					    (expand-file-name (buffer-local-value 'default-directory (get-buffer buf)))
-					    filename)
-				       buf))
-				   rscope-buffers)))))
-    (if exact-match exact-match (car rscope-buffers))
-    ))
-
-(defun rscope-select-unique-result ()
-  "Called when query returned only 1 result, and display window"
-  (let (l file-name line-number)
-    (with-current-buffer (get-buffer-create rscope-output-buffer-name)
-      (goto-char (point-min))
-      (setq l (rscope-get-relative-entry (current-buffer) +1))
-      (setq file-name (nth 0 l))
-      (setq line-number (nth 1 l))
-      (if (and file-name line-number)
-	  (rscope-select-entry-other-window)
-	(error "No cscope unique entry found, that's abnormal")))))
-
-(defun rscope-handle-query (query)
-  "Launch the query in the rscope process."
-  (let (nb-results
-	(rscope-process (rscope-find-cscope-process (current-buffer))))
-    (if rscope-process
-	(progn
-	  (setq nb-results (rscope-query (get-process rscope-process) query))
-	  (when (>= nb-results 1)
-	    (ring-insert rscope-marker-ring (point-marker)))
-	  (when (= 1 nb-results) (rscope-select-unique-result)))
-      (error "No rscope initialized found, did you call rscope-init ?")
-    )))
-
-(defun rscope-clear-overlay-arrow ()
-  "Clean up the overlay arrow."
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Result buffer navigation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun rscope-display-entry-current-window ()
+  "Display the entry at point in current window.
+Open a new buffer if necessary."
   (interactive)
-  (let ()
-    (if overlay-arrow-position
-	(set-marker overlay-arrow-position nil))
-    ))
+  (apply 'rscope-display-file-line
+	 (append (rscope-get-relative-entry (current-buffer) 0) nil)))
 
-(defun rscope-mark-buffer-opened (buffer)
-  (with-current-buffer buffer
-    (make-variable-frame-local 'rscope-auto-open)
-    (setq rscope-auto-open t)
-    (add-hook 'first-change-hook (lambda () (setq rscope-auto-open nil)))
-    ))
+(defun rscope-display-entry-other-window ()
+  (interactive)
+  "Display the entry at point in other window, without loosing selection."
+  (apply 'rscope-display-file-line
+	 (append (rscope-get-relative-entry (current-buffer) 0) '(t nil)))
+)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun rscope-select-entry-current-window ()
+  "Select the entry in the cscope result buffer at current point,
+display it in the current window replacing the result buffer."
+  (interactive)
+  (let ((result-buffer (current-buffer))
+	(buffer
+	 (apply 'rscope-display-file-line
+		(append (rscope-get-relative-entry (current-buffer) 0) '(nil t)))))
+    (rscope-clear-previewed-buffers result-buffer buffer)
+))
+
+(defun rscope-select-entry-other-window ()
+  "Select the entry in the cscope result buffer at current point,
+display it in the other window, and bury the result buffer."
+  (interactive)
+  (let* ((result-buffer (current-buffer))
+	(buffer (apply 'rscope-display-file-line
+		       (append (rscope-get-relative-entry result-buffer 0) '(t t)))))
+    (quit-window nil (get-buffer-window result-buffer))
+    (rscope-clear-previewed-buffers result-buffer buffer)
+))
+
+(defun rscope-preview-entry-other-window ()
+  "Preview the entry in another window, without loosing selection, and
+with an optionnal arrow to show what was found."
+  (interactive)
+  (let (buffer file-line file already-opened)
+    (setq file-line (rscope-get-relative-entry (current-buffer) 0))
+    (setq file (nth 0 file-line))
+    (when (get-file-buffer file)
+      (setq already-opened t))
+    (apply 'rscope-display-file-line (append file-line '(t nil t)))
+    (push buffer preview-buffers)
+    (when already-opened
+      (push buffer preview-already-opened-buffers))
+))
+
+(defun rscope-next-symbol ()
+  "Move to the next symbol in the *rscope* buffer."
+  (interactive)
+  (rscope-get-relative-entry (current-buffer) +1))
+
+(defun rscope-prev-symbol ()
+  "Move to the previous symbol in the *rscope* buffer."
+  (interactive)
+  (rscope-get-relative-entry (current-buffer) -1))
+
+(defun rscope-close-results ()
+  "Close the cscope result buffer, and all previews."
+  (interactive)
+  (let ((result-buffer (current-buffer)))
+    (rscope-clear-previewed-buffers result-buffer)
+    (quit-window nil (get-buffer-window result-buffer))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Result buffer helpers: internal navigation, buffer spawning
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun rscope-get-nth-relative-entry (entry-number)
   "Returns the (file . line-number) of the nth relative entry in the result
 buffer. This function should only be called inside the result buffer."
@@ -445,74 +459,6 @@ Returns the buffer containing the file."
     buffer
     ))
 
-(defun rscope-display-entry-current-window ()
-  "Display the entry at point in current window.
-Open a new buffer if necessary."
-  (interactive)
-  (apply 'rscope-display-file-line
-	 (append (rscope-get-relative-entry (current-buffer) 0) nil)))
-
-(defun rscope-display-entry-other-window ()
-  (interactive)
-  "Display the entry at point in other window, without loosing selection."
-  (apply 'rscope-display-file-line
-	 (append (rscope-get-relative-entry (current-buffer) 0) '(t nil)))
-)
-
-(defun rscope-select-entry-current-window ()
-  "Select the entry in the cscope result buffer at current point,
-display it in the current window replacing the result buffer."
-  (interactive)
-  (let ((result-buffer (current-buffer))
-	(buffer
-	 (apply 'rscope-display-file-line
-		(append (rscope-get-relative-entry (current-buffer) 0) '(nil t)))))
-    (rscope-clear-previewed-buffers result-buffer buffer)
-))
-
-(defun rscope-select-entry-other-window ()
-  "Select the entry in the cscope result buffer at current point,
-display it in the other window, and bury the result buffer."
-  (interactive)
-  (let* ((result-buffer (current-buffer))
-	(buffer (apply 'rscope-display-file-line
-		       (append (rscope-get-relative-entry result-buffer 0) '(t t)))))
-    (quit-window nil (get-buffer-window result-buffer))
-    (rscope-clear-previewed-buffers result-buffer buffer)
-))
-
-(defun rscope-preview-entry-other-window ()
-  "Preview the entry in another window, without loosing selection, and
-with an optionnal arrow to show what was found."
-  (interactive)
-  (let (buffer file-line file already-opened)
-    (setq file-line (rscope-get-relative-entry (current-buffer) 0))
-    (setq file (nth 0 file-line))
-    (when (get-file-buffer file)
-      (setq already-opened t))
-    (apply 'rscope-display-file-line (append file-line '(t nil t)))
-    (push buffer preview-buffers)
-    (when already-opened
-      (push buffer preview-already-opened-buffers))
-))
-
-(defun rscope-next-symbol ()
-  "Move to the next symbol in the *rscope* buffer."
-  (interactive)
-  (rscope-get-relative-entry (current-buffer) +1))
-
-(defun rscope-prev-symbol ()
-  "Move to the previous symbol in the *rscope* buffer."
-  (interactive)
-  (rscope-get-relative-entry (current-buffer) -1))
-
-(defun rscope-close-results ()
-  "Close the cscope result buffer, and all previews."
-  (interactive)
-  (let ((result-buffer (current-buffer)))
-    (rscope-clear-previewed-buffers result-buffer)
-    (quit-window nil (get-buffer-window result-buffer))))
-
 (defun rscope-list-entry-mode ()
   (use-local-map rscope-list-entry-keymap)
   (setq buffer-read-only t
@@ -525,7 +471,87 @@ with an optionnal arrow to show what was found."
   (run-hooks 'rscope-list-entry-hook)
   )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Result buffer helpers
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun rscope-ring-bufferp (buffer)
+  "Check if buffer is on the cscope searches ring."
+  (member buffer
+	  (mapcar 'marker-buffer (ring-elements rscope-marker-ring))))
+
+(defun get-strings-prefixed-by (prefix list)
+  (delq nil
+	(mapcar (lambda (x) (when (string-prefix-p prefix x) x)) list)))
+
+(defun rscope-get-cscope-buffers ()
+  (get-strings-prefixed-by "*rscope-"
+			   (mapcar (function buffer-name) (buffer-list))))
+
+(defun rscope-find-cscope-process (buffer)
+  "Find the initialized (through rscope-init) cscope buffer for buffer.
+The match is done by matching the buffer absolute path of the
+file with the absolute path of each rscope initialized buffer,
+and see if a match appears.
+
+By default, if no match found and if exactly one cscope is launched,
+use it."
+  (let* ((filename (buffer-file-name buffer))
+	(rscope-buffers (rscope-get-cscope-buffers))
+	(exact-match))
+    (when filename
+      (setq exact-match
+	    (car (delq nil (mapcar (lambda(buf)
+				     (when (string-prefix-p
+					    (expand-file-name (buffer-local-value 'default-directory (get-buffer buf)))
+					    filename)
+				       buf))
+				   rscope-buffers)))))
+    (if exact-match exact-match (car rscope-buffers))
+    ))
+
+(defun rscope-select-unique-result ()
+  "Called when query returned only 1 result, and display window"
+  (let (l file-name line-number)
+    (with-current-buffer (get-buffer-create rscope-output-buffer-name)
+      (goto-char (point-min))
+      (setq l (rscope-get-relative-entry (current-buffer) +1))
+      (setq file-name (nth 0 l))
+      (setq line-number (nth 1 l))
+      (if (and file-name line-number)
+	  (rscope-select-entry-other-window)
+	(error "No cscope unique entry found, that's abnormal")))))
+
+(defun rscope-handle-query (query)
+  "Launch the query in the rscope process."
+  (let (nb-results
+	(rscope-process (rscope-find-cscope-process (current-buffer))))
+    (if rscope-process
+	(progn
+	  (setq nb-results (rscope-query (get-process rscope-process) query))
+	  (when (>= nb-results 1)
+	    (ring-insert rscope-marker-ring (point-marker)))
+	  (when (= 1 nb-results) (rscope-select-unique-result)))
+      (error "No rscope initialized found, did you call rscope-init ?")
+    )))
+
+(defun rscope-clear-overlay-arrow ()
+  "Clean up the overlay arrow."
+  (interactive)
+  (let ()
+    (if overlay-arrow-position
+	(set-marker overlay-arrow-position nil))
+    ))
+
+(defun rscope-mark-buffer-opened (buffer)
+  (with-current-buffer buffer
+    (make-variable-frame-local 'rscope-auto-open)
+    (setq rscope-auto-open t)
+    (add-hook 'first-change-hook (lambda () (setq rscope-auto-open nil)))
+    ))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Cscope process running and result formatting
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun rscope-filter (process string)
   ;; Write the output into the Tramp Process
   (with-current-buffer (process-buffer process)
@@ -561,21 +587,6 @@ with an optionnal arrow to show what was found."
 	)
       )
     nb-lines))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun rscope-interactive (prompt)
-  (list
-   (let (sym)
-     (setq sym (current-word))
-     (read-string
-      (if sym
-	  (format "%s (default %s): "
-		  (substring prompt 0 (string-match "[ :]+\\'" prompt))
-		  sym)
-	prompt)
-      nil nil sym)
-     ))
-  )
 
 (defun rscope-make-entry-line (func-name line-number line)
   ;; The format of entry line:
@@ -740,6 +751,9 @@ with an optionnal arrow to show what was found."
     )
   )
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Rscope minor mode hook: provides rscope:keymap for key shortcuts
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defvar rscope-minor-mode-hooks nil
   "List of hooks to call when entering cscope-minor-mode.")
 
@@ -754,11 +768,9 @@ with an optionnal arrow to show what was found."
   (progn
     (setq rscope-minor-mode (if (null arg) t (car arg)))
     (when rscope-minor-mode
-      (run-hooks 'rscope-minor-mode-hooks)
-      )
+      (run-hooks 'rscope-minor-mode-hooks))
     rscope-minor-mode
     ))
-
 
 (defun rscope:hook ()
   ""
