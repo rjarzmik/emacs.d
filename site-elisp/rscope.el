@@ -377,15 +377,23 @@ with an optionnal arrow to show what was found."
 buffer. This function should only be called inside the result buffer."
   (let* (line-number file-name stall
 	 (direction (if (> entry-number 0) 1 -1)))
+    ; Be at beginning of line
+    (forward-line 0)
     (while (not (= 0 entry-number))
       (setq entry-number (- entry-number direction))
       ; Look for next valid entry
       (setq stall 0)
       (while (= 0 stall)
 	(setq stall (forward-line direction))
-	(setq line-number (get-text-property (point) 'rscope-line-number))
-	(when line-number
+	(when (looking-at "^\\*\\* ")
 	  (setq stall 1))))
+	;(setq line-number (get-text-property (point) 'rscope-line-number))
+	;(when line-number
+	;  (setq stall 1))))
+
+    ;;; RJK
+    ;; Review how to find file-name and line-number
+    ; (text-property-any (point) (line-end-position) 'face 'rscope-line-number-face)
 
     (setq line-number (get-text-property (point) 'rscope-line-number))
     (setq file-name (get-text-property (point) 'rscope-file))
@@ -703,12 +711,9 @@ use it."
   )
 
 (defun rscope-process-output (buf)
-  (setq rscope-first-match nil
-	rscope-last-file nil)
-  (if (get-buffer rscope-output-buffer-name)
-      (kill-buffer rscope-output-buffer-name)
-    )
-  (let (text-start text-end text-max)
+  (when (get-buffer rscope-output-buffer-name)
+    (kill-buffer rscope-output-buffer-name))
+  (let (result-buf text-start text-end text-max)
     (with-current-buffer buf
       (setq text-start (point))
       (setq text-max (point-max))
@@ -716,15 +721,18 @@ use it."
 	  (setq text-end (+ text-start 5000))
 	(setq text-end text-max))
       )
-    (while (and (> (- text-end text-start) 0) (<= text-end text-max))
 
-      (rscope-process_one_chunk buf text-start text-end)
+    (setq result-buf (get-buffer-create rscope-output-buffer-name))
+    (with-current-buffer result-buf
+      (insert rscope-action-message "\n")
+      (insert rscope-separator-line))
+    (rscope-cscope-parse-output buf text-start text-end
+				result-buf 'rscope-results-sort-filename)
 
-      (setq text-start (+ text-end 1))
-      (if (>= (- text-max text-start) 5000)
-	  (setq text-end (+ text-start 5000))
-	(setq text-end text-max))))
-  )
+    (setq text-start (+ text-end 1))
+    (if (>= (- text-max text-start) 5000)
+	(setq text-end (+ text-start 5000))
+      (setq text-end text-max))))
 
 (defun rscope-wait-for-output (&optional timeout)
   (let ((proc (get-buffer-process (current-buffer)))
@@ -778,7 +786,6 @@ use it."
     (rscope-minor-mode)
     ))
 
-
 (or (assq 'rscope-minor-mode minor-mode-map-alist)
     (setq minor-mode-map-alist (cons (cons 'rscope-minor-mode rscope:map)
 				     minor-mode-map-alist)))
@@ -789,3 +796,76 @@ use it."
 
 (provide 'rscope)
 ;;; rscope.el ends here
+
+;;; To be melded into process handling
+(defun rscope-cscope-parse-output (procbuf begin end resultbuf organizer)
+  "Process a cscope raw output in procbuf, between point [begin..end].
+Parse each line, and once file, line number and line content are parsed,
+call organizer to handle them within resultbuf."
+  (let (line file line-number function-name content
+	(stall 0)
+	(cscope-regexp
+	 "\\([^[:blank:]]*\\)[[:blank:]]+\\([^[:blank:]]*\\)[[:blank:]]+\\([[:digit:]]*\\)[[:blank:]]+\\(.*\\)"
+	 ))
+    (with-current-buffer procbuf
+      (goto-char begin)
+      (while (and (< (point) end) (= 0 stall))
+	(setq line (buffer-substring-no-properties (line-beginning-position)
+						   (line-end-position)))
+	(setq stall (forward-line 1))
+
+	; Match a cscope output line
+	(when (string-match cscope-regexp line)
+	  (setq file (match-string 1 line))
+	  (setq function-name (match-string 2 line))
+	  (setq line-number (string-to-number (match-string 3 line)))
+	  (setq content (match-string 4 line))
+	  ;(message "RJK: file=%s func=%s line=%s content=%s\n"
+	  ;file function-name line-number content)
+	  (apply organizer (list resultbuf file line-number function-name content))
+	)))))
+
+(defun rscope-results-insert-filename (file-name level)
+  (insert-char ?* level)
+  (insert " ")
+  (insert (propertize file-name 'face 'rscope-file-face))
+  (insert "\n")
+)
+
+(defun rscope-results-insert-function (function-name level line-number content)
+  (let (str)
+    (insert-char ?* level)
+    (insert " ")
+    (setq str (concat
+	       (propertize function-name 'face 'rscope-function-face)
+	       "() ["
+	       (propertize (number-to-string line-number) 'face 'rscope-line-number-face)
+	       "]"
+	       (propertize content 'face 'rscope-line-face)
+	       "\n"))
+    (insert str)))
+
+(defun rscope-results-sort-filename (buf file line-number function-name content)
+  "Insert in buffer buf the entry, where all functions are grouped by file."
+  (let (last-file found)
+    (message "RJK: file=%s func=%s line=%s content=%s\n"
+	     file function-name line-number content)
+    (with-current-buffer (get-buffer-create buf)
+      ;; Find the file in buf if already present
+      ;;; First check last-file (optimization) => already placed in this case
+      (unless (eq last-file file)
+	(goto-char (point-min))
+	(setq found (re-search-forward (format "^\* %s" file) nil t)))
+      (setq last-file file)
+
+      ;;; If found the file, move to the next line, beggining of line
+      ;;; Else insert the new filename
+      (if found
+	  (forward-line +1)
+	(progn
+	  (goto-char (point-max))
+	  (rscope-results-insert-filename file 1)))
+
+      ;;; Insert the found result
+      (rscope-results-insert-function function-name 2 line-number content)
+)))
