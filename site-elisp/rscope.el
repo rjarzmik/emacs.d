@@ -1,6 +1,7 @@
-;;; rscope.el --- Another cscope interface for emacs
+;;; rscope.el --- Reborn cscope interface for emacs
 ;;
 ;; Robert Jarzmik <robert.jarzmik@free.fr>
+;; Version 0.1
 ;;
 ;; Heavily inspired by ascope, relies on :
 ;;   - pre-launched cscope processes
@@ -55,11 +56,6 @@ What files include this header file?
 
 (defcustom rscope-allow-arrow-overlays t
   "*If non-nil, use an arrow overlay to show target lines.
-Arrow overlays are only used when the following functions are used:
-
-rscope-show-entry-other-window
-rscope-show-next-entry-other-window
-rscope-show-prev-entry-other-window
 
 The arrow overlay is removed when other cscope functions are used.
 Note that the arrow overlay is not an actual part of the text, and can
@@ -67,21 +63,17 @@ be removed by quitting the cscope buffer."
   :type 'boolean
   :group 'rscope)
 
+(defcustom rscope-hierarchies-shorten-filename t
+  "*If non-nil, replace relative path names with the stripped of path, just
+as would have been gotten by using unix basename."
+  :type 'boolean
+  :group 'rscope
+)
+
 (defcustom rscope-overlay-arrow-string "=>"
   "*The overlay string to use when displaying arrow overlays."
   :type 'string
   :group 'rscope)
-
-(defcustom rscope-name-line-width -30
-  "*The width of the combined \"function name:line number\" field in the
-cscope results buffer. If negative, the field is left-justified."
-  :type 'integer
-  :group 'rscope)
-
-(defcustom rscope-use-face t
-  "*Whether to use text highlighting (? la font-lock) or not."
-  :group 'rscope
-  :type '(boolean))
 
 (defface rscope-file-face
   '((((class color) (background dark))
@@ -183,6 +175,7 @@ Must end with a newline.")
   (define-key rscope:map "C" 'rscope-find-called-functions)
   (define-key rscope:map "t" 'rscope-find-this-text-string)
   (define-key rscope:map "i" 'rscope-find-files-including-file)
+  (define-key rscope:map "h" 'rscope-find-calling-hierarchy)
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -214,52 +207,59 @@ Must end with a newline.")
 
 (defun rscope-find-this-symbol (symbol)
   "Locate a symbol in source code."
-  (interactive (rscope-interactive "Find this symbol: "))
+  (interactive (rscope-interactive
+		(list (cons "Find this symbol: " (current-word)))))
   (setq query-command (concat "0" symbol "\n") )
-  (setq rscope-action-message (format "Find this symbol: %s" symbol))
   (rscope-handle-query query-command))
 
 (defun rscope-find-global-definition (symbol)
   "Find a symbol's global definition."
-  (interactive (rscope-interactive "Find this global definition: "))
+  (interactive (rscope-interactive
+		(list (cons "Find this global definition: " (current-word)))))
   (setq query-command (concat "1" symbol "\n") )
-  (setq rscope-action-message (format "Finding global definition: %s" symbol))
   (rscope-handle-query query-command))
 
 (defun rscope-find-called-functions (symbol)
   "Display functions called by a function."
-  (interactive (rscope-interactive "Find functions called by this function: "))
+  (interactive (rscope-interactive
+		(list (cons "Find functions called by this function: " (current-word)))))
   (setq query-command (concat "2" symbol "\n") )
-  (setq rscope-action-message (format "Find functions called by this function: %s" symbol))
   (rscope-handle-query query-command))
 
 (defun rscope-find-functions-calling-this-function (symbol)
   "Display functions calling a function."
-  (interactive (rscope-interactive "Find functions calling this function: "))
+  (interactive (rscope-interactive
+		(list (cons "Find functions calling by this function: " (current-word)))))
   (setq query-command (concat "3" symbol "\n") )
-  (setq rscope-action-message (format "Find functions calling this function: %s" symbol))
   (rscope-handle-query query-command))
 
 (defun rscope-find-this-text-string (symbol)
   "Locate where a text string occurs."
-  (interactive (rscope-interactive "Find this text string: "))
+  (interactive (rscope-interactive
+		(list (cons "Find this text string: " (current-word)))))
   (setq query-command (concat "4" symbol "\n") )
-  (setq rscope-action-message (format "Find this text string: %s" symbol))
   (rscope-handle-query query-command))
 
 (defun rscope-find-files-including-file (symbol)
   "Locate all files #including a file."
-  (interactive (rscope-interactive "Find files #including this file: "))
+  (interactive (rscope-interactive
+		(list (cons "Find files #including this file: " (current-word)))))
   (setq query-command (concat "8" symbol "\n") )
-  (setq rscope-action-message (format "Find files #including this file: %s" symbol))
   (rscope-handle-query query-command))
 
 (defun rscope-all-symbol-assignments (symbol)
   "Find all the assignments of the symbol"
-  (interactive (rscope-interactive "this don't work due to the bug of cscope, Find all assignments of symbol: "))
+  (interactive (rscope-interactive
+		(list (cons "this don't work due to the bug of cscope, Find all assignments of symbol: " (current-word)))))
   (setq query-command (concat "10" symbol "\n") )
-  (setq rscope-action-message (format "Find all assignments of symbol %s" symbol))
   (rscope-handle-query query-command))
+
+(defun rscope-find-calling-hierarchy (symbol depth)
+  "Find all functions calling a function, then functions calling these ones, etc ..."
+  (interactive (rscope-interactive
+		(list (cons "Find function's calling hierarchy: " (current-word))
+		      (cons "Depth: " "1"))))
+  (rscope-handle-query-call-hierarchy symbol (string-to-number depth)))
 
 (defun rscope-pop-mark()
   "Pop back to where cscope was last invoked."
@@ -284,19 +284,26 @@ Must end with a newline.")
 	  (goto-char marker-point)))
     ))
 
-(defun rscope-interactive (prompt)
-  (list
-   (let (sym)
-     (setq sym (current-word))
-     (read-string
-      (if sym
-	  (format "%s (default %s): "
-		  (substring prompt 0 (string-match "[ :]+\\'" prompt))
-		  sym)
-	prompt)
-      nil nil sym)
-     ))
-  )
+(defun rscope-interactive (prompt-defvals-alist)
+  "Interactive prompter, with an associative list of prompt and default value.
+As a side effect, rscope-action-message is set."
+  (setq rscope-action-message "")
+
+  (mapcar (lambda (elem)
+	    (let ((p (car elem)) (def (cdr elem)) prompt out)
+	      (setq prompt
+		    (if def (format "%s (default %s): "
+				    (substring p 0 (string-match "[ :]+\\'" p)) def)
+		      p))
+	      (setq out (read-string prompt nil nil (if def def "")))
+	      (when (> (length rscope-action-message) 0)
+		(setq rscope-action-message
+		      (concat rscope-action-message " - ")))
+	      (setq rscope-action-message
+		    (concat rscope-action-message
+			    (format "%s%s" p out)))
+	      out))
+	  prompt-defvals-alist))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Result buffer navigation
@@ -342,11 +349,11 @@ display it in the other window, and bury the result buffer."
 with an optionnal arrow to show what was found."
   (interactive)
   (let (buffer file-line file already-opened)
-    (setq file-line (rscope-get-relative-entry (current-buffer) 0))
-    (setq file (nth 0 file-line))
-    (when (get-file-buffer file)
-      (setq already-opened t))
-    (apply 'rscope-display-file-line (append file-line '(t nil t)))
+    (setq file-line (rscope-get-relative-entry (current-buffer) 0)
+	  file (nth 0 file-line)
+	  already-opened (and (get-file-buffer file)
+			      (not (member (get-file-buffer file) preview-buffers)))
+	  buffer (apply 'rscope-display-file-line (append file-line '(t nil t))))
     (push buffer preview-buffers)
     (when already-opened
       (push buffer preview-already-opened-buffers))
@@ -456,12 +463,18 @@ Optionally draw an arrow at the line number."
 If selectp, select the buffer. If arrowp, draw an arrow on the line number
 on this buffer for the selected entry.
 Returns the buffer containing the file."
-  (let ((buffer (rscope-get-buffer-file-line file-name line-number arrowp)))
+  (let (window
+	(buffer (rscope-get-buffer-file-line file-name line-number arrowp)))
     (if selectp
 	(progn
 	  (if otherp (pop-to-buffer buffer) (switch-to-buffer buffer))
 	  (goto-line line-number))
-      (display-buffer buffer))
+      (progn
+	(display-buffer buffer)
+	(with-current-buffer buffer
+	  (goto-line line-number))
+	(setq window (get-buffer-window buffer))
+	(when window (set-window-point window (with-current-buffer buffer (point))))))
     buffer
     ))
 
@@ -484,6 +497,22 @@ Returns the buffer containing the file."
   "Check if buffer is on the cscope searches ring."
   (member buffer
 	  (mapcar 'marker-buffer (ring-elements rscope-marker-ring))))
+
+(defun rscope-clear-overlay-arrow ()
+  "Clean up the overlay arrow."
+  (interactive)
+  (let ()
+    (if overlay-arrow-position
+	(set-marker overlay-arrow-position nil))
+    ))
+
+(defun rscope-mark-buffer-opened (buffer)
+  "Mark a buffer which was opened by a rscope action."
+  (with-current-buffer buffer
+    (make-variable-frame-local 'rscope-auto-open)
+    (setq rscope-auto-open t)
+    (add-hook 'first-change-hook (lambda () (setq rscope-auto-open nil)))
+    ))
 
 (defun get-strings-prefixed-by (prefix list)
   (delq nil
@@ -543,29 +572,43 @@ use it."
 	    (ring-insert rscope-marker-ring (point-marker)))
 	  (rscope-finish-result-buffer result-buf)
 	  (when (= 1 nb-results) (rscope-select-unique-result)))
-      (error "No rscope initialized found, did you call rscope-init ?")
-      )))
+      (error "No rscope initialized found, did you call rscope-init ?"))))
 
-(defun rscope-clear-overlay-arrow ()
-  "Clean up the overlay arrow."
-  (interactive)
-  (let ()
-    (if overlay-arrow-position
-	(set-marker overlay-arrow-position nil))
-    ))
+(defun rscope-handle-query-call-hierarchy (function-name levels)
+  "Launch the query to get a calling hierarchy in rscope process."
+  (let (result-buf regexp found nb-lines
+		   (rscope-process (rscope-find-cscope-process (current-buffer))))
+    (if rscope-process
+	(progn
+	  (setq result-buf (rscope-create-result-buffer
+			    rscope-action-message rscope-process))
+	  (with-current-buffer result-buf
+	    (rscope-results-insert-function function-name 1 0 "" "File")
+	    (make-local-variable 'rscope-level)
 
-(defun rscope-mark-buffer-opened (buffer)
-  (with-current-buffer buffer
-    (make-variable-frame-local 'rscope-auto-open)
-    (setq rscope-auto-open t)
-    (add-hook 'first-change-hook (lambda () (setq rscope-auto-open nil)))
-    ))
+	    (dotimes (level levels)
+	      (setq regexp (format "^[*]\\{%d\\}" (+ 1 level))
+		    rscope-level (+ 2 level))
+	      (goto-char (point-min))
+	      (setq found (re-search-forward regexp nil t))
+	      (while found
+		(forward-line 0)
+		(setq function-name (get-text-property (point) 'rscope-function-name))
+		(forward-line +1)
+		(setq nb-lines
+		      (rscope-cscope-exec-query rscope-process
+						(concat "3" function-name "\n")))
+		(rscope-cscope-parse-output rscope-process
+					    result-buf 'rscope-results-organize-funcs)
+		(setq found (re-search-forward regexp nil t)))
+	      ))
+	  (rscope-finish-result-buffer result-buf))
+      (error "No rscope initialized found, did you call rscope-init ?"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Cscope process running and result formatting
+;; Cscope process running
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun rscope-filter (process string)
-  ;; Write the output into the Tramp Process
   (with-current-buffer (process-buffer process)
     (save-excursion
       (goto-char (point-max))
@@ -576,9 +619,7 @@ use it."
 	(found nil)
 	(start-time (current-time))
 	(start-point (point))
-	(nb-lines 0)
-	)
-
+	(nb-lines 0))
     (save-excursion
       (while (not found)
 	(accept-process-output proc 1)
@@ -591,49 +632,21 @@ use it."
     (when (re-search-forward "^cscope: \\([0-9]+\\) lines$" nil t)
       (setq nb-lines (string-to-number (match-string 1)))
       (forward-line +1))
-    nb-lines
-    )
-  )
+    nb-lines))
+
+(defun rscope-cscope-exec-query (procbuf command)
+  (let ((nb-lines 0)
+	(proc (get-buffer-process procbuf)))
+    (with-current-buffer procbuf
+      (goto-char (point-max))
+      (insert "\n")
+      (process-send-string proc command)
+      (setq nb-lines (rscope-wait-for-output))
+      nb-lines)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Rscope minor mode hook: provides rscope:keymap for key shortcuts
+;; Rscope cscope output parsing and result buffer creation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defvar rscope-minor-mode-hooks nil
-  "List of hooks to call when entering cscope-minor-mode.")
-
-;;; Minor mode
-(defvar rscope-minor-mode nil
-  "")
-(make-variable-buffer-local 'rscope-minor-mode)
-(put 'rscope-minor-mode 'permanent-local t)
-
-(defun rscope-minor-mode (&optional arg)
-  ""
-  (progn
-    (setq rscope-minor-mode (if (null arg) t (car arg)))
-    (when rscope-minor-mode
-      (run-hooks 'rscope-minor-mode-hooks))
-    rscope-minor-mode
-    ))
-
-(defun rscope:hook ()
-  ""
-  (progn
-    (rscope-minor-mode)
-    ))
-
-(or (assq 'rscope-minor-mode minor-mode-map-alist)
-    (setq minor-mode-map-alist (cons (cons 'rscope-minor-mode rscope:map)
-				     minor-mode-map-alist)))
-
-(add-hook 'c-mode-hook (function rscope:hook))
-(add-hook 'c++-mode-hook (function rscope:hook))
-(add-hook 'dired-mode-hook (function rscope:hook))
-
-(provide 'rscope)
-;;; rscope.el ends here
-
-;;; To be melded into process handling
 (defun rscope-cscope-parse-output (procbuf resultbuf organizer)
   "Process a cscope raw output in procbuf, between point [(point)..(point-max)].
 Parse each line, and once file, line number and line content are parsed,
@@ -669,8 +682,13 @@ call organizer to handle them within resultbuf."
   (insert "\n")
   )
 
-(defun rscope-results-insert-function (function-name level line-number content file-name)
-  (let (str)
+(defun rscope-results-insert-function (function-name level line-number content
+						     file-name &optional write-file-p)
+  (let (str displayed-file-name)
+    (setq displayed-file-name
+	  (if rscope-hierarchies-shorten-filename
+	      (file-name-nondirectory file-name)
+	      file-name))
     (insert (propertize "*"
 			'rscope-function-name function-name
 			'rscope-line-number line-number
@@ -680,6 +698,10 @@ call organizer to handle them within resultbuf."
     (setq str (concat
 	       (propertize function-name 'face 'rscope-function-face)
 	       "() ["
+	       (when write-file-p
+		 (concat 
+		  (propertize displayed-file-name 'face 'rscope-file-face)
+		  ":"))
 	       (propertize (number-to-string line-number) 'face 'rscope-line-number-face)
 	       "]"
 	       (propertize content 'face 'rscope-line-face)
@@ -713,7 +735,7 @@ call organizer to handle them within resultbuf."
   (let (found)
     (with-current-buffer buf
       (rscope-results-insert-function function-name rscope-level line-number content
-				      file))))
+				      file t))))
 
 (defun rscope-create-result-buffer (header procbuf)
   (when (get-buffer rscope-output-buffer-name)
@@ -741,36 +763,37 @@ call organizer to handle them within resultbuf."
     (rscope-get-relative-entry (current-buffer) +1)
     (rscope-list-entry-mode)))
 
-(defun rscope-cscope-exec-query (procbuf command)
-  (let ((nb-lines 0)
-	(proc (get-buffer-process procbuf)))
-    (with-current-buffer procbuf
-      (goto-char (point-max))
-      (insert "\n")
-      (process-send-string proc command)
-      (setq nb-lines (rscope-wait-for-output))
-      nb-lines)))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Rscope minor mode hook: provides rscope:keymap for key shortcuts
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defvar rscope-minor-mode-hooks nil
+  "List of hooks to call when entering cscope-minor-mode.")
 
-(defun rscope-call-hierarchy (procbuf function-name levels)
-  (let (result-buf regexp found nb-lines)
-    (setq result-buf (rscope-create-result-buffer rscope-action-message procbuf))
-    (with-current-buffer result-buf
-      (rscope-results-insert-function function-name 1 0 "" "File")
-      (make-local-variable 'rscope-level)
+;;; Minor mode
+(defvar rscope-minor-mode nil
+  "")
+(make-variable-buffer-local 'rscope-minor-mode)
+(put 'rscope-minor-mode 'permanent-local t)
 
-      (dotimes (level levels)
-	(setq regexp (format "^[*]\\{%d\\}" (+ 1 level))
-	      rscope-level (+ 2 level))
-	(goto-char (point-min))
-	(setq found (re-search-forward regexp nil t))
-	(while found
-	  (forward-line 0)
-	  (setq function-name (get-text-property (point) 'rscope-function-name))
-	  (forward-line +1)
-	  (setq nb-lines
-		(rscope-cscope-exec-query procbuf (concat "3" function-name "\n")))
-	  (rscope-cscope-parse-output procbuf
-				      result-buf 'rscope-results-organize-funcs)
-	  (setq found (re-search-forward regexp nil t)))
-	))
-    (rscope-finish-result-buffer result-buf)))
+(defun rscope-minor-mode (&optional arg)
+  ""
+  (setq rscope-minor-mode (if (null arg) t (car arg)))
+  (when rscope-minor-mode
+    (run-hooks 'rscope-minor-mode-hooks))
+  rscope-minor-mode)
+
+(defun rscope:hook ()
+  ""
+  (rscope-minor-mode))
+
+(or (assq 'rscope-minor-mode minor-mode-map-alist)
+    (setq minor-mode-map-alist (cons (cons 'rscope-minor-mode rscope:map)
+				     minor-mode-map-alist)))
+
+(add-hook 'c-mode-hook (function rscope:hook))
+(add-hook 'c++-mode-hook (function rscope:hook))
+(add-hook 'dired-mode-hook (function rscope:hook))
+
+(provide 'rscope)
+;;; rscope.el ends here
+
