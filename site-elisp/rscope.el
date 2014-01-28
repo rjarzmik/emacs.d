@@ -1,11 +1,15 @@
 ;;; rscope.el --- Reborn cscope interface for emacs
 ;;
-;; Robert Jarzmik <robert.jarzmik@free.fr>
-;; Version 0.1
+;; Copyright(c) 2014 Robert Jarzmik <robert.jarzmik@free.fr>
+;; Authors: Robert Jarzmik <robert.jarzmik@free.fr>
+;; Keywords: code
+;; Licence: GPL
+;; Version 0.2
 ;;
 ;; Heavily inspired by ascope, relies on :
 ;;   - pre-launched cscope processes
 ;;   - auto finding of the best suited cscope process (based on file directory)
+;;   - auto finding cscope databases, customizable
 ;;   - has navigation and preview capability in rscope result buffer
 
 ;; Usage:
@@ -14,17 +18,23 @@
 ;;     This command must be issue prior to issue any other command below, the
 ;;     directory fed to this command must be the directory holding the cscope.out
 ;;     file.
+;;     Alternatively, if a cscope.out exists in the directory tree, don't bother
+;;     doing a rscope-init command, it will work out automatically.
 ;;   M-x find-file "myfile.c"
 ;;   M-x rscope-find-this-symbol
 ;;     Find a symbol from the database.
 
 ;; Result buffer navigation (*Result*)
+;;   Normal keystrokes :
+;;     Use "n" to navigate to next entry in results
+;;     Use "p" to navigate to previsous entry in results
+;;     Use ENTER bury result buffer and switch to the previewed entry
+;;     Use "q" to bury result buffer and switch to other window.
 ;;
-;;   Use "n" to navigate to next entry in results
-;;   Use "p" to navigate to previsous entry in results
-;;   Use SPACE to preview an entry
-;;   Use ENTER bury result buffer and switch to the previewed entry
-;;   Use "q" to bury result buffer and switch to other window.
+;;   Advances keystrokes:
+;;     Use SPACE to preview an entry
+;;     Use Ctr-ENTER to bury result buffer, and replace it by the selected entry
+;;     Use number <N> to develop current leaf's subtree up to Nth level
 
 ;; Available global commands (bound by default to C-c s [gstCcia])
 ;;
@@ -36,6 +46,32 @@
 ;; M-x rscope-find-files-including-file
 ;; M-x rscope-all-symbol-assignments
 ;; M-x rscope-pop-mark
+
+;; Advanced users guide :
+;;  - pay attention to cusotmizable variables
+;;  - don't do anymore any rscope-init command, implement a hook in
+;;    rscope-autoinit-cscope-dir-hooks
+;;      (see rscope-autoinit-path-upwards-cscope_out)
+
+;; This file is *NOT* part of GNU Emacs.
+;; This file is distributed under the same terms as GNU Emacs.
+;;
+;; This program is free software; you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License as
+;; published by the Free Software Foundation; either version 2 of
+;; the License, or (at your option) any later version.
+;;
+;; This program is distributed in the hope that it will be
+;; useful, but WITHOUT ANY WARRANTY; without even the implied
+;; warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+;; PURPOSE.  See the GNU General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public
+;; License along with this program; if not, write to the Free
+;; Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+;; MA 02111-1307 USA
+
+;; http://www.fsf.org/copyleft/gpl.html
 
 (defgroup rscope nil
   "Cscope interface for (X)Emacs.
@@ -148,6 +184,12 @@ Must end with a newline.")
   (define-key rscope-list-entry-keymap (kbd "C-<return>") 'rscope-select-entry-current-window)
   )
 
+(defvar rscope-autoinit-cscope-dir-hooks nil
+  "*Hooks run to perform automatic rcscope-init calls.
+These hooks should take a buffer as input, and return a string containing
+a directory with a cscope.out file, or nil if they can't find a directory.
+The first hook returning a non nil value wins.")
+
 (defvar rscope-list-entry-hook nil
   "*Hook run after rscope-list-entry-mode entered.")
 
@@ -163,20 +205,18 @@ Must end with a newline.")
 
 (defvar rscope:map nil
   "The rscope keymap.")
-(if rscope:map
-    nil
-  (define-prefix-command 'rscope:map)
-  (global-set-key (kbd "\C-cs") 'rscope:map)
-  ;; The following line corresponds to be beginning of the "Cscope" menu.
-  (define-key rscope:map "s" 'rscope-find-this-symbol)
-  (define-key rscope:map "d" 'rscope-find-global-definition)
-  (define-key rscope:map "g" 'rscope-find-global-definition)
-  (define-key rscope:map "c" 'rscope-find-functions-calling-this-function)
-  (define-key rscope:map "C" 'rscope-find-called-functions)
-  (define-key rscope:map "t" 'rscope-find-this-text-string)
-  (define-key rscope:map "i" 'rscope-find-files-including-file)
-  (define-key rscope:map "h" 'rscope-find-calling-hierarchy)
-  )
+(unless rscope:map
+    (define-prefix-command 'rscope:map)
+    ;; The following line corresponds to be beginning of the "Cscope" menu.
+    (define-key 'rscope:map "s" 'rscope-find-this-symbol)
+    (define-key 'rscope:map "d" 'rscope-find-global-definition)
+    (define-key 'rscope:map "g" 'rscope-find-global-definition)
+    (define-key 'rscope:map "c" 'rscope-find-functions-calling-this-function)
+    (define-key 'rscope:map "C" 'rscope-find-called-functions)
+    (define-key 'rscope:map "t" 'rscope-find-this-text-string)
+    (define-key 'rscope:map "i" 'rscope-find-files-including-file)
+    (define-key 'rscope:map "h" 'rscope-find-calling-hierarchy)
+    )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; High-level user usable functions (init + queries)
@@ -202,8 +242,9 @@ Must end with a newline.")
 	    (message "rscope: no cscope.out file here"))
 	(progn
 	  (rscope-wait-for-output)
-	  (message "rscope: load ok"))
-	))))
+	  (message "rscope: database load %s : OK" dir))
+	))
+    rscope-buffer))
 
 (defun rscope-find-this-symbol (symbol)
   "Locate a symbol in source code."
@@ -541,8 +582,30 @@ use it."
 					    filename)
 				       buf))
 				   rscope-buffers)))))
-    (if exact-match exact-match (car rscope-buffers))
-    ))
+    (cond
+     (exact-match exact-match)
+     ((setq exact-match (rscope-find-cscope-process-run-hooks buffer)) exact-match)
+     ((= 1 (length rscope-buffers)) (car rscope-buffers))
+     ((error "No rscope initialized found, did you call rscope-init ?")))))
+
+(defun rscope-find-cscope-process-run-hooks (buffer)
+  "Hooks to find a directory where a cscope.out file might be.
+The first hook returning non nil wins."
+  (let* ((dir (run-hook-with-args-until-success 'rscope-autoinit-cscope-dir-hooks
+						buffer))
+	 (rscope-buffer (when dir (rscope-init dir))))
+    rscope-buffer))
+
+(defun rscope-autoinit-path-upwards-cscope_out (buffer)
+  "Look the directory tree upwards, and report the first directory containing
+a file named cscope.out."
+  (let (found old-dir (dir (buffer-local-value 'default-directory buffer)))
+    (while (and dir (not found) (not (string= old-dir dir)))
+      (setq old-dir dir)
+      (if (file-readable-p (concat dir "cscope.out"))
+	  (setq found dir)
+	(setq dir (file-name-directory (directory-file-name dir)))))
+    found))
 
 (defun rscope-select-unique-result ()
   "Called when query returned only 1 result, and display window"
@@ -562,7 +625,7 @@ use it."
 		   (rscope-process (rscope-find-cscope-process (current-buffer))))
     (setq result-buf
 	  (rscope-create-result-buffer rscope-action-message rscope-process))
-    (if rscope-process
+    (when rscope-process
 	(progn
 	  (setq nb-results
 		(rscope-cscope-exec-query rscope-process query))
@@ -571,14 +634,13 @@ use it."
 	  (when (>= nb-results 1)
 	    (ring-insert rscope-marker-ring (point-marker)))
 	  (rscope-finish-result-buffer result-buf)
-	  (when (= 1 nb-results) (rscope-select-unique-result)))
-      (error "No rscope initialized found, did you call rscope-init ?"))))
+	  (when (= 1 nb-results) (rscope-select-unique-result))))))
 
 (defun rscope-handle-query-call-hierarchy (function-name levels)
   "Launch the query to get a calling hierarchy in rscope process."
   (let (result-buf regexp found nb-lines
 		   (rscope-process (rscope-find-cscope-process (current-buffer))))
-    (if rscope-process
+    (when rscope-process
 	(progn
 	  (setq result-buf (rscope-create-result-buffer
 			    rscope-action-message rscope-process))
@@ -602,8 +664,7 @@ use it."
 					    result-buf 'rscope-results-organize-funcs)
 		(setq found (re-search-forward regexp nil t)))
 	      ))
-	  (rscope-finish-result-buffer result-buf))
-      (error "No rscope initialized found, did you call rscope-init ?"))))
+	  (rscope-finish-result-buffer result-buf)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Cscope process running
@@ -622,11 +683,15 @@ use it."
 	(nb-lines 0))
     (save-excursion
       (while (not found)
+	;(debug)
 	(accept-process-output proc 1)
+	;(debug)
 	(goto-char (point-max)) ;move the last line
 	(forward-line 0) ;move to the beggining of last line
-	(setq found (looking-at "^>>"))) ;looking for cscope prompt "^>>"
-      )
+	(setq found (looking-at "^>>")) ;looking for cscope prompt "^>>"
+	(when (not (process-live-p proc))
+	  (error "Cscope process died, kill %s buffer please." (current-buffer)))))
+
     ;; Find the number of results returned by the search
     (goto-char start-point)
     (when (re-search-forward "^cscope: \\([0-9]+\\) lines$" nil t)
@@ -640,6 +705,7 @@ use it."
     (with-current-buffer procbuf
       (goto-char (point-max))
       (insert "\n")
+      (insert command)
       (process-send-string proc command)
       (setq nb-lines (rscope-wait-for-output))
       nb-lines)))
@@ -766,34 +832,18 @@ call organizer to handle them within resultbuf."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Rscope minor mode hook: provides rscope:keymap for key shortcuts
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defvar rscope-minor-mode-hooks nil
-  "List of hooks to call when entering cscope-minor-mode.")
-
-;;; Minor mode
-(defvar rscope-minor-mode nil
-  "")
-(make-variable-buffer-local 'rscope-minor-mode)
-(put 'rscope-minor-mode 'permanent-local t)
-
-(defun rscope-minor-mode (&optional arg)
-  ""
-  (setq rscope-minor-mode (if (null arg) t (car arg)))
-  (when rscope-minor-mode
-    (run-hooks 'rscope-minor-mode-hooks))
-  rscope-minor-mode)
-
 (defun rscope:hook ()
-  ""
-  (rscope-minor-mode))
-
-(or (assq 'rscope-minor-mode minor-mode-map-alist)
-    (setq minor-mode-map-alist (cons (cons 'rscope-minor-mode rscope:map)
-				     minor-mode-map-alist)))
+  (global-set-key (kbd "\C-cs") 'rscope:map))
 
 (add-hook 'c-mode-hook (function rscope:hook))
 (add-hook 'c++-mode-hook (function rscope:hook))
 (add-hook 'dired-mode-hook (function rscope:hook))
 
+;; By default, ease users life by auto-loading cscope database by some simple
+;; methods :
+;;   - directory tree upwards traversal looking for cscope.out file
+(add-hook 'rscope-autoinit-cscope-dir-hooks
+	  (function rscope-autoinit-path-upwards-cscope_out))
 (provide 'rscope)
 ;;; rscope.el ends here
 
