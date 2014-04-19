@@ -19,8 +19,15 @@
   (interactive)
   (mioa701-barebox-start)
   (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/zImage"))
-  (mioa701-barebox-command "bootargs=\$bootargs mtdparts=docg3.0:$mtdparts ubi.mtd=4 rootfstype=ubifs root=ubi0:linux_root ro")
+  (mioa701-barebox-command "bootargs=\"\$bootargs mem=32M ramoops.mem_address=0xa2000000 ramoops.mem_size=1048576\"")
   (mioa701-barebox-command "bootm zImage"))
+
+(defun mioa701-upload-launch-kernel-dt ()
+  (interactive)
+  (mioa701-barebox-start)
+  (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/zImage"))
+  (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/dts/mioa701.dtb"))
+  (mioa701-barebox-command "bootm -o mioa701.dtb zImage"))
 
 ;; Kernel
 (define-minor-mode mioa701-kernel
