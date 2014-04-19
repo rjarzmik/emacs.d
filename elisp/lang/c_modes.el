@@ -76,15 +76,9 @@
 	      compilation-ask-about-save nil)
 
 ;; Tags handling
-(defun ctags-db-available-p ()
-    (when (featurep 'xcscope)
-        (let ((cscope-dir (cscope-find-info default-directory)))
-	  (file-exists-p (concat (caar cscope-dir) cscope-database-file))
-)))
-
-(defun atags-db-available-p ()
-    (get-buffer "*ascope*")
-)
+(defun rtags-db-available-p ()
+    (when (featurep 'rscope)
+      (rscope-find-cscope-process (current-buffer))))
 
 (defun my-find-tag ()
   "Find tag definition using cscope or tags.
@@ -92,18 +86,16 @@ If cscope database file is found, it is used. Fallback on tags."
   (interactive)
   (progn
     (call-interactively
-     (cond ((atags-db-available-p) 'ascope-find-global-definition)
-	   ((ctags-db-available-p) 'cscope-find-global-definition)
+     (cond ((rtags-db-available-p) 'rscope-find-global-definition)
 	   (t 'find-tag))
-)))
+     )))
 
 (defun my-pop-tag-mark ()
   "Pop back to where M-. was las invoked (see pop-tag-mark)"
   (interactive)
   (progn
     (call-interactively
-     (cond ((atags-db-available-p) 'ascope-pop-mark)
-	   ((ctags-db-available-p) 'cscope-pop-mark)
+     (cond ((rtags-db-available-p) 'rscope-pop-mark)
 	   (t 'pop-tag-mark))
 )))
 

@@ -24,8 +24,7 @@
 ;(ac-config-default)
 
 ;; CScope
-(require 'ascope)
-;; Replaced by ascope (require 'xcscope)
+(require 'rscope)
 
 (provide 'my-lang)
 
