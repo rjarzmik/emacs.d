@@ -167,7 +167,7 @@ mioa701-barebox-start was called first."
 (defun mioa701-barebox-term ()
   "Open terminal on barebox"
   (interactive)
-  (serial-term "/dev/ttyUSB0" 9600))
+  (serial-term "/dev/serial/by-id/usb-barebox_Scoter_Mitac_Mio_A701-if00-port0" 9600))
 
 ;;; Local Variables:
 ;;; eval: (defun byte-compile-this-file () (write-region (point-min) (point-max) buffer-file-name nil 't) (byte-compile-file buffer-file-name) nil)
