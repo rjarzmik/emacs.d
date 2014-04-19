@@ -43,9 +43,10 @@
   (when (buffer-live-p (process-buffer proc))
     (with-current-buffer (process-buffer proc)
       (goto-char (point-max))
-      (dolist (str (split-string output ""))
-	(kill-line 0)
-	(insert str))
+      (insert output)
+;      (dolist (str (split-string output ""))
+;	(kill-line 0)
+;	(insert str))
       )))
 
 (defun barebox-command-exit-ko ()
@@ -55,10 +56,12 @@
 	 ((eq barebox-status 'barebox-status-idle) 'barebox-status-idle)
 	 ((eq barebox-status 'barebox-status-busy) 'barebox-status-idle))))
     (insert "\t => launch finished on error\n")
+    (message "Barebox command error")
     (setq barebox-status status)))
 
 (defun barebox-command-exit-ok ()
   (insert "\t => finished successfully\n")
+  (message "Barebox command success")
   (setq barebox-status 'barebox-status-idle))
   
 (defun barebox-commander-sentinel (process event)
