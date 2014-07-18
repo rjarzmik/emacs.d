@@ -15,11 +15,21 @@
 ;; Barebox
 (load "mioa701/mioa701_barebox")
 
+(defun mioa701-launch-kernel-pstore ()
+  (interactive)
+  (mioa701-barebox-start)
+  (mioa701-barebox-command "bootargs=\"\$bootargs ramoops.mem_address=0xa2000000 ramoops.mem_size=1048576 ramoops.console_size=131072\"")
+  (mioa701-barebox-command "mci0.probe=1")
+  (mioa701-barebox-command "mkdir /sdcard")
+  (mioa701-barebox-command "mount /dev/disk0.0 /sdcard")
+  (mioa701-barebox-command "bootm /sdcard/zImage.pstore"))
+
 (defun mioa701-upload-launch-kernel ()
   (interactive)
   (mioa701-barebox-start)
   (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/zImage"))
-  (mioa701-barebox-command "bootargs=\"\$bootargs mem=32M ramoops.mem_address=0xa2000000 ramoops.mem_size=1048576\"")
+  (mioa701-barebox-command "bootargs=\"\$bootargs ramoops.mem_address=0xa2000000 ramoops.mem_size=1048576 ramoops.console_size=131072\"")
+  ;(mioa701-barebox-command "bootargs=\"\$bootargs mem=32M ramoops.mem_address=0xa2000000 ramoops.mem_size=1048576 ramoops.console_size=131072\"")
   (mioa701-barebox-command "bootm zImage"))
 
 (defun mioa701-upload-launch-kernel-dt ()
@@ -27,6 +37,7 @@
   (mioa701-barebox-start)
   (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/zImage"))
   (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/dts/mioa701.dtb"))
+  (mioa701-barebox-command "bootargs=\"\$bootargs ramoops.mem_address=0xa2000000 ramoops.mem_size=1048576 ramoops.console_size=131072 loglevel=10 pxa2xx-cpufreq.pxa27x_maxfreq=624 dyndbg=\\\"file phy-gpio-vbus-usb.c +p\\\" \"")
   (mioa701-barebox-command "bootm -o mioa701.dtb zImage"))
 
 ;; Kernel
@@ -57,6 +68,18 @@
     ))
 (easy-menu-remove-item global-map '("menu-bar") "MioA701")
 (easy-menu-add-item global-map '("menu-bar") mioa701-menu "Help")
+
+;; Keyboard shortcuts
+(defvar mioa701:map nil
+  "The mioa701 keymap.")
+(unless mioa701:map
+    (define-prefix-command 'mioa701:map)
+    ;; The following line corresponds to be beginning of the "Cscope" menu.
+    (define-key 'mioa701:map "d" 'mioa701-upload-launch-kernel-dt)
+    (define-key 'mioa701:map "k" 'mioa701-upload-launch-kernel)
+    (define-key 'mioa701:map "u" 'mioa701-barebox-upload-file)
+)
+(global-set-key (kbd "\C-cm") 'mioa701:map)
 
 (provide 'my-mioa701)
 
