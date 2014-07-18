@@ -53,7 +53,7 @@ function wait_for_prompt()
 	in=""
 
 	while [ $again -gt 0 ]; do
-		[ ${#in} -eq 0 ] && echo "" >&3
+		[ ${#in} -eq 0 ] && echo -n -e "\r\n" >&3
 		in=""
 		read -t 1 in <&3
 		in_full="${in_full}${in}"
