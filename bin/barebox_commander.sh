@@ -1,6 +1,6 @@
 #!/bin/bash
 
-barebox_tty=/dev/ttyUSB0
+barebox_tty=/dev/serial/by-id/usb-barebox_Scoter_Mitac_Mio_A701-if00-port0
 
 function progressing()
 {
@@ -31,8 +31,8 @@ function wait_for_tty_device()
 
 	while [ $again -gt 0 ]; do
 		if [ -r ${barebox_tty} ]; then
-			exec 3<> ${barebox_tty}
-			return 1
+			stty -F ${barebox_tty} >/dev/null 2>/dev/null &&
+				exec 3<> ${barebox_tty} && return 1
 		fi
 		let again-=1
 		sleep 1
