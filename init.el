@@ -75,6 +75,7 @@
 ;(add-to-list 'load-path (concat user-emacs-directory "site-elisp/cedet-1.0/common"))
 (add-to-list 'load-path (concat user-emacs-directory "site-elisp/gnus/lisp"))
 (add-to-list 'load-path (concat user-emacs-directory "site-elisp/muse/lisp"))
+(add-to-list 'load-path (concat user-emacs-directory "site-elisp/bbdb/lisp"))
 (add-to-list 'load-path (concat user-emacs-directory "elisp"))
 
 ;; Fonts

@@ -102,8 +102,13 @@
 
 ;; BBDB
 ;; Remember: in gnus, use ":" to add an entry
-;(require 'bbdb)
-;(bbdb-initialize 'gnus 'message)
+(setq bbdb-file "~/.emacs.d/data/bbdb")
+(require 'bbdb-loaddefs)
+(require 'bbdb)
+(bbdb-initialize 'gnus 'message)
+(bbdb-mua-auto-update-init 'gnus 'message)
+(setq bbdb-mua-update-interactive-p '(query . create))
+(setq bbdb-message-all-addresses t)
 ;(add-hook 'gnus-startup-hook 'bbdb-insinuate-gnus)
 ;(add-hook 'gnus-startup-hook 'bbdb-insinuate-message)
 ;(setq bbdb-complete-name-allow-cycling t)
