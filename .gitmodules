@@ -16,3 +16,6 @@
 [submodule "site-elisp/bbdb"]
 	path = site-elisp/bbdb
 	url = git://git.savannah.nongnu.org/bbdb.git
+[submodule "site-elisp/rscope"]
+	path = site-elisp/rscope
+	url = git@github.com:rjarzmik/rscope.git
