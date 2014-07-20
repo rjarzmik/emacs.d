@@ -1,67 +1,14 @@
-;;; Update strings such as "my-isp.net" to yours.
-
-;(require 'gnus-load)
 (require 'mbsync)
-(require 'cl)
+(require 'gnus-load)
+(eval-when-compile (require 'cl))
 
 (custom-set-variables
  '(gnus-home-directory "~/.emacs.d/gnus/")
  '(gnus-list-groups-with-ticked-articles nil)
  '(gnus-save-score t)
- '(gnus-gcc-mark-as-read t)
-)
+ '(gnus-gcc-mark-as-read t))
 
-(defun internet-available-p ()
-  (eq (call-process "ping" nil nil t "-W" "5" "-c" "1" "google.fr") 0))
-
-;; When group refresh is asked for, launch mbsync
-(add-hook 'gnus-get-new-news-hook
-	  '(lambda () (when (internet-available-p) (mbsync))))
-
-;; When mbsync finishes, refresh unread articles in groups menu
-(defun mbsync-event (process msg)
-  (when (eq (process-status process) 'exit)
-    (gnus-get-unread-articles)
-    (gnus-group-list-groups)))
-(add-hook 'mbsync-event-hooks 'mbsync-event)
-;
-;;; Find the dovecot-imap executable
-(setq dovecot-imap
-      (car (remove-if-not 'file-exists-p
-			  '("/usr/local/libexec/dovecot/imap"
-			    "/usr/libexec/dovecot-imap"
-			    "/usr/lib/dovecot/imap" ))))
-
-(setq gnus-select-method '(nnnil ""))
-(setq gnus-secondary-select-methods
-      (list
-;	(nnimap "free"
-;		(nnimap-stream network)
-;		(nnimap-address "imap.free.fr")
-;		(nnimap-server-port 143)
-;		(imap-username "robert.jarzmik")
-;		(remove-prefix "INBOX.")
-;		(nnimap-list-pattern ("INBOX*" "ARCHIVES*" "Mail/*" "ml*"))
-;		(nnimap-authinfo-file "~/.emacs.d/gnus/.imap-authinfo")
-;		)
-	(list 'nnimap "free-mbsync"
-		  '(nnimap-stream shell)
-		  (list 'imap-shell-program (concat dovecot-imap " -c ~/Maildir/dovecot_mbsync.conf"))
-		  '(nnir-search-engine imap))
-
-;	(nnimap "gmail"
-;		  (nnimap-address "imap.gmail.com")
-;		  (nnimap-server-port 993)
-;		  (nnimap-stream ssl)
-;		  (imap-username "robert.jarzmik@gmail.com")
-;		  (nnimap-authinfo-file "~/.emacs.d/gnus/.imap-authinfo")
-;		)
-	))
-
-;; Configure out-going mail, through free.fr, without a local MTA
-(setq message-send-mail-function 'smtpmail-send-it
-      smtpmail-smtp-server "smtp.orange.fr"
-      sendmail-program "/bin/false")
+(load (concat gnus-home-directory "my-mail-accounts"))
 
 ;; Fetch only part of the article if we can.  I saw this in someone
 ;; else's .gnus
@@ -87,10 +34,13 @@
       '((".*"
          (name "Robert Jarzmik")
          ("X-URL" "http://belgarath.falguerolles.org/")
-	 (signature "Robert"))
-	("free"
-         (address "robert.jarzmik@free.fr"))
-	("gmail.com"
+	 (signature "Robert")
+	 ("X-Message-SMTP-Method" "smtp smtp.orange.fr 25"))
+	(".*intel.*"
+      	 ("X-Message-SMTP-Method" "smtp smtp.intel.com 25")
+	 (address "robert.jarzmik@intel.com"))
+	(".*gmail.*"
+      	 ("X-Message-SMTP-Method" "smtp smtp.gmail.com 587")
 	 (address "robert.jarzmik@gmail.com"))))
 
 ; Archive outgoing messages, in one file per month
@@ -98,7 +48,8 @@
 (setq gnus-message-archive-group
       '((if (message-news-p)
 	    "misc-news"
-	  "nnimap+free-mbsync:INBOX/Sent")))
+	  '("nnimap+free-mbsync:INBOX/Sent" "nnimap+free-mbsync:INBOX/incoming")
+	  )))
 
 ;; BBDB
 ;; Remember: in gnus, use ":" to add an entry

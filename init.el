@@ -3,10 +3,11 @@
 (require 'cl)
 
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(auth-sources (quote ("~/.authinfo" "~/.authinfo.gpg" "~/.netrc" "~/.emacs.d/gnus/.imap-authinfo")))
  '(auto-save-file-name-transforms (quote (("\\`/[^/]*:\\(.+/\\)*\\(.*\\)" "/tmp/\\2") ("\\(.+/\\)*\\(.*\\)" "/tmp/\\2"))))
  '(auto-save-list-file-prefix "~/.emacs.d/data/auto-backup/auto-save-list/.saves-")
  '(backup-directory-alist (quote ((".*" . "~/.emacs.d/data/auto-backup/backup/"))))
@@ -33,6 +34,7 @@
  '(fortune-dir "/usr/local/share/games/fortunes")
  '(fortune-file "/usr/local/share/games/fortunes/chucknorris")
  '(global-font-lock-mode t nil (font-lock))
+ '(gnus-gcc-mark-as-read t)
  '(gnus-home-directory "~/.emacs.d/gnus/")
  '(gnus-list-groups-with-ticked-articles nil)
  '(gnus-save-score t)
@@ -112,14 +114,13 @@
 ;;  ))
 
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(gnus-header-subject ((((class color) (background light)) (:background "dark orange" :foreground "red4"))))
  '(highlight-changes ((((class color) (background light)) (:background "antique white" :foreground nil))))
- '(highlight-changes-delete ((((class color) (background light)) (:background "antique white" :foreground nil))))
- )
+ '(highlight-changes-delete ((((class color) (background light)) (:background "antique white" :foreground nil)))))
 ;;; Local Variables:
 ;;; eval: (defun byte-compile-this-file () (write-region (point-min) (point-max) buffer-file-name nil 't) (byte-compile-file buffer-file-name) nil)
 ;;; write-file-hooks: (byte-compile-this-file)
