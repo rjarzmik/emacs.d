@@ -28,7 +28,7 @@
   (setq w3m-use-cookies t
 	w3m-default-coding-system 'utf-8
 	w3m-default-directory "~/.emacs.d/data/w3m"
-	browse-url-browser-function 'w3m
+	;;; browse-url-browser-function 'w3m
 	w3m-profile-directory "~/.emacs.d/data/w3m"
 	w3m-language "english"
 	w3m-use-japanese-menu nil)
