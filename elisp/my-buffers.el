@@ -64,7 +64,6 @@
 
 ;; Iswitchb-mode
 (require 'edmacro)
-(iswitchb-mode t)
 (when (featurep 'iswitchb)
   (defun iswitchb-local-keys ()
     (mapc (lambda (K)
