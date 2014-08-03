@@ -1,6 +1,8 @@
 ;;; Robert Jarzmik
 ;;; 2013-09-01
 
+(defvar mioa701-host "localhost"
+  "Host to which the mioa701 is connected through USB.")
 (defconst mioa701-path "/home/rj/mio_linux"
   "Path to mioa701 projects")
 (defconst mioa701-kpath (concat mioa701-path "/kernel")
@@ -39,6 +41,12 @@
   (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/dts/mioa701.dtb"))
   (mioa701-barebox-command "bootargs=\"\$bootargs ramoops.mem_address=0xa2000000 ramoops.mem_size=1048576 ramoops.console_size=131072 loglevel=10 pxa2xx-cpufreq.pxa27x_maxfreq=624 dyndbg=\\\"file phy-gpio-vbus-usb.c +p\\\" \"")
   (mioa701-barebox-command "bootm -o mioa701.dtb zImage"))
+
+(defun mioa701-change-host (host)
+  "Changes the host which is connected to the mioa701."
+  (interactive "sHost connected to the mioa701 device: ")
+  (when (featurep 'openocd)
+    (setq openocd-host host)))
 
 ;; Kernel
 (define-minor-mode mioa701-kernel
