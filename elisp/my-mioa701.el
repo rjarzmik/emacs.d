@@ -9,6 +9,12 @@
   "Path to mioa701 linux kernel")
 (defconst mioa701-bpath (concat mioa701-path "/barebox")
   "Path to mioa701 barebox")
+(defvar mioa701-extra-bootargs nil
+  "Extra bootargs to pass to the linux kernel")
+
+(defun mioa701-setup-bootargs (&optional extra-args)
+  "Common bootargs to all launch types. Might be enhanced by mioa701-extra-bootargs"
+  (concat "bootargs=\"\$bootargs ramoops.mem_address=0xa2000000 ramoops.mem_size=1048576 ramoops.console_size=131072 " extra-args "\""))
 
 (dolist (package '(openocd))
   (when (not (require package nil t))
@@ -19,28 +25,27 @@
 
 (defun mioa701-launch-kernel-pstore ()
   (interactive)
-  (mioa701-barebox-start)
-  (mioa701-barebox-command "bootargs=\"\$bootargs ramoops.mem_address=0xa2000000 ramoops.mem_size=1048576 ramoops.console_size=131072\"")
-  (mioa701-barebox-command "mci0.probe=1")
-  (mioa701-barebox-command "mkdir /sdcard")
-  (mioa701-barebox-command "mount /dev/disk0.0 /sdcard")
-  (mioa701-barebox-command "bootm /sdcard/zImage.pstore"))
+  (let ((b (mioa701-barebox-start)))
+    (mioa701-barebox-command (mioa701-setup-bootargs mioa701-extra-bootargs) b)
+    (mioa701-barebox-command "mci0.probe=1" b)
+    (mioa701-barebox-command "mkdir /sdcard" b)
+    (mioa701-barebox-command "mount /dev/disk0.0 /sdcard" b)
+    (mioa701-barebox-command "bootm /sdcard/zImage.pstore" b)))
 
 (defun mioa701-upload-launch-kernel ()
   (interactive)
-  (mioa701-barebox-start)
-  (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/zImage"))
-  (mioa701-barebox-command "bootargs=\"\$bootargs ramoops.mem_address=0xa2000000 ramoops.mem_size=1048576 ramoops.console_size=131072\"")
-  ;(mioa701-barebox-command "bootargs=\"\$bootargs mem=32M ramoops.mem_address=0xa2000000 ramoops.mem_size=1048576 ramoops.console_size=131072\"")
-  (mioa701-barebox-command "bootm zImage"))
+  (let ((b (mioa701-barebox-start)))
+    (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/zImage") b)
+    (mioa701-barebox-command (mioa701-setup-bootargs mioa701-extra-bootargs) b)
+    (mioa701-barebox-command "bootm zImage" b)))
 
 (defun mioa701-upload-launch-kernel-dt ()
   (interactive)
-  (mioa701-barebox-start)
-  (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/zImage"))
-  (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/dts/mioa701.dtb"))
-  (mioa701-barebox-command "bootargs=\"\$bootargs ramoops.mem_address=0xa2000000 ramoops.mem_size=1048576 ramoops.console_size=131072 loglevel=10 pxa2xx-cpufreq.pxa27x_maxfreq=624 dyndbg=\\\"file phy-gpio-vbus-usb.c +p\\\" \"")
-  (mioa701-barebox-command "bootm -o mioa701.dtb zImage"))
+  (let ((b (mioa701-barebox-start)))
+  (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/zImage") b)
+  (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/dts/mioa701.dtb") b)
+  (mioa701-barebox-command (mioa701-setup-bootargs "loglevel=10 pxa2xx-cpufreq.pxa27x_maxfreq=624 dyndbg=\\\"file phy-gpio-vbus-usb.c +p\\\"") b)
+  (mioa701-barebox-command "bootm -o mioa701.dtb zImage" b)))
 
 (defun mioa701-change-host (host)
   "Changes the host which is connected to the mioa701."
