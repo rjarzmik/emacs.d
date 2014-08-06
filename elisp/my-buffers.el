@@ -2,7 +2,9 @@
 ;;; 2008-03-28
 ;;; Global buffers and destop functions
 
-(require 'cl)
+(eval-when-compile
+  (require 'iswitchb)
+  (require 'cl))
 
 ;; save a list of open files in ~/.emacs.desktop
 ;; save the desktop file automatically if it already exists
@@ -41,6 +43,9 @@
 (global-hl-line-mode t)
 (show-paren-mode t)
 (tool-bar-mode 0)
+(winner-mode)
+(ido-mode t)
+(display-time)
 
 (setq inhibit-startup-message t
       inhibit-startup-echo-area-message t
@@ -112,4 +117,5 @@
 ;;; Local Variables:
 ;;; eval: (defun byte-compile-this-file () (write-region (point-min) (point-max) buffer-file-name nil 't) (byte-compile-file buffer-file-name) nil)
 ;;; write-file-hooks: (byte-compile-this-file)
+;;; byte-compile-warnings: (not cl-functions)
 ;;; End:

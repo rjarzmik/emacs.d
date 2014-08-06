@@ -96,17 +96,17 @@
  '(user-mail-address "robert.jarzmik@free.fr")
  '(visible-bell t))
 
-(display-time)
-(server-mode 1)
-(ido-mode t)
+(server-mode)
 
 ;; Le path des fichiers .el et .elc
 ;;emacs24 (when (not (boundp 'user-emacs-directory))
 ;;emacs24  (setq 'user-emacs-directory "~/.emacs.d/"))
 
 ;; Ajouter .emacs.d, .emacs.d/site-lisp et tous ses sous-repertoires
-(dolist (path (delete-if-not 'file-directory-p
-			     (directory-files (concat user-emacs-directory "site-elisp") t)))
+(dolist
+    (path
+     (delete-if-not 'file-directory-p
+		    (directory-files (concat user-emacs-directory "site-elisp") t)))
   (add-to-list 'load-path path))
 ;(add-to-list 'load-path (concat user-emacs-directory "site-elisp/cedet-1.0/common"))
 (add-to-list 'load-path (concat user-emacs-directory "site-elisp/gnus/lisp"))
@@ -159,4 +159,5 @@
 ;;; Local Variables:
 ;;; eval: (defun byte-compile-this-file () (write-region (point-min) (point-max) buffer-file-name nil 't) (byte-compile-file buffer-file-name) nil)
 ;;; write-file-hooks: (byte-compile-this-file)
+;;; byte-compile-warnings: (not cl-functions)
 ;;; End:
