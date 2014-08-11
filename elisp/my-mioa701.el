@@ -21,31 +21,47 @@
     (message (concat (symbol-name package) " package is not available"))))
 
 ;; Barebox
-(load "mioa701/mioa701_barebox")
-
-(defun mioa701-launch-kernel-pstore ()
+(require 'device-control-barebox)
+(defun mioa701-barebox-term ()
+  "Open terminal on barebox"
   (interactive)
-  (let ((b (mioa701-barebox-start)))
-    (mioa701-barebox-command (mioa701-setup-bootargs mioa701-extra-bootargs) b)
-    (mioa701-barebox-command "mci0.probe=1" b)
-    (mioa701-barebox-command "mkdir /sdcard" b)
-    (mioa701-barebox-command "mount /dev/disk0.0 /sdcard" b)
-    (mioa701-barebox-command "bootm /sdcard/zImage.pstore" b)))
+  (serial-term "/dev/serial/by-id/usb-barebox_Scoter_Mitac_Mio_A701-if00-port0" 9600))
 
-(defun mioa701-upload-launch-kernel ()
-  (interactive)
-  (let ((b (mioa701-barebox-start)))
-    (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/zImage") b)
-    (mioa701-barebox-command (mioa701-setup-bootargs mioa701-extra-bootargs) b)
-    (mioa701-barebox-command "bootm zImage" b)))
+(defun mioa701-barebox-command (command)
+  (nconc dctrl-actions (dctrl-barebox-action-command command)))
 
-(defun mioa701-upload-launch-kernel-dt ()
+(defun mioa701-barebox-upload-file (file)
+  (nconc dctrl-actions (dctrl-barebox-action-upload-file file)))
+
+(defun dctrl-barebox-action-launch-kernel-pstore ()
   (interactive)
-  (let ((b (mioa701-barebox-start)))
-  (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/zImage") b)
-  (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/dts/mioa701.dtb") b)
-  (mioa701-barebox-command (mioa701-setup-bootargs "loglevel=10 pxa2xx-cpufreq.pxa27x_maxfreq=624 dyndbg=\\\"file phy-gpio-vbus-usb.c +p\\\"") b)
-  (mioa701-barebox-command "bootm -o mioa701.dtb zImage" b)))
+  (let ((device-name (dctrl-complete-device nil "barebox")))
+    (with-current-buffer (dctrl-get-buffer device-name)
+      (mioa701-barebox-command (mioa701-setup-bootargs mioa701-extra-bootargs))
+      (mioa701-barebox-command "mci0.probe=1")
+      (mioa701-barebox-command "mkdir /sdcard")
+      (mioa701-barebox-command "mount /dev/disk0.0 /sdcard")
+      (mioa701-barebox-command "bootm /sdcard/zImage.pstore")
+      (dctrl-start))))
+
+(defun dctrl-barebox-action-upload-launch-kernel ()
+  (interactive)
+  (let ((device-name (dctrl-complete-device nil "barebox")))
+    (with-current-buffer (dctrl-get-buffer device-name)
+      (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/zImage"))
+      (mioa701-barebox-command (mioa701-setup-bootargs mioa701-extra-bootargs))
+      (mioa701-barebox-command "bootm zImage")
+      (dctrl-start))))
+
+(defun dctrl-barebox-action-upload-launch-kernel-dt ()
+  (interactive)
+  (let ((device-name (dctrl-complete-device nil "barebox")))
+    (with-current-buffer (dctrl-get-buffer device-name)
+      (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/zImage"))
+      (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/dts/mioa701.dtb"))
+      (mioa701-barebox-command (mioa701-setup-bootargs "loglevel=10 pxa2xx-cpufreq.pxa27x_maxfreq=624 dyndbg=\\\"file phy-gpio-vbus-usb.c +p\\\""))
+      (mioa701-barebox-command "bootm -o mioa701.dtb zImage")
+      (dctrl-start))))
 
 (defun mioa701-change-host (host)
   "Changes the host which is connected to the mioa701."
@@ -71,9 +87,8 @@
   '("MioA701"
     ("Barebox"
      ["Barebox Term" (mioa701-barebox-term)]
-     ["Barebox Commander start" (mioa701-barebox-start)]
-     ["Barebox Commander Upload file" (mioa701-barebox-upload-file)]
-     ["Barebox Commander Execute command" (mioa701-barebox-command)]
+     ["Barebox Commander Upload file" (dctrl-barebox-action-upload-file)]
+     ["Barebox Commander Execute command" (dctrl-barebox-action-command)]
      )
     ("Kernel"
      ["Kernel Term" (mioa701-kernel-term)]
@@ -83,16 +98,7 @@
 (easy-menu-add-item global-map '("menu-bar") mioa701-menu "Help")
 
 ;; Keyboard shortcuts
-(defvar mioa701:map nil
-  "The mioa701 keymap.")
-(unless mioa701:map
-    (define-prefix-command 'mioa701:map)
-    ;; The following line corresponds to be beginning of the "Cscope" menu.
-    (define-key 'mioa701:map "d" 'mioa701-upload-launch-kernel-dt)
-    (define-key 'mioa701:map "k" 'mioa701-upload-launch-kernel)
-    (define-key 'mioa701:map "u" 'mioa701-barebox-upload-file)
-)
-(global-set-key (kbd "\C-cm") 'mioa701:map)
+(global-set-key (kbd "\C-cm") 'device-control)
 
 (provide 'my-mioa701)
 
