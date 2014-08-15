@@ -19,3 +19,6 @@
 [submodule "site-elisp/rscope"]
 	path = site-elisp/rscope
 	url = git@github.com:rjarzmik/rscope.git
+[submodule "site-elisp/device-control"]
+	path = site-elisp/device-control
+	url = git@github.com:rjarzmik/device-control.git
