@@ -55,6 +55,7 @@
 (global-set-key (kbd "C-M-k") 'windmove-up)
 (global-set-key (kbd "C-M-l") 'windmove-left)
 (global-set-key (kbd "C-M-m") 'windmove-right)
+(global-set-key (kbd "C-c *") 'window-toggle-stickiness)
 
 ;; Buffer moves
 (when (featurep 'iswitchb)

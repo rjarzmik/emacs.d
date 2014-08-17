@@ -112,6 +112,21 @@
 	    (lambda () (rename-buffer (generate-new-buffer-name dired-directory))))
   (setq dired-recursive-deletes 'always))
 
+;; Window's buffer stickiness
+(defun window-toggle-stickiness ()
+  "Toggle between the 3 dedication states : free, dedicated and
+strongly dedicated. See `set-window-dedicated-p."
+  (interactive)
+  (let* ((dedicated (window-dedicated-p))
+	 (new (cond ((not dedicated) 1)
+		    ((eq dedicated 1) t)
+		    (t nil))))
+    (set-window-dedicated-p (get-buffer-window (current-buffer)) new)))
+
+(add-to-list
+ 'global-mode-string
+ '(:eval (assoc-default (window-dedicated-p) '((t . " S") (1 . " s")))) t)
+
 (provide 'my-buffers)
 
 ;;; Local Variables:
