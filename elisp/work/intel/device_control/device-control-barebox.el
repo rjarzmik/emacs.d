@@ -3,11 +3,18 @@
 (require 'tramp)
 
 (defvar barebox-exec "barebox_commander.sh")
-(defconst barebox-tty-fmt "^tty[[:alpha:]]+\\[[:digit:]]+(\\)")
+(defconst barebox-default-devname
+  "serial/by-id/usb-barebox_Scoter_Mitac_Mio_A701-if00-port0")
 
 (defun dctrl-barebox-run (&rest args)
-  (dctrl-run-process
-   (nconc (list barebox-exec) args)))
+  (let ((devname
+	 (if (numberp (string-match "^barebox:\\\([^@]*\\\)@.*$" dctrl-device-name))
+	     (match-string 1 dctrl-device-name)
+	   barebox-default-devname)))
+    (when (string= "last" devname)
+      (setq devname barebox-default-devname))
+    (dctrl-run-process
+     (nconc (list barebox-exec (concat "/dev/" devname)) args))))
 
 (defun dctrl-barebox-action-reset ()
   (dctrl-barebox-run "command" "reset"))
@@ -58,14 +65,19 @@
 	   (shell-command-to-string
 	    "dirname $(grep barebox /sys/bus/usb/devices/*/manufacturer | cut -d: -f1)")))
 	 (tty-names
-	  (mapcar (lambda (dev)
-		    (car
-		     (split-string
-		      (shell-command-to-string
-		       (format "basename $(ls -1d %s/*/tty*)" dev)))))
-		  usb-devs)))
-    (or (remove-if-not (curry 'string-prefix-p "tty") tty-names)
-	(list "barebox"))))
+	  (remove-if-not (curry 'string-prefix-p "tty")
+			 (mapcar (lambda (dev)
+				   (car
+				    (split-string
+				     (shell-command-to-string
+				      (format "basename $(ls -1d %s/*/tty*)" dev)))))
+				 usb-devs)))
+	 (host
+	  (if (tramp-tramp-file-p default-directory)
+	      (with-parsed-tramp-file-name default-directory d d-host)
+	    "localhost")))
+    (mapcar (lambda (n) (format "barebox:%s@%s" n host))
+	     (append tty-names '("last")))))
 
 (defun dctrl-barebox-start (&optional delay)
   (setcdr dctrl-actions
@@ -75,14 +87,7 @@
 	    (cons (car (dctrl-action-wait delay)) (cdr dctrl-actions)))))
 
 (defun dctrl-barebox-create ()
-  (let ((tty-num
-	 (if (numberp (string-match barebox-tty-fmt dctrl-device-name))
-	     (match-string 1 line) "0"))
-	(host
-	(if (tramp-tramp-file-p default-directory)
-	    (with-parsed-tramp-file-name default-directory d d-host)
-	  "localhost")))
-    (rename-buffer (format "*barebox%s@%s*" tty-num host) t)))
+  (rename-buffer (format "*%s*" dctrl-device-name)))
 
 (dctrl-register-backend
  (make-dctrl-backend :name "barebox"
