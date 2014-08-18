@@ -106,12 +106,6 @@
   (add-hook 'iswitchb-make-buflist-hook 'iswitchb-current-activity)
   )
 
-;; Dired unique window
-(when (featurep 'dired)
-  (add-hook 'dired-after-readin-hook
-	    (lambda () (rename-buffer (generate-new-buffer-name dired-directory))))
-  (setq dired-recursive-deletes 'always))
-
 ;; Window's buffer stickiness
 (defun window-toggle-stickiness ()
   "Toggle between the 3 dedication states : free, dedicated and
