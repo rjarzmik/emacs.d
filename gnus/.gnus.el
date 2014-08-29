@@ -116,15 +116,18 @@
 				   (message 1.0 point)))))
 
 ;; Color customizations
-(defface gnus-summary-tremendously-interesting '((t (:background "red")))
+(defface gnus-summary-tremendously-interesting
+  '((t (:background "red" :inherit gnus-summary-root)))
   "Face used for displaying high score articles."
   :group 'gnus-summary-emphasis)
 
-(defface gnus-summary-very-interesting '((t (:background "orange")))
+(defface gnus-summary-very-interesting
+  '((t (:background "orange" :inherit gnus-summary-root)))
   "Face used for displaying high score articles."
   :group 'gnus-summary-emphasis)
 
-(defface gnus-summary-interesting '((t (:background "yellow")))
+(defface gnus-summary-interesting
+  '((t (:background "yellow" :inherit gnus-summary-root)))
   "Face used for displaying high score articles."
   :group 'gnus-summary-emphasis)
 

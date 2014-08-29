@@ -148,12 +148,30 @@
 ;;			  '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
 ;;  ))
 
+(defface gnus-summary-root '((t (:height 0.8)))
+  "Face of common attributes for all summary faces in gnus summary."
+  :group 'gnus-summary)
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(gnus-header-subject ((((class color) (background light)) (:background "dark orange" :foreground "red4"))))
+ '(gnus-summary-cancelled ((t (:inherit gnus-summary-root :background "black" :foreground "yellow"))))
+ '(gnus-summary-high-ancient ((t (:foreground "RoyalBlue" :weight bold :inherit gnus-summary-root))))
+ '(gnus-summary-high-read ((t (:foreground "DarkGreen" :weight bold :inherit gnus-summary-root))))
+ '(gnus-summary-high-ticked ((t (:foreground "firebrick" :weight bold :inherit gnus-summary-root))))
+ '(gnus-summary-high-unread ((t (:inherit gnus-summary-root :weight bold))))
+ '(gnus-summary-low-ancient ((t (:inherit gnus-summary-root :foreground "RoyalBlue" :slant italic))))
+ '(gnus-summary-low-read ((t (:inherit gnus-summary-root :foreground "DarkGreen" :slant italic))))
+ '(gnus-summary-low-undownloaded ((t (:inherit gnus-summary-root :foreground "cyan4" :slant italic :weight normal))))
+ '(gnus-summary-low-unread ((t (:inherit gnus-summary-root :slant italic))))
+ '(gnus-summary-normal-ancient ((t (:foreground "RoyalBlue" :inherit gnus-summary-root))))
+ '(gnus-summary-normal-read ((t (:foreground "DarkGreen" :inherit gnus-summary-root))))
+ '(gnus-summary-normal-ticked ((t (:foreground "firebrick" :inherit gnus-summary-root))))
+ '(gnus-summary-normal-unread ((t (:inherit gnus-summary-root))))
+ '(gnus-summary-selected ((t (:underline t))))
  '(highlight-changes ((((class color) (background light)) (:background "antique white" :foreground nil))))
  '(highlight-changes-delete ((((class color) (background light)) (:background "antique white" :foreground nil)))))
 ;;; Local Variables:
