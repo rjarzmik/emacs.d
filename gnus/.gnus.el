@@ -154,7 +154,7 @@
 	       . gnus-summary-normal-ticked)
 
 	      ;; RJK special colors
-	      ((and (>= score 200) (eq mark gnus-unread-mark)) . gnus-summary-tremendously-interesting)
+	      ((and (>= score 1000) (eq mark gnus-unread-mark)) . gnus-summary-tremendously-interesting)
 	      ((and (>= score 100) (eq mark gnus-unread-mark)) . gnus-summary-very-interesting)
 	      ((and (>= score 30) (eq mark gnus-unread-mark)) . gnus-summary-interesting)
 
