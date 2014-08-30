@@ -38,7 +38,7 @@
 ;; F7 : indente correctement tout le buffer courant
 (global-set-key [f7]     'vectra-indent-hilit-buffer)
 ;; F9 : lance la compilation
-(global-set-key [f9]     'compile)
+(global-set-key [f9]     'my-compile)
 ;; F10 : va à l erreur suivante
 (global-set-key [f10]    'next-error)
 ;; F11 : lance la speedbar

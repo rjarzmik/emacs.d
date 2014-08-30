@@ -36,6 +36,21 @@
 (setq auto-mode-alist (cons '("/home/rj/.*/kernel.*/.*\\.[ch]$" . linux-c-mode)
 			    auto-mode-alist))
 
+(defun kernel-smart-compile ()
+  "Hook called when opening a file in a linux kernel directory."
+  (let* ((path
+	  (and (string-match "^\\(.*/kernel/\\).*$" default-directory)
+	       (match-string 1 default-directory)))
+	 (arch
+	  (and path
+	       (shell-command-to-string
+		(format "bash -c \". %s.config ; echo -n \\${CONFIG_CROSS_COMPILE%%%%-*}\"" path))))
+	 (arch-env
+	  (when (> (length arch) 0) (concat "ARCH=" arch " "))))
+    (when path (concat "cd " path " && " arch-env "make -j 8"))))
+
+(add-hook 'my-compile-command-hooks 'kernel-smart-compile)
+
 (defun linux-filter-activity (buf)
     (let ((bufname (buffer-file-name (get-buffer buf))))
       (when bufname
