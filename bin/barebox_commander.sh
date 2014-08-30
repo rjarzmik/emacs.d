@@ -1,6 +1,8 @@
 #!/bin/bash
 
-barebox_tty=/dev/serial/by-id/usb-barebox_Scoter_Mitac_Mio_A701-if00-port0
+#barebox_tty=/dev/serial/by-id/usb-barebox_Scoter_Mitac_Mio_A701-if00-port0
+barebox_tty="$1"
+shift
 
 function progressing()
 {

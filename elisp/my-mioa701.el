@@ -28,40 +28,40 @@
   (serial-term "/dev/serial/by-id/usb-barebox_Scoter_Mitac_Mio_A701-if00-port0" 9600))
 
 (defun mioa701-barebox-command (command)
-  (nconc dctrl-actions (dctrl-barebox-action-command command)))
+  (dctrl-barebox-action-command command))
 
 (defun mioa701-barebox-upload-file (file)
-  (nconc dctrl-actions (dctrl-barebox-action-upload-file file)))
+  (dctrl-barebox-action-upload-file file))
 
 (defun dctrl-barebox-action-launch-kernel-pstore ()
   (interactive)
   (let ((device-name (dctrl-complete-device nil "barebox")))
     (with-current-buffer (dctrl-get-buffer device-name)
-      (mioa701-barebox-command (mioa701-setup-bootargs mioa701-extra-bootargs))
-      (mioa701-barebox-command "mci0.probe=1")
-      (mioa701-barebox-command "mkdir /sdcard")
-      (mioa701-barebox-command "mount /dev/disk0.0 /sdcard")
-      (mioa701-barebox-command "bootm /sdcard/zImage.pstore")
-      (dctrl-start))))
+      (append
+       (mioa701-barebox-command (mioa701-setup-bootargs mioa701-extra-bootargs))
+       (mioa701-barebox-command "mci0.probe=1")
+       (mioa701-barebox-command "mkdir /sdcard")
+       (mioa701-barebox-command "mount /dev/disk0.0 /sdcard")
+       (mioa701-barebox-command "bootm /sdcard/zImage.pstore")))))
 
 (defun dctrl-barebox-action-upload-launch-kernel ()
   (interactive)
   (let ((device-name (dctrl-complete-device nil "barebox")))
     (with-current-buffer (dctrl-get-buffer device-name)
-      (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/zImage"))
-      (mioa701-barebox-command (mioa701-setup-bootargs mioa701-extra-bootargs))
-      (mioa701-barebox-command "bootm zImage")
-      (dctrl-start))))
+      (append
+       (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/zImage"))
+       (mioa701-barebox-command (mioa701-setup-bootargs mioa701-extra-bootargs))
+       (mioa701-barebox-command "bootm zImage")))))
 
 (defun dctrl-barebox-action-upload-launch-kernel-dt ()
   (interactive)
   (let ((device-name (dctrl-complete-device nil "barebox")))
     (with-current-buffer (dctrl-get-buffer device-name)
-      (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/zImage"))
-      (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/dts/mioa701.dtb"))
-      (mioa701-barebox-command (mioa701-setup-bootargs "loglevel=10 pxa2xx-cpufreq.pxa27x_maxfreq=624 dyndbg=\\\"file phy-gpio-vbus-usb.c +p\\\""))
-      (mioa701-barebox-command "bootm -o mioa701.dtb zImage")
-      (dctrl-start))))
+      (append
+       (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/zImage"))
+       (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/dts/mioa701.dtb"))
+       (mioa701-barebox-command (mioa701-setup-bootargs "loglevel=10 pxa2xx-cpufreq.pxa27x_maxfreq=624 dyndbg=\\\"file phy-gpio-vbus-usb.c +p\\\""))
+       (mioa701-barebox-command "bootm -o mioa701.dtb zImage")))))
 
 (defun mioa701-change-host (host)
   "Changes the host which is connected to the mioa701."
@@ -87,8 +87,14 @@
   '("MioA701"
     ("Barebox"
      ["Barebox Term" (mioa701-barebox-term)]
-     ["Barebox Commander Upload file" (dctrl-barebox-action-upload-file)]
-     ["Barebox Commander Execute command" (dctrl-barebox-action-command)]
+     ["Barebox Commander Upload file"
+      (with-current-buffer (dctrl-get-buffer (dctrl-complete-device nil "barebox"))
+	(nconc dctrl-actions (dctrl-barebox-action-upload-file))
+	(dctrl-start)) ]
+     ["Barebox Commander Execute command"
+      (with-current-buffer (dctrl-get-buffer (dctrl-complete-device nil "barebox"))
+	(nconc dctrl-actions (dctrl-barebox-action-command))
+	(dctrl-start)) ]
      )
     ("Kernel"
      ["Kernel Term" (mioa701-kernel-term)]
