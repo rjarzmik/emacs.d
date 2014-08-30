@@ -6,15 +6,19 @@
 (defconst barebox-default-devname
   "serial/by-id/usb-barebox_Scoter_Mitac_Mio_A701-if00-port0")
 
-(defun dctrl-barebox-run (&rest args)
-  (let ((devname
-	 (if (numberp (string-match "^barebox:\\\([^@]*\\\)@.*$" dctrl-device-name))
-	     (match-string 1 dctrl-device-name)
+(defun dctrl-barebox-get-tty-devname ()
+  (concat "/dev/"
+	  (or
+	   (and dctrl-automatic-mode barebox-default-devname)
+	   (and (numberp (string-match "^\\\([^@]*\\\)@.*$" dctrl-device-name))
+		(match-string 1 dctrl-device-name))
 	   barebox-default-devname)))
-    (when (string= "last" devname)
-      (setq devname barebox-default-devname))
-    (dctrl-run-process
-     (nconc (list barebox-exec (concat "/dev/" devname)) args))))
+
+(defun dctrl-barebox-run (&rest args)
+  (dctrl-run-process
+   (nconc (list barebox-exec)
+	  (list (dctrl-barebox-get-tty-devname))
+	  args)))
 
 (defun dctrl-barebox-action-reset ()
   (dctrl-barebox-run "command" "reset"))
@@ -50,7 +54,7 @@
 	  (dctrl-msg "Waiting for barebox prompt")
 	  (set-process-sentinel
 	   (apply 'start-file-process "ctrl" (current-buffer)
-		  barebox-exec '("wait_prompt"))
+		  barebox-exec (list (dctrl-barebox-get-tty-devname) "wait_prompt"))
 	   'dctrl-barebox-process-sentinel)
 	  (set-process-filter (get-buffer-process (current-buffer))
 			      'dctrl-process-filter)
@@ -76,8 +80,7 @@
 	  (if (tramp-tramp-file-p default-directory)
 	      (with-parsed-tramp-file-name default-directory d d-host)
 	    "localhost")))
-    (mapcar (lambda (n) (format "barebox:%s@%s" n host))
-	     (append tty-names '("last")))))
+    (mapcar (lambda (n) (format "%s@%s" n host)) tty-names)))
 
 (defun dctrl-barebox-start (&optional delay)
   (setcdr dctrl-actions
