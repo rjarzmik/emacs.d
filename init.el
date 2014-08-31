@@ -128,6 +128,12 @@
   (when (not (require package nil t))
     (message (concat (symbol-name package) " package is not available"))))
 
+; Host specific configurations
+(dolist (my-host-el
+	 (file-expand-wildcards
+	  (format   "%selisp/my-host-%s*.el" user-emacs-directory (system-name))))
+  (load my-host-el))
+
 (defcustom config-to-load
   '(my-buffers my-command-line my-dired my-emms my-git my-lang my-mioa701
 	       my-muse my-w3m my-work my-keyboard my-shells)
