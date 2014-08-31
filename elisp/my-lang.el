@@ -12,13 +12,14 @@
   "Hooks run to find a smart compile command. First hook returning a non nil strings wins. If no hook finds a smart compile command, `compile' is used.
 The hook is called without any argument.")
 
-(defun my-compile ()
-  (interactive)
+(defun my-compile (arg)
+  (interactive "P")
   (let ((command
 	 (run-hook-with-args-until-success 'my-compile-command-hooks)))
-    (if command (compile command)
-      ;(set (make-local-variable 'compile-command) command))
-      (compile "make"))))
+    (let ((current-prefix-arg arg))
+      (if (and (not arg) command)
+	  (compile command)
+	(call-interactively 'compile)))))
 
 ;; Doxymacs
 (require 'doxymacs)
