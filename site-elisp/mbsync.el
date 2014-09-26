@@ -178,14 +178,15 @@ This is used when `mbsync-mode-line-style' is set to 'symbol."
   "Start Mbsync."
   (interactive)
   (let* ((buffer (mbsync-make-buffer)))
+    (add-to-list 'global-mode-string '(:eval (mbsync-mode-line)) t)
     (unless (get-buffer-process buffer)
       (let ((process (start-process-shell-command
                       "mbsync"
                       buffer
                       mbsync-command)))
+	(mbsync-update-mode-line process)
         (set-process-filter process 'mbsync-process-filter)
-        (set-process-sentinel process 'mbsync-process-sentinel))))
-  (add-to-list 'global-mode-string '(:eval (mbsync-mode-line)) t))
+        (set-process-sentinel process 'mbsync-process-sentinel)))))
 
 (defun mbsync-quit ()
   "Quit Mbsync."
