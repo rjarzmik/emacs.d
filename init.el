@@ -88,6 +88,11 @@
  '(message-directory "~/.emacs.d/gnus/Mail/")
  '(message-send-mail-function (quote smtpmail-send-it))
  '(next-line-add-newlines nil)
+ '(org-log-done (quote time))
+ '(package-archives
+   (quote
+    (("gnu" . "http://elpa.gnu.org/packages/")
+     ("melpa" . "http://melpa.milkbox.net/packages/"))))
  '(sh-basic-offset 8)
  '(show-paren-mode t nil (paren))
  '(show-trailing-whitespace nil)
