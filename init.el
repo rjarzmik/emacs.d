@@ -78,6 +78,7 @@
  '(line-number-mode t)
  '(load-home-init-file t t)
  '(magit-commit-signoff t)
+ '(magit-log-cutoff-length 30)
  '(magit-process-popup-time 2)
  '(mediawiki-site-alist
    (quote
