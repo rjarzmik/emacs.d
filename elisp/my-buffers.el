@@ -45,7 +45,8 @@
 (tool-bar-mode 0)
 (winner-mode)
 (ido-mode t)
-(display-time)
+(when (featurep 'status)
+  (turn-on-status))
 
 (setq inhibit-startup-message t
       inhibit-startup-echo-area-message t

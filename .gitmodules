@@ -22,3 +22,6 @@
 [submodule "site-elisp/device-control"]
 	path = site-elisp/device-control
 	url = https://github.com/rjarzmik/device-control.git
+[submodule "site-elisp/status"]
+	path = site-elisp/status
+	url = https://github.com/jeremy-compostella/status.git

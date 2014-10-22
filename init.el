@@ -25,7 +25,6 @@
  '(column-number-mode t)
  '(delete-auto-save-files nil)
  '(display-time-24hr-format t)
- '(display-time-day-and-date t)
  '(display-time-mail-file "/var/spool/mail/jarzmik")
  '(doxymacs-doxygen-style "Kernel")
  '(ecb-options-version "2.32")
@@ -97,6 +96,8 @@
  '(show-paren-mode t nil (paren))
  '(show-trailing-whitespace nil)
  '(standard-indent 8)
+ '(status-battery-discharging-fmt "%wW %t")
+ '(status-refresh-timer-delay 10)
  '(tramp-persistency-file-name "/home/rj/.emacs.d/data/tramp")
  '(transient-mark-mode t)
  '(user-mail-address "robert.jarzmik@free.fr")
@@ -125,7 +126,7 @@
 
 (defcustom package-to-load '(activity easymenu gnus-load magit git-commit-mode
 				      mediawiki muse-mode muse-html muse-publish
-				      w3m w3m-session)
+				      status w3m w3m-session)
   "List of my prefered packages"
   :group 'local
 )
