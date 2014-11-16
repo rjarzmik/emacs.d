@@ -39,7 +39,7 @@
 (defun kernel-smart-compile ()
   "Hook called when opening a file in a linux kernel directory."
   (let* ((path
-	  (and (string-match "^\\(.*/kernel/\\).*$" default-directory)
+	  (and (string-match "^\\(.*?/kernel/\\).*$" default-directory)
 	       (match-string 1 default-directory)))
 	 (arch
 	  (and path
