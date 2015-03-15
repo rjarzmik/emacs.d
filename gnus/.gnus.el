@@ -6,7 +6,9 @@
  '(gnus-home-directory "~/.emacs.d/gnus/")
  '(gnus-list-groups-with-ticked-articles nil)
  '(gnus-save-score t)
- '(gnus-gcc-mark-as-read t))
+ '(gnus-gcc-mark-as-read t)
+ '(gnus-saved-headers "From:\\|Newsgroups:\\|Subject:\\|Date:\\|Organization:\\|To:\\|Cc:\\|Followup-To\\|Gnus-Warnings:\\|X-Sent:\\|X-URL:\\|User-Agent:\\|X-Newsreader:\\|X-Mailer:\\|Reply-To:\\|X-Spam:\\|X-Spam-Status:\\|X-Now-Playing\\|X-Attachments\\|X-Diagnostic\\|Message-ID:\\|In-Reply-To:")
+ )
 
 (load (concat gnus-home-directory "my-mail-accounts"))
 

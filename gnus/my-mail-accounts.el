@@ -28,11 +28,11 @@
 	     (list 'imap-shell-program (concat dovecot-imap " -c ~/Maildir/dovecot_mbsync.conf"))
 	     '(nnir-search-engine imap))
 
-       (list 'nnimap "gmail"
-	     '(nnimap-address "imap.gmail.com")
-	     '(nnimap-server-port 993)
-	     '(nnimap-stream ssl)
-	     '(imap-username "robert.jarzmik"))
+;       (list 'nnimap "gmail"
+;	     '(nnimap-address "imap.gmail.com")
+;	     '(nnimap-server-port 993)
+;	     '(nnimap-stream ssl)
+;	     '(imap-username "robert.jarzmik"))
 
        (when (intel-available-p)
 	 (list 'nnimap "intel"
