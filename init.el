@@ -143,7 +143,7 @@
 
 (defcustom config-to-load
   '(my-buffers my-command-line my-dired my-emms my-git my-lang my-mioa701
-	       my-muse my-w3m my-work my-keyboard my-shells)
+	       my-muse my-pxa my-w3m my-work my-keyboard my-shells)
   "List of my configurations"
   :group 'local
 )
