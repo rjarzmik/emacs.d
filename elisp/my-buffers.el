@@ -118,6 +118,9 @@ strongly dedicated. See `set-window-dedicated-p."
 		    (t nil))))
     (set-window-dedicated-p (get-buffer-window (current-buffer)) new)))
 
+;; Tramp: use remote host environment
+(add-to-list 'tramp-remote-path 'tramp-own-remote-path)
+
 (add-to-list
  'global-mode-string
  '(:eval (assoc-default (window-dedicated-p) '((t . " S") (1 . " s")))) t)
