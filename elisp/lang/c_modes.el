@@ -41,13 +41,10 @@
   (let* ((path
 	  (and (string-match "^\\(.*?/kernel/\\).*$" default-directory)
 	       (match-string 1 default-directory)))
-	 (arch
-	  (and path
-	       (shell-command-to-string
-		(format "bash -c \". %s.config ; echo -n \\${CONFIG_CROSS_COMPILE%%%%-*}\"" path))))
-	 (arch-env
-	  (when (> (length arch) 0) (concat "ARCH=" arch " "))))
-    (when path (concat "cd " path " && " arch-env "make -j 8"))))
+	 (path (or (and (featurep 'tramp) (tramp-tramp-file-p tpath)
+			(with-parsed-tramp-file-name tpath d d-localname))
+		   tpath)))
+    (when path (format "bash -c \'. %s.config ; env ARCH=${CONFIG_CROSS_COMPILE%%%%-\*} make -C %s -j 8'" path path))))
 
 (add-hook 'my-compile-command-hooks 'kernel-smart-compile)
 
