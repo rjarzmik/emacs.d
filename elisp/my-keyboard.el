@@ -50,7 +50,7 @@
 (substitute-key-definition 'kill-buffer 'kill-this-buffer global-map)
 
 ;; Window moves
-(windmove-default-keybindings 'meta)
+(windmove-default-keybindings 'shift)
 (global-set-key (kbd "C-M-j") 'windmove-down)
 (global-set-key (kbd "C-M-k") 'windmove-up)
 (global-set-key (kbd "C-M-l") 'windmove-left)
