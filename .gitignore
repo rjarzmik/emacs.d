@@ -11,3 +11,8 @@ gnus/Mail
 # Main
 .emacs.desktop*
 
+# elisp my-host- specific files
+elisp/my-host-*.el*
+
+# ELPA packages
+elpa
