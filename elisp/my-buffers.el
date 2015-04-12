@@ -47,6 +47,7 @@
 (ido-mode t)
 (when (featurep 'status)
   (turn-on-status))
+(load-theme 'tsdh-light)
 
 (setq inhibit-startup-message t
       inhibit-startup-echo-area-message t
