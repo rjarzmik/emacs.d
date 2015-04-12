@@ -38,7 +38,7 @@
 
 (defun kernel-smart-compile ()
   "Hook called when opening a file in a linux kernel directory."
-  (let* ((path
+  (let* ((tpath
 	  (and (string-match "^\\(.*?/kernel/\\).*$" default-directory)
 	       (match-string 1 default-directory)))
 	 (path (or (and (featurep 'tramp) (tramp-tramp-file-p tpath)
