@@ -96,7 +96,6 @@
  '(show-paren-mode t nil (paren))
  '(show-trailing-whitespace nil)
  '(standard-indent 8)
- '(status-battery-discharging-fmt "%wW %t")
  '(status-refresh-timer-delay 10)
  '(tramp-persistency-file-name "/home/rj/.emacs.d/data/tramp")
  '(transient-mark-mode t)
