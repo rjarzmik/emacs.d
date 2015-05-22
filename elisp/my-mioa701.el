@@ -33,17 +33,6 @@
 (defun mioa701-barebox-upload-file (file)
   (dctrl-barebox-action-upload-file file))
 
-(defun dctrl-barebox-action-launch-kernel-pstore ()
-  (interactive)
-  (let ((device-name (dctrl-complete-device nil "barebox")))
-    (with-current-buffer (dctrl-get-buffer device-name)
-      (append
-       (mioa701-barebox-command (mioa701-setup-bootargs mioa701-extra-bootargs))
-       (mioa701-barebox-command "mci0.probe=1")
-       (mioa701-barebox-command "mkdir /sdcard")
-       (mioa701-barebox-command "mount /dev/disk0.0 /sdcard")
-       (mioa701-barebox-command "bootm /sdcard/zImage.pstore")))))
-
 (defun dctrl-barebox-action-upload-launch-kernel ()
   (interactive)
   (let ((device-name (dctrl-complete-device nil "barebox")))

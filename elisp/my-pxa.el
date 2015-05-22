@@ -14,7 +14,7 @@
 
 (defun pxa-setup-bootargs (&optional extra-args)
   "Common bootargs to all launch types. Might be enhanced by pxa-extra-bootargs"
-  (concat "bootargs=\"\$bootargs ramoops.mem_address=0xa2000000 ramoops.mem_size=1048576 ramoops.console_size=131072 " extra-args "\""))
+  (concat "bootargs=\\\"\$bootargs " extra-args "\\\""))
 
 (defun belgarath-uart-log ()
   (interactive)
