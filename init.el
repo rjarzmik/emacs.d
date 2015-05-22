@@ -63,6 +63,7 @@
 	(mode . java-mode)
 	(mode . idl-mode)
 	(mode . lisp-mode)))))))
+ '(ido-save-directory-list-file "~/.emacs.d/data/ido.last")
  '(inhibit-startup-screen t)
  '(ispell-highlight-face (quote highlight))
  '(ispell-personal-dictionary nil)
