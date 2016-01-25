@@ -27,7 +27,20 @@
     (message (concat (symbol-name package) " package is not available"))))
 
 ;; Barebox
+;; Device control for my usual boards
 (require 'device-control-pxa)
+(defun lubbock ()
+  (interactive)
+  (device-control-start "localhost" "pxa" "lubbock"
+			"belgarath" 3334 "belgarath" "192.168.1.230" 6660))
+(defun mainstone ()
+  (interactive)
+  (device-control-start "localhost" "pxa" "mainstone"
+			"belgarath" 3334 "belgarath" "192.168.1.231" 6661))
+(defun zylonite ()
+  (interactive)
+  (device-control-start "localhost" "pxa" "zylonite"
+			"belgarath" 3340 "belgarath" "192.168.1.232" 6666))
 
 ;; Log-tools
 (require 'lt-serial-kernel)
