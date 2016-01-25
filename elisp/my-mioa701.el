@@ -14,7 +14,7 @@
 
 (defun mioa701-setup-bootargs (&optional extra-args)
   "Common bootargs to all launch types. Might be enhanced by mioa701-extra-bootargs"
-  (concat "bootargs=\"\$bootargs ramoops.mem_address=0xa2000000 ramoops.mem_size=1048576 ramoops.console_size=131072 " extra-args "\""))
+  (concat "bootargs=\"\$bootargs " extra-args "\""))
 
 (dolist (package '(openocd))
   (when (not (require package nil t))
@@ -49,7 +49,8 @@
       (append
        (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/zImage"))
        (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/dts/mioa701.dtb"))
-       (mioa701-barebox-command (mioa701-setup-bootargs "loglevel=10 pxa2xx-cpufreq.pxa27x_maxfreq=624 dyndbg=\\\"file phy-gpio-vbus-usb.c +p\\\""))
+       (mioa701-barebox-command (mioa701-setup-bootargs
+				 (concat "loglevel=10 pxa2xx-cpufreq.pxa27x_maxfreq=624 " mioa701-extra-bootargs)))
        (mioa701-barebox-command "bootm -o mioa701.dtb zImage")))))
 
 (defun mioa701-change-host (host)
