@@ -24,7 +24,7 @@
 	url = https://github.com/rjarzmik/device-control.git
 [submodule "site-elisp/status"]
 	path = site-elisp/status
-	url = https://github.com/jeremy-compostella/status.git
+	url = https://github.com/rjarzmik/status.git
 [submodule "site-elisp/log-tools"]
 	path = site-elisp/log-tools
 	url = git@github.com:jeremy-compostella/log-tools.git
