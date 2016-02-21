@@ -40,7 +40,7 @@
 (defun zylonite ()
   (interactive)
   (device-control-start "localhost" "pxa" "zylonite"
-			"belgarath" 3340 "belgarath" "192.168.1.232" 6666))
+			"belgarath" 3340 "belgarath" "192.168.1.232" 6662))
 
 ;; Log-tools
 (require 'lt-serial-kernel)
