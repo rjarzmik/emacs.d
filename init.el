@@ -126,7 +126,7 @@
 
 (defcustom package-to-load '(activity easymenu gnus-load magit git-commit-mode
 				      mediawiki muse-mode muse-html muse-publish
-				      status w3m w3m-session)
+				      status w3m w3m-session zoom-frm)
   "List of my prefered packages"
   :group 'local
 )

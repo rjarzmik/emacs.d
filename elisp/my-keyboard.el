@@ -99,6 +99,14 @@
 (when (featurep 'magit)
   (global-set-key (kbd "C-c g") 'magit-status))
 
+;; Frame text font increase/descrease
+(when (featurep 'zoom-frm)
+  (define-key ctl-x-map [(control ?+)] 'zoom-in/out)
+  (define-key ctl-x-map [(control ?-)] 'zoom-in/out)
+  )
+;;;  (global-set-key (kbd "C-x C-+") (lambda () (interactive) (zoom-in 1)))
+;;;  (global-set-key (kbd "C-x C--") (lambda () (interactive) (zoom-out 1)))
+
 (provide 'my-keyboard)
 
 ;;; Local Variables:
