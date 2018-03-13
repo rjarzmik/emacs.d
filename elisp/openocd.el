@@ -19,8 +19,8 @@ If nil, openocd is not launched, and supposed to be already running")
 
 (defun openocd-sentinel (process event)
   (when (get-process "openocd-server") (delete-process "openocd-server"))
-  (when (get-buffer "*openocd-server*")
-    (kill-buffer "*openocd-server*"))
+  (when (get-buffer " *openocd-server*")
+    (kill-buffer " *openocd-server*"))
 )
 
 (defun openocd-guess-host (host)
