@@ -54,6 +54,7 @@ function wait_for_prompt()
 	in_full=""
 	in=""
 
+	echo -n -e "\c\n" >&3
 	while [ $again -gt 0 ]; do
 		[ ${#in} -eq 0 ] && echo -n -e "\r\n" >&3
 		in=""
@@ -81,6 +82,7 @@ function upload_file()
 	#sb --ymodem ${filename} <&3 >&3
 }
 
+stty -F ${barebox_tty} 1:0:8bd:0:3:1c:7f:15:4:5:1:0:11:13:1a:0:12:f:17:16:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0
 wait_for_tty_device && exit 1
 case "$1" in
 	upload_file)

@@ -14,7 +14,7 @@
 
 (defun pxa-setup-bootargs (&optional extra-args)
   "Common bootargs to all launch types. Might be enhanced by pxa-extra-bootargs"
-  (concat "bootargs=\\\"\$bootargs " extra-args "\\\""))
+  (concat "bootargs=\\\"\$bootargs " extra-args "\\\"\\\; " "global linux.bootargs.debug=\\\"" extra-args "\\\""))
 
 (defun belgarath-uart-log ()
   (interactive)
