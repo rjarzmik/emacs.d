@@ -31,6 +31,14 @@
 ;; Not used anymore, git-modes is now the default
 ;; (add-to-list 'auto-mode-alist '("COMMIT_EDITMSG" . gitcommit-mode))
 
+(defun git-fixes-string(commitSha1)
+  "Get the Fixes string for a given commit id"
+  (interactive "sCommit id: ")
+  (insert (with-temp-buffer
+	    (shell-command (concat "git log --pretty=fixes -n 1 " commitSha1)
+			   (current-buffer))
+	    (buffer-string))))
+
 ;; Integrated git-modes into magit
 (define-derived-mode magit-log-edit-mode git-commit-mode "Magit Log Edit"
   (set (make-local-variable 'git-commit-commit-function)
