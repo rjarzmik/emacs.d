@@ -507,11 +507,13 @@ Key bindings:
 
 (define-key doxymacs-mode-map "\C-cdf"
   'doxymacs-insert-function-comment)
+(define-key doxymacs-mode-map "\C-cds"
+  'doxymacs-insert-structure-comment)
 (define-key doxymacs-mode-map "\C-cdi"
   'doxymacs-insert-file-comment)
 (define-key doxymacs-mode-map "\C-cdm"
   'doxymacs-insert-blank-multiline-comment)
-(define-key doxymacs-mode-map "\C-cds"
+(define-key doxymacs-mode-map "\C-cdS"
   'doxymacs-insert-blank-singleline-comment)
 (define-key doxymacs-mode-map "\C-cd;"
   'doxymacs-insert-member-comment)
@@ -1310,6 +1312,22 @@ the completion or nil if canceled by the user."
 	 nil))))
  "Default Kernel-style template for function documentation.")
 
+(defconst doxymacs-Kernel-structure-comment-template
+  '((let ((next-struct (doxymacs-find-next-struct)))
+      (if next-struct
+	 (list
+	  'l
+	  "/**" 'n
+	  " * " (cdr (assoc 'struct next-struct)) " - short description"
+	  'p '> 'n
+	  (doxymacs-parm-tempo-element (cdr (assoc 'args next-struct)))
+	  " *" 'n
+	  " * <Structure long description>" '> 'n
+	  " */" '> 'n)
+       (progn
+	 (error "Can't find next structure declaration.")
+	 nil))))
+ "Default Kernel-style template for structure documentation.")
 
 (defun doxymacs-invalid-style ()
   "Warn the user that he has set `doxymacs-doxygen-style' to an invalid
@@ -1364,6 +1382,12 @@ style."
 current point."
   (interactive "*")
   (doxymacs-call-template "function-comment"))
+
+(defun doxymacs-insert-structure-comment ()
+  "Inserts Doxygen documentation for the next structure declaration at
+current point."
+  (interactive "*")
+  (doxymacs-call-template "structure-comment"))
 
 ;; FIXME
 ;; The following was borrowed from "simple.el".
@@ -1672,6 +1696,51 @@ The argument list is a list of strings."
 	  (list (cons 'func func)
 		(cons 'args (doxymacs-extract-args-list args))
 		(cons 'return (doxymacs-core-string ret))))
+    nil)))
+
+
+(defun doxymacs-extract-member-list-helper (members index)
+  (if (string-match
+       (concat
+	"[^;]*"
+	"[\t ]\\([a-zA-Z0-9_]+\\)"
+	"\\(:[0-9]+\\|\\[.*\\]\\)*;"
+	) members index)
+      (cons (match-string 1 members)
+	      (doxymacs-extract-member-list-helper members (match-end 0))))
+  )
+
+(defun doxymacs-extract-member-list (members)
+  "Return a list of member of a structure"
+
+  (if members
+      (doxymacs-extract-member-list-helper members 0)
+    nil))
+
+(defun doxymacs-find-next-struct ()
+  "Returns a list describing next structure declaration, or nil if not found.
+
+(cdr (assoc 'struct (doxymacs-find-next-struct))) is the structure name (string).
+(cdr (assoc 'args (doxymacs-find-next-struct))) is a list of arguments.
+
+The argument list is a list of strings."
+  (interactive)
+  (save-excursion
+    (if (re-search-forward
+	 (concat
+	   ;; name
+	  "struct \\([a-zA-Z0-9_]*\\) *{"
+	  ) nil t)
+
+	(let* ((struct (buffer-substring (match-beginning 1) (match-end 1)))
+	       (args (buffer-substring (point) (progn
+                                                (backward-char 1)
+                                                (forward-list)
+                                                (backward-char 1)
+                                                (point))))
+	       )
+	  (list (cons 'struct struct)
+		(cons 'args (doxymacs-extract-member-list args))))
     nil)))
 
 ;;; doxymacs.el ends here
