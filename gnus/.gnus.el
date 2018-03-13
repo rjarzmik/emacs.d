@@ -37,10 +37,7 @@
          (name "Robert Jarzmik")
          ("X-URL" "http://belgarath.falguerolles.org/")
 	 (signature "Robert")
-	 ("X-Message-SMTP-Method" "smtp smtp.orange.fr 25"))
-	(".*intel.*"
-      	 ("X-Message-SMTP-Method" "smtp smtp.intel.com 25")
-	 (address "robert.jarzmik@intel.com"))
+	 ("X-Message-SMTP-Method" "smtp smtp.orange.fr 587"))
 	(".*gmail.*"
       	 ("X-Message-SMTP-Method" "smtp smtp.gmail.com 587")
 	 (address "robert.jarzmik@gmail.com"))))
