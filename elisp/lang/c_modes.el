@@ -10,11 +10,19 @@
   (highlight-beyond-fill-column)
   (setq show-trailing-whitespace t)
   ;;(define-key c++-mode-map "\M-/" 'semantic-ia-complete-symbol-menu)
-  (define-key c-mode-map "\M-." 'my-find-tag)
-  (define-key c-mode-map "\M-*" 'my-pop-tag-mark)
-  (highlight-changes-mode t)
 )
 (add-hook 'c-mode-hook 'my-default-c-mode-hook)
+
+(defun my-common-c-mode-hook ()
+  "My default setup for C and C++ mode"
+
+  (define-key c-mode-map "\M-." 'my-find-tag)
+  (define-key c-mode-map "\M-*" 'my-pop-tag-mark)
+  (define-key c++-mode-map "\M-." 'my-find-tag)
+  (define-key c++-mode-map "\M-*" 'my-pop-tag-mark)
+  (highlight-changes-mode t)
+  )
+(add-hook 'c-mode-common-hook 'my-common-c-mode-hook)
 
 (defun linux-c-mode ()
   "C mode with adjusted defaults for use with the Linux kernel."
