@@ -6,6 +6,7 @@
 (load "lang/c_modes")
 (load "lang/python")
 (load "lang/java")
+(load "lang/my-lsp")
 
 ;; Compilation
 (defvar my-compile-command-hooks nil
@@ -40,9 +41,7 @@ The hook is called without any argument.")
 ;; CScope
 (require 'rscope)
 
-(provide 'my-lang)
+;; IDE lsp
+(require 'my-lsp)
 
-;;; Local Variables:
-;;; eval: (defun byte-compile-this-file () (write-region (point-min) (point-max) buffer-file-name nil 't) (byte-compile-file buffer-file-name) nil)
-;;; write-file-hooks: (byte-compile-this-file)
-;;; End:
+(provide 'my-lang)
