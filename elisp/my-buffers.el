@@ -126,6 +126,12 @@ strongly dedicated. See `set-window-dedicated-p."
  'global-mode-string
  '(:eval (assoc-default (window-dedicated-p) '((t . " S") (1 . " s")))) t)
 
+;; Which-key: completion of possible key-bindings
+(use-package which-key
+  :diminish
+  :config
+  (which-key-mode))
+
 (provide 'my-buffers)
 
 ;;; Local Variables:
