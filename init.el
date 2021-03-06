@@ -187,8 +187,6 @@
  '(gnus-summary-selected ((t (:underline t))))
  '(highlight-changes ((((class color) (background light)) (:background "antique white" :foreground nil))))
  '(highlight-changes-delete ((((class color) (background light)) (:background "antique white" :foreground nil)))))
-;;; Local Variables:
-;;; eval: (defun byte-compile-this-file () (write-region (point-min) (point-max) buffer-file-name nil 't) (byte-compile-file buffer-file-name) nil)
-;;; write-file-hooks: (byte-compile-this-file)
-;;; byte-compile-warnings: (not cl-functions)
-;;; End:
+
+;; BUG Workaround : melpa package installation errors (emacs <= 26.3)
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
