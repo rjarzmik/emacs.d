@@ -120,6 +120,7 @@ strongly dedicated. See `set-window-dedicated-p."
     (set-window-dedicated-p (get-buffer-window (current-buffer)) new)))
 
 ;; Tramp: use remote host environment
+(require 'tramp)
 (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
 
 (add-to-list
