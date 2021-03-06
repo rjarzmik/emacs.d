@@ -92,7 +92,10 @@
  '(package-archives
    (quote
     (("gnu" . "http://elpa.gnu.org/packages/")
-     ("melpa" . "http://melpa.milkbox.net/packages/"))))
+     ("melpa" . "https://melpa.org/packages/"))))
+ '(package-selected-packages
+   (quote
+    (json-mode helm-lsp lsp-ivy diminish-buffer which-key use-package lsp-mode tabbar session pod-mode muttrc-mode mutt-alias markdown-mode initsplit htmlize graphviz-dot-mode folding eproject diminish csv-mode browse-kill-ring boxquote bm bar-cursor apache-mode scala-mode)))
  '(sh-basic-offset 8)
  '(show-paren-mode t nil (paren))
  '(show-trailing-whitespace nil)
@@ -130,6 +133,8 @@
   "List of my prefered packages"
   :group 'local
 )
+
+(package-initialize)
 
 (dolist (package package-to-load)
   (when (not (require package nil t))
