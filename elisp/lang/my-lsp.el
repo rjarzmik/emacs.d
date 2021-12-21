@@ -11,7 +11,14 @@
                                          ;; hierarchy lsp extension
   (lsp-auto-guess-root t)                ;; auto guess root
   (lsp-prefer-capf t)                    ;; using `company-capf' by default
-  (lsp-keymap-prefix "C-c l"))
+  (lsp-keymap-prefix "C-c l")
+  :config
+  (progn
+    (lsp-register-client
+     (make-lsp-client :new-connection (lsp-tramp-connection "clangd")
+                      :major-modes '(c-mode c++-mode)
+                      :remote? t
+                      :server-id 'clangd-remote))))
 
 (use-package helm-lsp)
 
