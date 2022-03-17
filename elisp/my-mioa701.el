@@ -38,7 +38,7 @@
   (let ((device-name (dctrl-complete-device nil "barebox")))
     (with-current-buffer (dctrl-get-buffer device-name)
       (append
-       (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/zImage"))
+       (mioa701-barebox-upload-file (concat mioa701-kpath "/out/arch/arm/boot/zImage"))
        (mioa701-barebox-command (mioa701-setup-bootargs mioa701-extra-bootargs))
        (mioa701-barebox-command "bootm zImage")))))
 
@@ -47,11 +47,11 @@
   (let ((device-name (dctrl-complete-device nil "barebox")))
     (with-current-buffer (dctrl-get-buffer device-name)
       (append
-       (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/zImage"))
-       (mioa701-barebox-upload-file (concat mioa701-kpath "/arch/arm/boot/dts/mioa701.dtb"))
+       (mioa701-barebox-upload-file (concat mioa701-kpath "/out/arch/arm/boot/zImage"))
+       (mioa701-barebox-upload-file (concat mioa701-kpath "/out/arch/arm/boot/dts/pxa270-mioa701.dtb"))
        (mioa701-barebox-command (mioa701-setup-bootargs
 				 (concat "loglevel=10 pxa2xx-cpufreq.pxa27x_maxfreq=624 " mioa701-extra-bootargs)))
-       (mioa701-barebox-command "bootm -o mioa701.dtb zImage")))))
+       (mioa701-barebox-command "bootm -o pxa270-mioa701.dtb zImage")))))
 
 (defun mioa701-change-host (host)
   "Changes the host which is connected to the mioa701."

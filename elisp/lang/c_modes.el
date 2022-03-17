@@ -52,7 +52,7 @@
 	 (path (or (and (featurep 'tramp) (tramp-tramp-file-p tpath)
 			(with-parsed-tramp-file-name tpath d d-localname))
 		   tpath)))
-    (when path (format "bash -c \'. %s.config ; env ARCH=${CONFIG_CROSS_COMPILE%%%%-\*} make -C %s -j 8'" path path))))
+    (when path (format "make -C %s/out -j 8" path))))
 
 (add-hook 'my-compile-command-hooks 'kernel-smart-compile)
 
