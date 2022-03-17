@@ -133,6 +133,17 @@ strongly dedicated. See `set-window-dedicated-p."
   :config
   (which-key-mode))
 
+;; Day-mode and Night-mode
+(defun night-mode ()
+  "Toggle the color theme to a dark mode, suitable for night usage"
+  (interactive)
+  (load-theme 'tsdh-dark))
+
+(defun day-mode ()
+  "Toggle the color theme to a light mode, suitable for daylight usage"
+  (interactive)
+  (load-theme 'tsdh-light))
+
 (provide 'my-buffers)
 
 ;;; Local Variables:
