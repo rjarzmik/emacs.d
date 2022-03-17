@@ -3,9 +3,14 @@
 (package-initialize)
 (require 'use-package)
 
+(defun dotfiles--lsp-deferred-if-supported ()
+  "Run `lsp-deferred' if it's a supported mode."
+  (unless (derived-mode-p 'emacs-lisp-mode)
+    (lsp-deferred)))
+
 (use-package lsp-mode
   :ensure t
-  :hook (prog-mode . lsp-deferred)
+  :hook (prog-mode . #'dotfiles--lsp-deferred-if-supported)
   :custom
   (lsp-clients-clangd-executable "clangd") ;; or use ccls package to get call
                                          ;; hierarchy lsp extension
