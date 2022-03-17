@@ -95,13 +95,13 @@
      ("melpa" . "https://melpa.org/packages/"))))
  '(package-selected-packages
    (quote
-    (json-mode helm-lsp lsp-ivy diminish-buffer which-key use-package lsp-mode tabbar session pod-mode muttrc-mode mutt-alias markdown-mode initsplit htmlize graphviz-dot-mode folding eproject diminish csv-mode browse-kill-ring boxquote bm bar-cursor apache-mode scala-mode)))
+    (git-commit rustic rutils lsp-ui helm-lsp lsp-mode plantuml-mode json-mode diminish-buffer which-key use-package sbt-mode scala-mode tabbar session pod-mode muttrc-mode mutt-alias markdown-mode magit initsplit htmlize graphviz-dot-mode folding eproject diminish csv-mode browse-kill-ring boxquote bm bar-cursor apache-mode scala-mode)))
  '(sh-basic-offset 8)
  '(show-paren-mode t nil (paren))
  '(show-trailing-whitespace nil)
  '(standard-indent 8)
  '(status-refresh-timer-delay 10)
- '(tramp-persistency-file-name "/home/rj/.emacs.d/data/tramp")
+ '(tramp-persistency-file-name "/home/rj/.emacs.d/data/tramp" nil (tramp))
  '(transient-mark-mode t)
  '(user-mail-address "robert.jarzmik@free.fr")
  '(visible-bell t))
