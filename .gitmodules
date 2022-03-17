@@ -1,6 +1,3 @@
-[submodule "site-elisp/git-modes"]
-	path = site-elisp/git-modes
-	url = https://github.com/magit/git-modes.git
 [submodule "site-elisp/gnus"]
 	path = site-elisp/gnus
 	url = http://git.gnus.org/gnus.git
