@@ -84,7 +84,7 @@
    (quote
     (("Wikipedia" "http://en.wikipedia.org/w/" "username" "password" "Main Page")
      ("belgarath" "http://belgarath.local/mediawiki/" "rjarzmik" "XXX" "Main Page"))))
- '(menu-bar-mode nil)
+ '(menu-bar-mode t)
  '(message-directory "~/.emacs.d/gnus/Mail/")
  '(message-send-mail-function (quote smtpmail-send-it))
  '(next-line-add-newlines nil)
