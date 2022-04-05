@@ -24,6 +24,24 @@
   )
 (add-hook 'c-mode-common-hook 'my-common-c-mode-hook)
 
+(c-add-style
+ "rjk-c++-style"
+ '("gnu"
+   (c-basic-offset . 4)
+   (indent-tabs-mode . nil) ; use spaces, never tabs
+   (c-comment-only-line-offset 0 . 0)
+   (c-offsets-alist . ((label . 0)
+		       (innamespace . -)
+		       (namespace-open . 0)
+		       (namespace-close . 0))))
+ nil)
+
+(defun my-common-c++-mode-hook()
+  "My default setup for C and C++ mode"
+  (c-set-style "rjk-c++-style")
+  )
+(add-hook 'c++-mode-hook 'my-common-c++-mode-hook)
+
 (defun linux-c-mode ()
   "C mode with adjusted defaults for use with the Linux kernel."
   (interactive)
