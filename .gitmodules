@@ -1,6 +1,3 @@
-[submodule "site-elisp/gnus"]
-	path = site-elisp/gnus
-	url = http://git.gnus.org/gnus.git
 [submodule "site-elisp/muse"]
 	path = site-elisp/muse
 	url = git://repo.or.cz/muse-el.git
