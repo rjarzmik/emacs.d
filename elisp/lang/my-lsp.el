@@ -62,7 +62,7 @@
   (:map lsp-mode-map
 	([remap xref-find-apropos] . helm-lsp-workspace-symbol))
   :custom
-  (company-idle-delay 0)
+  (company-idle-delay 5)
   (company-echo-delay 0)
   (company-show-numbers t)
   (company-require-match nil)
