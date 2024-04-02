@@ -9,7 +9,7 @@
 
 (use-package lsp-mode
   :ensure t
-  :hook (prog-mode . #'dotfiles--lsp-deferred-if-supported)
+  :hook (prog-mode . dotfiles--lsp-deferred-if-supported)
   :custom
   (lsp-clients-clangd-executable "clangd") ;; or use ccls package to get call
                                          ;; hierarchy lsp extension
