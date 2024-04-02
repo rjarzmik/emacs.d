@@ -1,6 +1,5 @@
 ;;; My personnal LSP-MODE configuration
 
-(package-initialize)
 (require 'use-package)
 
 (defun dotfiles--lsp-deferred-if-supported ()
