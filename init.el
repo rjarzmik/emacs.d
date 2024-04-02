@@ -8,17 +8,15 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(auth-sources
-   (quote
-    ("~/.authinfo" "~/.authinfo.gpg" "~/.netrc" "~/.emacs.d/data/authinfo.gpg")))
+   '("~/.authinfo" "~/.authinfo.gpg" "~/.netrc" "~/.emacs.d/data/authinfo.gpg"))
  '(auto-save-file-name-transforms
-   (quote
-    (("\\`/[^/]*:\\(.+/\\)*\\(.*\\)" "/tmp/\\2")
-     ("\\(.+/\\)*\\(.*\\)" "/tmp/\\2"))))
+   '(("\\`/[^/]*:\\(.+/\\)*\\(.*\\)" "/tmp/\\2")
+     ("\\(.+/\\)*\\(.*\\)" "/tmp/\\2")))
  '(auto-save-list-file-prefix "~/.emacs.d/data/auto-backup/auto-save-list/.saves-")
- '(backup-directory-alist (quote ((".*" . "~/.emacs.d/data/auto-backup/backup/"))))
+ '(backup-directory-alist '((".*" . "~/.emacs.d/data/auto-backup/backup/")))
  '(battery-mode-line-format "[%b%p%%,%w,%t]")
- '(bbdb-file "~/.emacs.d/bbdb")
- '(c-basic-offset (quote set-from-style))
+ '(bbdb-file "~/.emacs.d/bbdb" t)
+ '(c-basic-offset 'set-from-style)
  '(c-default-style nil)
  '(c-indent-comments-syntactically-p t)
  '(c-tab-always-indent nil)
@@ -28,9 +26,9 @@
  '(display-time-mail-file "/var/spool/mail/jarzmik")
  '(doxymacs-doxygen-style "Kernel")
  '(ecb-options-version "2.32")
- '(ediff-merge-split-window-function (quote split-window-vertically))
- '(ediff-split-window-function (quote split-window-horizontally))
- '(ediff-window-setup-function (quote ediff-setup-windows-plain))
+ '(ediff-merge-split-window-function 'split-window-vertically)
+ '(ediff-split-window-function 'split-window-horizontally)
+ '(ediff-window-setup-function 'ediff-setup-windows-plain)
  '(eudc-strict-return-matches nil)
  '(explicit-shell-file-name "/bin/bash")
  '(fill-column 80)
@@ -45,8 +43,7 @@
  '(hexl-iso "-iso")
  '(ibuffer-saved-filter-groups nil)
  '(ibuffer-saved-filters
-   (quote
-    (("logs"
+   '(("logs"
       ((name . "\\*.*")))
      ("gnus"
       ((or
@@ -62,46 +59,41 @@
 	(mode . c-mode)
 	(mode . java-mode)
 	(mode . idl-mode)
-	(mode . lisp-mode)))))))
+	(mode . lisp-mode))))))
  '(ido-save-directory-list-file "~/.emacs.d/data/ido.last")
  '(inhibit-startup-screen t)
- '(ispell-highlight-face (quote highlight))
+ '(ispell-highlight-face 'highlight)
  '(ispell-personal-dictionary nil)
  '(ispell-silently-savep t)
  '(jde-global-classpath
-   (quote
-    ("/usr/java/jdk1.3.1_01/connector.jar" "/usr/java/jdk1.3.1_01/src.jar" "/usr/java/jdk1.3.1_01/jta.jar" "/usr/java/jdk1.3.1_01/jaas.jar" "~rj/Basp/src/basp/adapter/ava/cci" "~rj/Basp/src/basp/adapter/ava/spi")))
+   '("/usr/java/jdk1.3.1_01/connector.jar" "/usr/java/jdk1.3.1_01/src.jar" "/usr/java/jdk1.3.1_01/jta.jar" "/usr/java/jdk1.3.1_01/jaas.jar" "~rj/Basp/src/basp/adapter/ava/cci" "~rj/Basp/src/basp/adapter/ava/spi"))
  '(kill-whole-line nil)
  '(ldap-host-parameters-alist
-   (quote
-    (("aww.tlse.titn.alcatel.fr" base "o=tlse.titn.alcatel.fr"))))
+   '(("aww.tlse.titn.alcatel.fr" base "o=tlse.titn.alcatel.fr")))
  '(line-number-mode t)
  '(load-home-init-file t t)
  '(magit-commit-signoff t)
  '(magit-log-cutoff-length 30)
  '(magit-process-popup-time 2)
  '(mediawiki-site-alist
-   (quote
-    (("Wikipedia" "http://en.wikipedia.org/w/" "username" "password" "Main Page")
-     ("belgarath" "http://belgarath.local/mediawiki/" "rjarzmik" "XXX" "Main Page"))))
+   '(("Wikipedia" "http://en.wikipedia.org/w/" "username" "password" "Main Page")
+     ("belgarath" "http://belgarath.local/mediawiki/" "rjarzmik" "XXX" "Main Page")))
  '(menu-bar-mode t)
  '(message-directory "~/.emacs.d/gnus/Mail/")
- '(message-send-mail-function (quote smtpmail-send-it))
+ '(message-send-mail-function 'smtpmail-send-it)
  '(next-line-add-newlines nil)
- '(org-log-done (quote time))
+ '(org-log-done 'time)
  '(package-archives
-   (quote
-    (("gnu" . "http://elpa.gnu.org/packages/")
-     ("melpa" . "https://melpa.org/packages/"))))
+   '(("gnu" . "http://elpa.gnu.org/packages/")
+     ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   (quote
-    (docker-tramp exec-path-from-shell toml-mode yasnippet-snippets yasnippet rust-playground flycheck git-commit rustic rutils lsp-ui helm-lsp lsp-mode plantuml-mode json-mode diminish-buffer which-key use-package sbt-mode scala-mode tabbar session pod-mode muttrc-mode mutt-alias markdown-mode magit initsplit htmlize graphviz-dot-mode folding eproject diminish csv-mode browse-kill-ring boxquote bm bar-cursor apache-mode scala-mode)))
+   '(company lsp-java bbdb exec-path-from-shell toml-mode yasnippet-snippets yasnippet rust-playground flycheck git-commit rustic rutils lsp-ui helm-lsp lsp-mode plantuml-mode json-mode diminish-buffer which-key use-package sbt-mode scala-mode tabbar session pod-mode muttrc-mode mutt-alias markdown-mode magit initsplit htmlize graphviz-dot-mode folding eproject diminish csv-mode browse-kill-ring boxquote bm bar-cursor apache-mode scala-mode))
  '(sh-basic-offset 8)
  '(show-paren-mode t nil (paren))
  '(show-trailing-whitespace nil)
  '(standard-indent 8)
  '(status-refresh-timer-delay 10)
- '(tramp-persistency-file-name "/home/rj/.emacs.d/data/tramp" nil (tramp))
+ '(tramp-persistency-file-name "/home/rj/.emacs.d/data/tramp")
  '(transient-mark-mode t)
  '(user-mail-address "robert.jarzmik@free.fr")
  '(visible-bell t))
