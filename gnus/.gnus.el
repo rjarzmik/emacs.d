@@ -190,8 +190,3 @@
 ;	  ("INBOX/ml-linux-v4l" "^\\(To\\|Cc\\):.*video4linux-list@redhat.com.*")
 ;	  ("INBOX/ego" "^From:.*[rR]obert.[jJ]arzmik")
 ;	  ))
-
-;;; Local Variables:
-;;; eval: (defun byte-compile-this-file () (write-region (point-min) (point-max) buffer-file-name nil 't) (byte-compile-file buffer-file-name) nil)
-;;; write-file-hooks: (byte-compile-this-file)
-;;; End:

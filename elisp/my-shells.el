@@ -17,8 +17,3 @@ the host where the shell is running on."
 (add-hook 'shell-mode-hook 'my-shell-hook)
 
 (provide 'my-shells)
-
-;;; Local Variables:
-;;; eval: (defun byte-compile-this-file () (write-region (point-min) (point-max) buffer-file-name nil 't) (byte-compile-file buffer-file-name) nil)
-;;; write-file-hooks: (byte-compile-this-file)
-;;; End:

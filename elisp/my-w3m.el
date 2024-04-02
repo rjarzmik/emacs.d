@@ -81,8 +81,3 @@
 ;      (nconc w3m-command-arguments
 ;	     '("-o" "http_proxy=http://proxy.mdp:3128/")))
 (provide 'my-w3m)
-
-;;; Local Variables:
-;;; eval: (defun byte-compile-this-file () (write-region (point-min) (point-max) buffer-file-name nil 't) (byte-compile-file buffer-file-name) nil)
-;;; write-file-hooks: (byte-compile-this-file)
-;;; End:

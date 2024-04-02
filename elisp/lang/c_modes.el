@@ -155,8 +155,3 @@ If cscope database file is found, it is used. Fallback on tags."
 (setq-default gdb-many-windows t)
 (add-to-list 'auto-mode-alist '("\\.dbg$" . gdb-script-mode))
 (add-to-list 'auto-mode-alist '("\\.gdb$" . gdb-script-mode))
-
-;;; Local Variables:
-;;; eval: (defun byte-compile-this-file () (write-region (point-min) (point-max) buffer-file-name nil 't) (byte-compile-file buffer-file-name) nil)
-;;; write-file-hooks: (byte-compile-this-file)
-;;; End:

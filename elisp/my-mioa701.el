@@ -97,8 +97,3 @@
 (global-set-key (kbd "\C-cm") 'device-control)
 
 (provide 'my-mioa701)
-
-;;; Local Variables:
-;;; eval: (defun byte-compile-this-file () (write-region (point-min) (point-max) buffer-file-name nil 't) (byte-compile-file buffer-file-name) nil)
-;;; write-file-hooks: (byte-compile-this-file)
-;;; End:
