@@ -66,6 +66,8 @@
   (company-show-numbers t)
   (company-require-match nil)
   (company-tooltip-align-annotations t)
+  (company-tng-configure-default)        ; Tab cycle
+  (setq company-selection-wrap-around t) ; Wrap around last/first
   (company-backends '(company-capf)))
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
