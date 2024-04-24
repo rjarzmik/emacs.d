@@ -10,4 +10,7 @@
 	    (buffer-string))))
 
 ;; Integrated git-modes into magit
+(use-package magit
+  :ensure)
+
 (provide 'my-git)
