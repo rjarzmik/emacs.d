@@ -20,7 +20,6 @@
   (lsp-idle-delay 0.6)
   :config
   (progn
-    (add-hook 'lsp-mode-hook 'lsp-ui-mode)
     (lsp-register-client
      (make-lsp-client :new-connection (lsp-tramp-connection "clangd")
                       :major-modes '(c-mode c++-mode)
@@ -29,6 +28,7 @@
 
 (use-package lsp-ui
   :ensure
+  :hook (lsp-mode . lsp-ui-mode)
   :commands lsp-ui-mode
   :custom
   (lsp-ui-peek-always-show t)
