@@ -70,16 +70,28 @@
   (dap-ui-mode)
   (dap-ui-controls-mode 1)
 
-  (require 'dap-lldb)
-  (require 'dap-gdb-lldb)
   (require 'dap-cpptools)
-  ;; installs .extension/vscode
-  (dap-gdb-lldb-setup)
   (dap-register-debug-template
-   "Rust::GDB Run Configuration"
-   (list :type "lldb"
+   "Rust::Lldb::dapcpp Run Configuration"
+   (list :type "cppdbg"
          :request "launch"
-         :name "LLDB::Run"
-	 :gdbpath "rust-lldb"
-         :target nil
-         :cwd nil)))
+         :name "Rust Debug"
+	 :MIMode "lldb"
+	 :debugServerPath "rust-lldb"
+	 :miDebuggerPath (f-join dap-cpptools-debug-path "extension/debugAdapters/lldb-mi/bin/lldb-mi")
+	 :program "${workspaceFolder}/ replace with your binary"
+         :cwd "${workspaceFolder}")))
+
+; Debug is OS reliant, help rust-analyzer
+(when (eq system-type 'darwin)
+  (use-package dap-mode
+    :after lsp-mode
+    :custom
+    (lsp-rust-analyzer-debug-lens-extra-dap-args
+     `(
+       :MiMode "lldb"
+       :debugServerPath "rust-lldb"
+       :miDebuggerPath ,(f-join dap-cpptools-debug-path "extension/debugAdapters/lldb-mi/bin/lldb-mi")
+       :stopAtEntry t
+       :externalConsole: json-false))))
+
