@@ -44,7 +44,14 @@
 (show-paren-mode t)
 (tool-bar-mode 0)
 (winner-mode)
-(ido-mode t)
+(use-package helm
+  :ensure
+  :bind
+  (("C-x C-f" . helm-find-files)
+   ("C-x b" . helm-buffers-list)
+   ("M-x" . helm-M-x))
+  :config
+  (helm-mode t))
 (when (featurep 'status)
   (turn-on-status))
 (load-theme 'tsdh-light)
