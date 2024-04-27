@@ -140,6 +140,21 @@ strongly dedicated. See `set-window-dedicated-p."
   :config
   (which-key-mode))
 
+;; Workspaces with perspective
+(use-package perspective
+  :bind
+  ("C-x C-b" . persp-list-buffers)
+  :custom
+  ((persp-mode-prefix-key (kbd "C-c C-p"))
+   (persp-state-default-file (f-join user-emacs-directory "data/persist.backup")))
+  :init
+  (persp-mode -1)) ; By default, disable it. User should enable it manually.
+
+(use-package persp-projectile
+  :after
+  projectile
+  )
+
 ;; Day-mode and Night-mode
 (defun night-mode ()
   "Toggle the color theme to a dark mode, suitable for night usage"
