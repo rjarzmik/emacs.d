@@ -41,7 +41,7 @@
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; auto-completion and code snippets
-(use-package helm-lsp)
+(use-package helm-lsp :ensure)
 
 ;;; Completion in LSP mode
 (use-package company

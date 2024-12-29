@@ -45,7 +45,7 @@
 (tool-bar-mode 0)
 (winner-mode)
 (use-package helm
-  :ensure
+  :ensure t
   :bind
   (("C-x C-f" . helm-find-files)
    ("C-x b" . helm-buffers-list)
@@ -136,12 +136,14 @@ strongly dedicated. See `set-window-dedicated-p."
 
 ;; Which-key: completion of possible key-bindings
 (use-package which-key
+  :ensure t
   :diminish
   :config
   (which-key-mode))
 
 ;; Workspaces with perspective
 (use-package perspective
+  :ensure t
   :bind
   ("C-x C-b" . persp-list-buffers)
   :custom
