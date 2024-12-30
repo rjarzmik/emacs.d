@@ -1,12 +1,6 @@
-[submodule "site-elisp/muse"]
-	path = site-elisp/muse
-	url = git://repo.or.cz/muse-el.git
 [submodule "site-elisp/emacs-jabber"]
 	path = site-elisp/emacs-jabber
 	url = git://emacs-jabber.git.sourceforge.net/gitroot/emacs-jabber/emacs-jabber
-[submodule "site-elisp/bbdb"]
-	path = site-elisp/bbdb
-	url = git://git.savannah.nongnu.org/bbdb.git
 [submodule "site-elisp/rscope"]
 	path = site-elisp/rscope
 	url = https://github.com/rjarzmik/rscope.git
