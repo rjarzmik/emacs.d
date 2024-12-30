@@ -120,8 +120,8 @@
 (modify-frame-parameters nil '((wait-for-wm . nil)))
 
 (defcustom package-to-load '(activity easymenu gnus-load magit git-commit-mode
-				      mediawiki muse-mode muse-html muse-publish
-				      status w3m w3m-session zoom-frm)
+				      muse-mode muse-html muse-publish
+				      status zoom-frm)
   "List of my prefered packages"
   :group 'local
 )
