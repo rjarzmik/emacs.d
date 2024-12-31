@@ -148,8 +148,8 @@ strongly dedicated. See `set-window-dedicated-p."
   ("C-x C-b" . persp-list-buffers)
   :custom
   ((persp-mode-prefix-key (kbd "C-c C-p"))
-   (persp-state-default-file (f-join user-emacs-directory "data/persist.backup")))
-  :init
+   (persp-state-default-file (file-name-concat user-emacs-directory "data/persist.backup")))
+  :config
   (persp-mode -1)) ; By default, disable it. User should enable it manually.
 
 (use-package persp-projectile
