@@ -21,43 +21,44 @@
     (message (concat (symbol-name package) " package is not available"))))
 
 ;; Barebox
-(require 'device-control-barebox)
-(defun mioa701-barebox-term ()
-  "Open terminal on barebox"
-  (interactive)
-  (serial-term "/dev/serial/by-id/usb-barebox_Scoter_Mitac_Mio_A701-if00-port0" 9600))
+(when (require 'device-control-barebox nil t)
+  (defun mioa701-barebox-term ()
+    "Open terminal on barebox"
+    (interactive)
+    (serial-term "/dev/serial/by-id/usb-barebox_Scoter_Mitac_Mio_A701-if00-port0" 9600))
 
-(defun mioa701-barebox-command (command)
-  (dctrl-barebox-action-command command))
+  (defun mioa701-barebox-command (command)
+    (dctrl-barebox-action-command command))
 
-(defun mioa701-barebox-upload-file (file)
-  (dctrl-barebox-action-upload-file file))
+  (defun mioa701-barebox-upload-file (file)
+    (dctrl-barebox-action-upload-file file))
 
-(defun dctrl-barebox-action-upload-launch-kernel ()
-  (interactive)
-  (let ((device-name (dctrl-complete-device nil "barebox")))
-    (with-current-buffer (dctrl-get-buffer device-name)
-      (append
-       (mioa701-barebox-upload-file (concat mioa701-kpath "/out/arch/arm/boot/zImage"))
-       (mioa701-barebox-command (mioa701-setup-bootargs mioa701-extra-bootargs))
-       (mioa701-barebox-command "bootm zImage")))))
+  (defun dctrl-barebox-action-upload-launch-kernel ()
+    (interactive)
+    (let ((device-name (dctrl-complete-device nil "barebox")))
+      (with-current-buffer (dctrl-get-buffer device-name)
+	(append
+	 (mioa701-barebox-upload-file (concat mioa701-kpath "/out/arch/arm/boot/zImage"))
+	 (mioa701-barebox-command (mioa701-setup-bootargs mioa701-extra-bootargs))
+	 (mioa701-barebox-command "bootm zImage")))))
 
-(defun dctrl-barebox-action-upload-launch-kernel-dt ()
-  (interactive)
-  (let ((device-name (dctrl-complete-device nil "barebox")))
-    (with-current-buffer (dctrl-get-buffer device-name)
-      (append
-       (mioa701-barebox-upload-file (concat mioa701-kpath "/out/arch/arm/boot/zImage"))
-       (mioa701-barebox-upload-file (concat mioa701-kpath "/out/arch/arm/boot/dts/pxa270-mioa701.dtb"))
-       (mioa701-barebox-command (mioa701-setup-bootargs
-				 (concat "loglevel=10 pxa2xx-cpufreq.pxa27x_maxfreq=624 " mioa701-extra-bootargs)))
-       (mioa701-barebox-command "bootm -o pxa270-mioa701.dtb zImage")))))
+  (defun dctrl-barebox-action-upload-launch-kernel-dt ()
+    (interactive)
+    (let ((device-name (dctrl-complete-device nil "barebox")))
+      (with-current-buffer (dctrl-get-buffer device-name)
+	(append
+	 (mioa701-barebox-upload-file (concat mioa701-kpath "/out/arch/arm/boot/zImage"))
+	 (mioa701-barebox-upload-file (concat mioa701-kpath "/out/arch/arm/boot/dts/pxa270-mioa701.dtb"))
+	 (mioa701-barebox-command (mioa701-setup-bootargs
+				   (concat "loglevel=10 pxa2xx-cpufreq.pxa27x_maxfreq=624 " mioa701-extra-bootargs)))
+	 (mioa701-barebox-command "bootm -o pxa270-mioa701.dtb zImage")))))
 
-(defun mioa701-change-host (host)
-  "Changes the host which is connected to the mioa701."
-  (interactive "sHost connected to the mioa701 device: ")
-  (when (featurep 'openocd)
-    (setq openocd-host host)))
+  (defun mioa701-change-host (host)
+    "Changes the host which is connected to the mioa701."
+    (interactive "sHost connected to the mioa701 device: ")
+    (when (featurep 'openocd)
+      (setq openocd-host host)))
+)
 
 ;; Kernel
 (define-minor-mode mioa701-kernel

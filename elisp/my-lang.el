@@ -40,7 +40,7 @@ The hook is called without any argument.")
 ;(ac-config-default)
 
 ;; CScope
-(require 'rscope)
+(require 'rscope nil t)
 
 ;; IDE lsp
 (require 'my-lsp)
