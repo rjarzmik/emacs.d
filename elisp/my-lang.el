@@ -7,6 +7,7 @@
 (load "lang/python")
 (load "lang/java")
 (load "lang/my-lsp")
+(load "lang/plantuml")
 (load "lang/rust")
 
 ;; Compilation
