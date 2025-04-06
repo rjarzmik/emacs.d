@@ -53,7 +53,7 @@
 (defvar-local lt-serial-real-port nil)
 (defvar-local lt-serial-port nil)
 (defvar-local lt-serial-speed nil)
-(defvar-local lt-serial-clean-regexp '("[\r\r\x]" "\e\\[[0-9]*m" "\e\\[[0-9]+;[0-9]+H?l?"))
+(defvar-local lt-serial-clean-regexp '("[\r\r[:xdigit:]]" "\e\\[[0-9]*m" "\e\\[[0-9]+;[0-9]+H?l?"))
 
 (defun lt-serial-filter (buffer proc string)
   (mapc (lambda (x) (setq string (replace-regexp-in-string x "" string))) lt-serial-clean-regexp)
