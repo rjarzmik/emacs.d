@@ -47,7 +47,7 @@
 (global-set-key [\C-f4]    'kill-buffer)
 
 ;; C-x b and C-f4 for killing buffers
-(substitute-key-definition 'kill-buffer 'kill-this-buffer global-map)
+(substitute-key-definition 'kill-buffer 'kill-current-buffer global-map)
 
 ;; Window moves
 (windmove-default-keybindings 'shift)
