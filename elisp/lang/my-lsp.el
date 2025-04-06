@@ -76,6 +76,8 @@
   (yas-reload-all)
   (add-hook 'prog-mode-hook 'yas-minor-mode)
   (add-hook 'text-mode-hook 'yas-minor-mode))
+(use-package yasnippet-snippets
+  :requires yasnippet)
 
 (defun company-yasnippet-or-completion ()
   (interactive)
