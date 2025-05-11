@@ -87,7 +87,7 @@
    '(("gnu" . "http://elpa.gnu.org/packages/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(flycheck-plantuml persp-projectile helm-projectile perspective helm-ag dap-mode company lsp-java bbdb exec-path-from-shell toml-mode yasnippet-snippets yasnippet rust-playground flycheck git-commit rustic rutils lsp-ui helm-lsp lsp-mode plantuml-mode json-mode diminish-buffer which-key use-package sbt-mode scala-mode tabbar session pod-mode muttrc-mode mutt-alias markdown-mode magit initsplit htmlize graphviz-dot-mode folding eproject diminish csv-mode browse-kill-ring boxquote bm bar-cursor apache-mode scala-mode))
+   '(apache-mode bar-cursor bbdb bm boxquote browse-kill-ring company csv-mode dap-mode diminish diminish-buffer eproject exec-path-from-shell flycheck flycheck-plantuml folding git-commit graphviz-dot-mode helm-ag helm-ispell helm-lsp helm-projectile htmlize initsplit json-mode lsp-java lsp-mode lsp-ui magit markdown-mode mutt-alias muttrc-mode persp-projectile perspective plantuml-mode pod-mode projectile rust-playground rustic rutils sbt-mode scala-mode session tabbar toml-mode use-package which-key yasnippet yasnippet-snippets))
  '(sh-basic-offset 8)
  '(show-paren-mode t nil (paren))
  '(show-trailing-whitespace nil)
