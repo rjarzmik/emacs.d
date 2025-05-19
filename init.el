@@ -136,11 +136,12 @@
   (load my-host-el))
 
 (defcustom config-to-load
-  '(my-buffers my-command-line my-dired my-emms my-git my-lang my-mioa701 my-macos
-	       my-mu4e my-muse my-pxa my-w3m my-work my-keyboard my-shells)
+  '(my-buffers my-command-line my-dired my-emms my-git my-ispell
+	       my-lang my-mioa701 my-macos my-mu4e my-muse my-pxa my-w3m
+	       my-work my-keyboard my-shells)
   "List of my configurations"
   :group 'local
-)
+  )
 
 (dolist (config config-to-load)
   (when (not (require config nil t))
