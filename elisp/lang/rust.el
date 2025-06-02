@@ -58,6 +58,11 @@
 (use-package toml-mode :ensure)
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; Have on the fly syntax checking
+
+(use-package flycheck-rust :ensure)
+
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; setting up debugging support with dap-mode
 
 (use-package exec-path-from-shell

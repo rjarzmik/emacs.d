@@ -21,6 +21,7 @@
  '(c-indent-comments-syntactically-p t)
  '(c-tab-always-indent nil)
  '(column-number-mode t)
+ '(company-show-quick-access t nil nil "Customized with use-package company")
  '(dap-breakpoints-file "/Users/rj/.emacs.d/data/.dap-breakpoints")
  '(delete-auto-save-files nil)
  '(display-time-24hr-format t)
@@ -90,7 +91,7 @@
    '(("gnu" . "http://elpa.gnu.org/packages/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(apache-mode bar-cursor bbdb bm boxquote browse-kill-ring company csv-mode dap-mode diminish diminish-buffer eproject exec-path-from-shell flycheck flycheck-plantuml folding git-commit graphviz-dot-mode helm-ag helm-ispell helm-lsp helm-projectile htmlize initsplit json-mode lsp-java lsp-mode lsp-ui magit markdown-mode mutt-alias muttrc-mode persp-projectile perspective plantuml-mode pod-mode projectile rust-playground rustic rutils sbt-mode scala-mode session tabbar toml-mode use-package which-key yasnippet yasnippet-snippets))
+   '(apache-mode bar-cursor bbdb bm boxquote browse-kill-ring company csv-mode dap-mode diminish diminish-buffer eproject exec-path-from-shell flycheck flycheck-plantuml flycheck-rust folding git-commit graphviz-dot-mode helm-ag helm-ispell helm-lsp helm-projectile htmlize initsplit json-mode lsp-java lsp-mode lsp-ui magit markdown-mode mutt-alias muttrc-mode persp-projectile perspective plantuml-mode pod-mode projectile rust-playground rustic rutils sbt-mode scala-mode session tabbar toml-mode use-package which-key yasnippet yasnippet-snippets))
  '(project-list-file "~/.emacs.d/data/projects")
  '(projectile-known-projects-file "/Users/rj/.emacs.d/data/projectile-bookmarks.eld")
  '(sh-basic-offset 8)
