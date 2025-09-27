@@ -4,6 +4,7 @@
 
 ;; C, Python, Java
 (load "lang/c_modes")
+(load "lang/copilot")
 (load "lang/python")
 (load "lang/java")
 (load "lang/my-lsp")

@@ -91,7 +91,7 @@
    '(("gnu" . "http://elpa.gnu.org/packages/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(apache-mode bar-cursor bbdb bm boxquote browse-kill-ring company csv-mode dap-mode diminish diminish-buffer eproject exec-path-from-shell flycheck flycheck-plantuml flycheck-rust folding git-commit graphviz-dot-mode helm-ag helm-ispell helm-lsp helm-projectile htmlize initsplit json-mode lsp-java lsp-mode lsp-ui magit markdown-mode mutt-alias muttrc-mode persp-projectile perspective plantuml-mode pod-mode projectile rust-playground rustic rutils sbt-mode scala-mode session tabbar toml-mode use-package which-key yasnippet yasnippet-snippets))
+   '(copilot apache-mode bar-cursor bbdb bm boxquote browse-kill-ring company csv-mode dap-mode diminish diminish-buffer eproject exec-path-from-shell flycheck flycheck-plantuml flycheck-rust folding git-commit graphviz-dot-mode helm-ag helm-ispell helm-lsp helm-projectile htmlize initsplit json-mode lsp-java lsp-mode lsp-ui magit markdown-mode mutt-alias muttrc-mode persp-projectile perspective plantuml-mode pod-mode projectile rust-playground rustic rutils sbt-mode scala-mode session tabbar toml-mode use-package which-key yasnippet yasnippet-snippets))
  '(project-list-file "~/.emacs.d/data/projects")
  '(projectile-known-projects-file "/Users/rj/.emacs.d/data/projectile-bookmarks.eld")
  '(sh-basic-offset 8)

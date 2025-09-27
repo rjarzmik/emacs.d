@@ -16,3 +16,6 @@ elisp/my-host-*.el*
 
 # ELPA packages
 elpa
+
+# Cache files from Copilot
+.cache
