@@ -8,3 +8,10 @@
   (setq copilot-idle-delay 0.5)
   (add-to-list 'copilot-indentation-alist '(rustic-mode rustic-indent-offset))
   (add-hook 'prog-mode-hook 'copilot-mode))
+
+;; AI Assited Coding
+(use-package gptel
+  :ensure t
+  :config
+  (gptel-make-gh-copilot "Copilot" :host "api.business.githubcopilot.com")
+  )
