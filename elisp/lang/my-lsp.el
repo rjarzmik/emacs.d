@@ -7,8 +7,11 @@
   :ensure t
   :hook
   (c-mode . lsp)
+  (c-ts-mode . lsp)
   (rust-mode . lsp)
+  (rust-ts-mode . lsp)
   (java-mode . lsp)
+  (java-ts-mode . lsp)
   :custom
   (lsp-clients-clangd-executable "clangd") ;; or use ccls package to get call
                                          ;; hierarchy lsp extension
