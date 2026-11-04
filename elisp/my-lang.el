@@ -10,6 +10,7 @@
 (load "lang/my-lsp")
 (load "lang/plantuml")
 (load "lang/rust")
+(load "lang/xml")
 
 ;; Compilation
 (defvar my-compile-command-hooks nil
