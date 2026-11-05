@@ -75,6 +75,11 @@
      (save-excursion (move-end-of-line 1) (point)))))
 (global-set-key (kbd "C-k") 'my-delete-line)
 
+(use-package eldoc
+  :custom
+  ;; Don't enable eldoc everywhere
+  (global-eldoc-mode nil))
+
 ;; Faces
 ;(custom-set-faces
 ;  ;; custom-set-faces was added by Custom.
