@@ -39,6 +39,7 @@
  '(font-lock-global-modes t)
  '(fortune-dir "/usr/local/share/games/fortunes")
  '(fortune-file "/usr/local/share/games/fortunes/chucknorris")
+ '(gc-cons-threshold 1600000)
  '(global-font-lock-mode t nil (font-lock))
  '(gnus-gcc-mark-as-read t)
  '(gnus-home-directory "~/.emacs.d/gnus/")
