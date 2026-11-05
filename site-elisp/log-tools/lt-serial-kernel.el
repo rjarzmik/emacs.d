@@ -1,3 +1,4 @@
+;;; lt-serial-kernel.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;;; lt-logat.el --- Log Tools serial kernel backend
 
 ;; Copyright (C) 2014 2014 Free Software Foundation, Inc.

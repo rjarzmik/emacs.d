@@ -1,3 +1,4 @@
+;;; python.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;;; My personnal Python modes
 
 ; Python

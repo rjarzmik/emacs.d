@@ -1,3 +1,4 @@
+;;; my-ispell.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;;; Robert Jarzmik
 ;;; 2025-05-14
 ;;; Dictionary checks

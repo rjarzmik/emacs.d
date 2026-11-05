@@ -1,3 +1,4 @@
+;;; work-intel.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;; Intel related stuff
 
 (add-to-list 'load-path (concat user-emacs-directory "site-elisp/psi_pupdr_scripts-intel-lisp"))

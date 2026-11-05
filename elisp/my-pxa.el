@@ -1,3 +1,4 @@
+;;; my-pxa.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;;; Robert Jarzmik
 ;;; 2013-09-01
 

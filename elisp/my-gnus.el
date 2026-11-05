@@ -1,3 +1,4 @@
+;;; my-gnus.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;;; Robert Jarzmik
 ;;; 2011-07-27
 ;;; Gnus customization

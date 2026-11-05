@@ -1,3 +1,4 @@
+;;; java.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;;; My personnal Java modes
 (add-hook 'java-mode-hook
 	  (lambda ()

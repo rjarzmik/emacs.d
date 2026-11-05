@@ -1,3 +1,4 @@
+;;; work-ampere.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;; Ampere(Renault) related stuff
 
 (defgroup work-ampere nil

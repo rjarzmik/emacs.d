@@ -1,3 +1,4 @@
+;;; my-git.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;; Git commit edit mode
 ;; Usally used by defining: EDITOR="emacs -Q -nw -l ~/.emacs.d/elisp/my-git"
 
