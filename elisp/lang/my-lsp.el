@@ -5,6 +5,7 @@
 
 (use-package lsp-mode
   :ensure t
+  :bind ("M-?" . lsp-ui-doc-glance)
   :hook
   (c-mode . lsp)
   (c-ts-mode . lsp)
@@ -18,8 +19,8 @@
   (lsp-auto-guess-root t)                ;; auto guess root
   (lsp-prefer-capf t)                    ;; using `company-capf' by default
   (lsp-keymap-prefix "C-c l")
-  (lsp-eldoc-render-all t)
-  (lsp-idle-delay 0.6)
+  (lsp-eldoc-render-all nil)
+  (lsp-idle-delay 2.0)
   :config
   (progn
     (lsp-register-client
