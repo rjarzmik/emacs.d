@@ -6,6 +6,7 @@
 ;; C, Python, Java
 (load "lang/c_modes")
 (load "lang/copilot")
+(load "lang/doxygen")
 (load "lang/python")
 (load "lang/java")
 (load "lang/my-lsp")
@@ -26,13 +27,6 @@ The hook is called without any argument.")
       (if (and (not arg) command)
 	  (compile command)
 	(call-interactively 'compile)))))
-
-;; Doxymacs
-(require 'doxymacs)
-(defun my-doxymacs-font-lock-hook ()
-  (if (or (eq major-mode 'c-mode) (eq major-mode 'c++-mode))
-      (doxymacs-font-lock)))
-(add-hook 'font-lock-mode-hook 'my-doxymacs-font-lock-hook)
 
 ;; Git
 (require 'git-blame)
