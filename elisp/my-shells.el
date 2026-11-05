@@ -1,3 +1,4 @@
+;;; my-shells.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;;; Robert Jarzmik
 ;;; 2014-08-07
 ;;; Shell customization

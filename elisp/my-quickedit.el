@@ -1,3 +1,4 @@
+;;; my-quickedit.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;; Quick edit mode (like a small vi)
 ;; Usally used by defining: EDITOR="emacs -Q -nw -l ~/.emacs.d/elisp/quickedit/init.elc"
 

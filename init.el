@@ -1,3 +1,4 @@
+;;; init.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;; Emacs config file, Robert Jarzmik, oct. 1996
 
 (require 'cl)

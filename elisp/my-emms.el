@@ -1,3 +1,4 @@
+;;; my-emms.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;; Copyright (C) 2010 Jérémy Compostella
 
 ;; Author: Jérémy Compostella <jeremy.compostella@gmail.com>

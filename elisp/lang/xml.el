@@ -1,3 +1,4 @@
+;;; xml.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;; Xml editing
 (use-package nxml-mode
   :init

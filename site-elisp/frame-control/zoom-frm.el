@@ -1,3 +1,4 @@
+;;; zoom-frm.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;;; zoom-frm.el --- Commands to zoom frame font size.
 ;;
 ;; Filename: zoom-frm.el

@@ -1,4 +1,4 @@
-
+;;; my-openocd.el --- Configuration Emacs -*- lexical-binding: t; -*-
 (require 'telnet)
 
 (defvar openocd-host nil

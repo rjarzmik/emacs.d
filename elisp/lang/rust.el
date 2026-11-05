@@ -1,3 +1,4 @@
+;;; rust.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;;; My personnal RUST configuration
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

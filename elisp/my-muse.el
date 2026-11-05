@@ -1,3 +1,4 @@
+;;; my-muse.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;; Copyright (C) 2011 Robert Jarzmik
 
 ;; This file is NOT part of GNU Emacs.

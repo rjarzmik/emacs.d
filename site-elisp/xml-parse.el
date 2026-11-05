@@ -1,3 +1,4 @@
+;;; xml-parse.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;;; xml-parse --- code to efficiently read/write XML data with Elisp
 ;;;
 ;;; $Id: xml-parse.el,v 1.4 2001/05/12 22:36:13 ryants Exp $

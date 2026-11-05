@@ -1,3 +1,4 @@
+;;; work-atos-icare.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;;; Robert Jarzmik
 ;;; 2011-07-10
 

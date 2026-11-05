@@ -1,3 +1,4 @@
+;;; lync-chat.el --- Configuration Emacs -*- lexical-binding: t; -*-
 (require 'pidgin)
 
 ;;set name of existing directory for store history

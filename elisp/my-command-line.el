@@ -1,3 +1,4 @@
+;;; my-command-line.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;;; Robert Jarzmik
 ;;; 2010-04-12
 ;;; Command-line invocation utilities

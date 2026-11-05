@@ -1,3 +1,4 @@
+;;; my-mu4e.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;; The package mu4e is not yet available in ELPA
 ;; (use-package mu4e
 ;;   :ensure t

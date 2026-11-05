@@ -1,3 +1,4 @@
+;;; my-lang.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;;; Robert Jarzmik
 ;;; 2008-03-28
 ;;; Global language specific files

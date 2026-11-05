@@ -1,3 +1,4 @@
+;;; my-lsp.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;;; My personnal LSP-MODE configuration
 
 (require 'use-package)

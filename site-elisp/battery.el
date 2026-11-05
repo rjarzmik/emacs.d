@@ -1,3 +1,4 @@
+;;; battery.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;;; battery.el --- display battery status information  -*- coding: utf-8 -*-
 
 ;; Copyright (C) 1997-1998, 2000-2013 Free Software Foundation, Inc.

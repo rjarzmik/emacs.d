@@ -1,3 +1,4 @@
+;;; my-dired.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;;; Robert Jarzmik
 ;;; 2011-07-16
 ;;; Dired customization

@@ -1,3 +1,4 @@
+;;; copilot.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;; Copilot
 (use-package copilot
   :hook (copilot-mode . copilot-clear-overlay)

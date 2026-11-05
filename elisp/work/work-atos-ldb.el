@@ -1,3 +1,4 @@
+;;; work-atos-icare.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;; Create a mode to colorize Icom logs
 ;(setq Icom-seeked-fpa "Digitatron_EVP_1c47 STPV")
 (define-generic-mode 'icom-mode

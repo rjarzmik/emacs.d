@@ -1,3 +1,4 @@
+;;; work-alcatel-gsm-mode.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;; Mode bouchons
 (define-generic-mode 'bouchon-robert
    (list ?#)

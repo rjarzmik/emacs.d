@@ -1,3 +1,4 @@
+;;; highlight-beyond-fill-column.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;;; highlight-beyond-fill-column.el --- fontify beyond the fill-column.
 
 ;; Copyright (C) 1985, 1986, 1987, 1992 Free Software Foundation, Inc.

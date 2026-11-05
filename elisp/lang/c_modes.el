@@ -1,3 +1,4 @@
+;;; c_modes.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;;; My personnal C modes
 
 (require 'highlight-beyond-fill-column)

@@ -1,3 +1,4 @@
+;;; moorefield_debugboard_commander.el --- Configuration Emacs -*- lexical-binding: t; -*-
 (require 'widget)
 
 (eval-when-compile

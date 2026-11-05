@@ -1,3 +1,4 @@
+;;; plantuml.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;;; Robert Jarzmik
 ;;; 2025-03-28
 ;;; Plantuml configuration

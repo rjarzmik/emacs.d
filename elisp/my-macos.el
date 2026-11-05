@@ -1,3 +1,4 @@
+;;; my-macos.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;;; I prefer cmd key for meta
 (when (eq system-type 'darwin)
   (setq mac-option-key-is-meta nil

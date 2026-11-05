@@ -1,3 +1,4 @@
+;;; activity.el --- Configuration Emacs -*- lexical-binding: t; -*-
 ;;; activity.el --- Activity management (named window configuration).
 
 ;; Copyright (C) 2010-2012 Jérémy Compostella
