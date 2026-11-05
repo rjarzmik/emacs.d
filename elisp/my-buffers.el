@@ -65,6 +65,16 @@
 ; Maximum de decoration
 (setq font-lock-maximum-decoration t)
 
+;; Delete line without touching the kill ring
+(defun my-delete-line ()
+  "Delete text from current position to end of line char."
+  (interactive)
+  (if (and (not (eobp)) (eolp)) (delete-char 1)
+    (delete-region
+     (point)
+     (save-excursion (move-end-of-line 1) (point)))))
+(global-set-key (kbd "C-k") 'my-delete-line)
+
 ;; Faces
 ;(custom-set-faces
 ;  ;; custom-set-faces was added by Custom.
