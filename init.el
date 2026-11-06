@@ -136,10 +136,10 @@
 
 (defcustom package-to-load '(activity easymenu gnus-load magit git-commit-mode
 				      muse-mode muse-html muse-publish
-				      status zoom-frm)
+				      zoom-frm)
   "List of my prefered packages"
   :group 'local
-)
+  )
 
 (package-initialize)
 
