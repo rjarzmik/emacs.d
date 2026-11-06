@@ -12,6 +12,7 @@
 (load "lang/my-lsp")
 (load "lang/plantuml")
 (load "lang/rust")
+(load "lang/tree-sitter")
 (load "lang/xml")
 
 ;; Compilation
