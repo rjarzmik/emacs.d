@@ -147,12 +147,6 @@
   (when (not (require package nil t))
     (message (concat (symbol-name package) " package is not available"))))
 
-; Host specific configurations
-(dolist (my-host-el
-	 (file-expand-wildcards
-	  (format   "%selisp/my-host-%s*.el" user-emacs-directory (system-name))))
-  (load my-host-el))
-
 (defcustom config-to-load
   '(my-buffers my-command-line my-dired my-emms my-git my-ispell
 	       my-lang my-mioa701 my-macos my-mu4e my-muse my-org my-pxa my-w3m
@@ -164,6 +158,12 @@
 (dolist (config config-to-load)
   (when (not (require config nil t))
     (message (concat (symbol-name config) " configuration is not available"))))
+
+; Host specific configurations
+(dolist (my-host-el
+	 (file-expand-wildcards
+	  (format   "%selisp/my-host-%s*.el" user-emacs-directory (system-name))))
+  (load my-host-el))
 
 ;; Start maximized
 ;;(if (not (eq window-system nil))
