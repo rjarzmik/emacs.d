@@ -15,4 +15,7 @@
   (unless (file-exists-p ispell-personal-dictionary)
     (write-region "" nil ispell-personal-dictionary nil 0)))
 
+(use-package flyspell
+  :hook (text-mode . flyspell-mode))
+
 (provide 'my-ispell)
