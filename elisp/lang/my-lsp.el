@@ -13,6 +13,8 @@
   (rust-ts-mode . lsp)
   (java-mode . lsp)
   (java-ts-mode . lsp)
+  :init
+  (setq lsp-diagnostics-provider :flycheck)
   :custom
   (lsp-clients-clangd-executable "clangd") ;; or use ccls package to get call
                                          ;; hierarchy lsp extension
