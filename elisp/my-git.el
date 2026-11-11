@@ -12,6 +12,7 @@
 
 ;; Integrated git-modes into magit
 (use-package magit
+  :bind ("C-c g" . magit-status)
   :ensure)
 
 (provide 'my-git)
