@@ -1,4 +1,4 @@
-;;; my-w3m.el --- Configuration Emacs -*- lexical-binding: t; -*-
+;;; my-w3m.el --- Configuration Emacs -*- lexical-binding: t; elisp-autofmt-load-packages-local: ("use-package" "use-package-core"); -*-
 ;;; Robert Jarzmik
 ;;; 2011-07-04
 
@@ -26,13 +26,14 @@
 ;; My emacs w3m configuration
 
 (when (featurep 'w3m)
-  (setq w3m-use-cookies t
-	w3m-default-coding-system 'utf-8
-	w3m-default-directory "~/.emacs.d/data/w3m"
-	;;; browse-url-browser-function 'w3m
-	w3m-profile-directory "~/.emacs.d/data/w3m"
-	w3m-language "english"
-	w3m-use-japanese-menu nil)
+  (setq
+   w3m-use-cookies t
+   w3m-default-coding-system 'utf-8
+   w3m-default-directory "~/.emacs.d/data/w3m"
+   ;;; browse-url-browser-function 'w3m
+   w3m-profile-directory "~/.emacs.d/data/w3m"
+   w3m-language "english"
+   w3m-use-japanese-menu nil)
   (defun w3m-search-next-page ()
     (interactive)
     (save-excursion
@@ -66,17 +67,22 @@
   (define-key w3m-mode-map (kbd "C-j") 'w3m-view-this-url))
 
 (when (featurep 'w3m-session)
-  (setq w3m-session-file "~/.emacs.d/data/w3m/w3m-session"
-	w3m-session-save-always t
-	w3m-session-load-always t
-	w3m-session-show-titles t
-	w3m-session-duplicate-tabs 'ask))
+  (setq
+   w3m-session-file "~/.emacs.d/data/w3m/w3m-session"
+   w3m-session-save-always t
+   w3m-session-load-always t
+   w3m-session-show-titles t
+   w3m-session-duplicate-tabs 'ask))
 
 (when (featurep 'activity)
-  (add-to-list 'available-activities (make-activity :name "Web"
-						    :open-hook (lambda ()
-								 (delete-other-windows)
-								 (w3m)))))
+  (add-to-list
+   'available-activities
+   (make-activity
+    :name "Web"
+    :open-hook
+    (lambda ()
+      (delete-other-windows)
+      (w3m)))))
 
 ;(setq w3m-command-arguments
 ;      (nconc w3m-command-arguments

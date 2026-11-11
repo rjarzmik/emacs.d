@@ -1,4 +1,4 @@
-;;; my-muse.el --- Configuration Emacs -*- lexical-binding: t; -*-
+;;; my-muse.el --- Configuration Emacs -*- lexical-binding: t; elisp-autofmt-load-packages-local: ("use-package" "use-package-core"); -*-
 ;; Copyright (C) 2011 Robert Jarzmik
 
 ;; This file is NOT part of GNU Emacs.
@@ -20,7 +20,8 @@
 ;; My muse configuration
 ;;
 (setq muse-project-alist
-      '(("mioa701" ("~/wiki/mioa701" :default "mioa701")
-	 (:base "html" :path "~/wiki/mioa701/html"))))
+      '(("mioa701"
+         ("~/wiki/mioa701" :default "mioa701")
+         (:base "html" :path "~/wiki/mioa701/html"))))
 
 (provide 'my-muse)

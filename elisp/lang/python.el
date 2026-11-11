@@ -1,12 +1,13 @@
-;;; python.el --- Configuration Emacs -*- lexical-binding: t; -*-
+;;; python.el --- Configuration Emacs -*- lexical-binding: t; elisp-autofmt-load-packages-local: ("use-package" "use-package-core"); -*-
 ;;; My personnal Python modes
 
 ; Python
-(add-hook 'python-mode-hook
-       	  '(lambda ()
-             ;;(load "py-mode-ext")
-             ;;(load "pyp")
-             (define-key python-mode-map [f12] 'pyp)
-             (define-key python-mode-map "\C-c\C-c" 'py-execute-prog)
-             (define-key python-mode-map "\C-c\C-g" 'py-call-pdb)
-             (define-key python-mode-map "\C-c\C-w" 'pychecker)))
+(add-hook
+ 'python-mode-hook
+ '(lambda ()
+    ;;(load "py-mode-ext")
+    ;;(load "pyp")
+    (define-key python-mode-map [f12] 'pyp)
+    (define-key python-mode-map "\C-c\C-c" 'py-execute-prog)
+    (define-key python-mode-map "\C-c\C-g" 'py-call-pdb)
+    (define-key python-mode-map "\C-c\C-w" 'pychecker)))

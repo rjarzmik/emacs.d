@@ -1,10 +1,13 @@
-;;; copilot.el --- Configuration Emacs -*- lexical-binding: t; -*-
+;;; copilot.el --- Configuration Emacs -*- lexical-binding: t; elisp-autofmt-load-packages-local: ("use-package" "use-package-core"); -*-
+
 ;; Copilot
 (use-package copilot
   :hook (copilot-mode . copilot-clear-overlay)
-  :bind (:map copilot-completion-map
-	      ("C-<return>" . copilot-accept-completion)
-	      ("M-<return>" . copilot-next-completion))
+  :bind
+  (:map
+   copilot-completion-map
+   ("C-<return>" . copilot-accept-completion)
+   ("M-<return>" . copilot-next-completion))
   :config
   (setq copilot-idle-delay 0.5)
   (add-to-list 'copilot-indentation-alist '(rustic-mode rustic-indent-offset))
@@ -13,6 +16,4 @@
 ;; AI Assited Coding
 (use-package gptel
   :ensure t
-  :config
-  (gptel-make-gh-copilot "Copilot" :host "api.business.githubcopilot.com")
-  )
+  :config (gptel-make-gh-copilot "Copilot" :host "api.business.githubcopilot.com"))

@@ -1,28 +1,30 @@
-;;; rust.el --- Configuration Emacs -*- lexical-binding: t; -*-
+;;; rust.el --- Configuration Emacs -*- lexical-binding: t; elisp-autofmt-load-packages-local: ("use-package" "use-package-core"); -*-
+
 ;;; My personnal RUST configuration
 
-;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*-
 ;; rustic = basic rust-mode + additions
 
 (use-package rust-mode
   :ensure t
-  :init
-  (setq rust-mode-treesitter-derive t))
+  :init (setq rust-mode-treesitter-derive t))
 
 (use-package rustic
   :ensure t
   :after (rust-mode)
-  :bind (:map rustic-mode-map
-              ("M-j" . lsp-ui-imenu)
-              ("C-c C-c l" . flycheck-list-errors)
-              ("C-c C-c a" . lsp-execute-code-action)
-              ("C-c C-c r" . lsp-rename)
-              ("C-c C-c q" . lsp-workspace-restart)
-              ("C-c C-c Q" . lsp-workspace-shutdown)
-              ("C-c C-c s" . lsp-rust-analyzer-status)
-              ("C-c C-c e" . lsp-rust-analyzer-expand-macro)
-              ("C-c C-c d" . dap-hydra)
-              ("C-c C-c h" . lsp-ui-doc-glance))
+  :bind
+  (:map
+   rustic-mode-map
+   ("M-j" . lsp-ui-imenu)
+   ("C-c C-c l" . flycheck-list-errors)
+   ("C-c C-c a" . lsp-execute-code-action)
+   ("C-c C-c r" . lsp-rename)
+   ("C-c C-c q" . lsp-workspace-restart)
+   ("C-c C-c Q" . lsp-workspace-shutdown)
+   ("C-c C-c s" . lsp-rust-analyzer-status)
+   ("C-c C-c e" . lsp-rust-analyzer-expand-macro)
+   ("C-c C-c d" . dap-hydra)
+   ("C-c C-c h" . lsp-ui-doc-glance))
   :config
   ;; uncomment for less flashiness
   (setq lsp-eldoc-hook nil)
@@ -30,10 +32,9 @@
   ;; (setq lsp-signature-auto-activate nil)
 
   ;; comment to disable rustfmt on save
-  :custom
-  (rustic-format-trigger 'on-save))
+  :custom (rustic-format-trigger 'on-save))
 
-;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*-
 ;; for rust-analyzer integration
 
 (use-package lsp-mode
@@ -53,23 +54,23 @@
   (lsp-rust-analyzer-display-parameter-hints nil)
   (lsp-rust-analyzer-display-reborrow-hints nil))
 
-;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*-
 ;; Create / cleanup rust scratch projects quickly
 
 (use-package rust-playground :ensure)
 
 
-;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*-
 ;; for Cargo.toml and other config files
 
 (use-package toml-mode :ensure)
 
-;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*-
 ;; Have on the fly syntax checking
 
 (use-package flycheck-rust :ensure)
 
-;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*-
 ;; setting up debugging support with dap-mode
 
 (use-package exec-path-from-shell
@@ -85,14 +86,17 @@
   (require 'dap-cpptools)
   (dap-register-debug-template
    "Rust::Lldb::dapcpp Run Configuration"
-   (list :type "cppdbg"
-         :request "launch"
-         :name "Rust Debug"
-	 :MIMode "lldb"
-	 :debugServerPath "rust-lldb"
-	 :miDebuggerPath (f-join dap-cpptools-debug-path "extension/debugAdapters/lldb-mi/bin/lldb-mi")
-	 :program "${workspaceFolder}/ replace with your binary"
-         :cwd "${workspaceFolder}")))
+   (list
+    :type "cppdbg"
+    :request "launch"
+    :name "Rust Debug"
+    :MIMode "lldb"
+    :debugServerPath "rust-lldb"
+    :miDebuggerPath
+    (f-join
+     dap-cpptools-debug-path "extension/debugAdapters/lldb-mi/bin/lldb-mi")
+    :program "${workspaceFolder}/ replace with your binary"
+    :cwd "${workspaceFolder}")))
 
 ; Debug is OS reliant, help rust-analyzer
 (when (eq system-type 'darwin)
@@ -100,10 +104,11 @@
     :after lsp-mode
     :custom
     (lsp-rust-analyzer-debug-lens-extra-dap-args
-     `(
-       :MiMode "lldb"
+     `(:MiMode
+       "lldb"
        :debugServerPath "rust-lldb"
-       :miDebuggerPath ,(f-join dap-cpptools-debug-path "extension/debugAdapters/lldb-mi/bin/lldb-mi")
+       :miDebuggerPath
+       ,(f-join
+         dap-cpptools-debug-path "extension/debugAdapters/lldb-mi/bin/lldb-mi")
        :stopAtEntry t
        :externalConsole: json-false))))
-

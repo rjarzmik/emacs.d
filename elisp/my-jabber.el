@@ -1,4 +1,4 @@
-;;; my-jabber.el --- Configuration Emacs -*- lexical-binding: t; -*-
+;;; my-jabber.el --- Configuration Emacs -*- lexical-binding: t; elisp-autofmt-load-packages-local: ("use-package" "use-package-core"); -*-
 ;; Copyright (C) 2010 Jérémy Compostella
 
 ;; Author: Jérémy Compostella <jeremy.compostella@gmail.com>
@@ -25,9 +25,9 @@
 
 (when (require 'jabber nil t)
   (setq jabber-account-list
-	'(("robert.jarzmik@gmail.com" 
-	   (:network-server . "talk.google.com")
-	   (:connection-type . ssl))))
+        '(("robert.jarzmik@gmail.com"
+           (:network-server . "talk.google.com")
+           (:connection-type . ssl))))
   (setq jabber-auto-reconnect nil)
   (jabber-roster-toggle-offline-display)
   (jabber-roster-toggle-binding-display)
@@ -47,10 +47,14 @@
     (switch-to-buffer "*-jabber-roster-*"))
   (defun my-jabber-buf-filter-p (buffer)
     (with-current-buffer buffer
-      (string= (substring (symbol-name major-mode) 0 (length "jabber")) "jabber")))
+      (string=
+       (substring (symbol-name major-mode) 0 (length "jabber")) "jabber")))
 
-  (add-to-list 'available-activities (make-activity :name "Jabber"
-						    :open-hook 'my-jabber-activity
-						    :buffer-filter-p 'my-jabber-buf-filter-p)))
+  (add-to-list
+   'available-activities
+   (make-activity
+    :name "Jabber"
+    :open-hook 'my-jabber-activity
+    :buffer-filter-p 'my-jabber-buf-filter-p)))
 
 (provide 'my-jabber)

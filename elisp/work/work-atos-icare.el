@@ -1,4 +1,4 @@
-;;; work-atos-icare.el --- Configuration Emacs -*- lexical-binding: t; -*-
+;;; work-atos-icare.el --- Configuration Emacs -*- lexical-binding: t; elisp-autofmt-load-packages-local: ("use-package" "use-package-core"); -*-
 ;;; Robert Jarzmik
 ;;; 2011-07-10
 
@@ -30,13 +30,7 @@
 
   (c-add-style
    "atos-icare"
-   '(
-     (c-basic-offset . 4)
-     (c-offsets-alist
-      (substatement-open . 0)
-      )
-     )
-   )
+   '((c-basic-offset . 4) (c-offsets-alist (substatement-open . 0))))
 
   (defun atos-icare-c++-mode-hook ()
     (c-set-style "atos-icare")
@@ -44,25 +38,26 @@
     (setq indent-tabs-mode nil)
     (require 'my-cedet)
     (require 'semantic-ia)
-    (dolist (dir (append (file-expand-wildcards "/mnt/LOCAL/rjarzmik/Projets/Icare-NG/icareng/*/trunk/code/include")
-			 (file-expand-wildcards "/mnt/LOCAL/rjarzmik/Projets/Icare-NG/icareng/*/trunk/code/include/*")))
+    (dolist
+        (dir
+         (append
+          (file-expand-wildcards
+           "/mnt/LOCAL/rjarzmik/Projets/Icare-NG/icareng/*/trunk/code/include")
+          (file-expand-wildcards
+           "/mnt/LOCAL/rjarzmik/Projets/Icare-NG/icareng/*/trunk/code/include/*")))
       (semantic-add-system-include dir))
-    (define-key c++-mode-map "\M-/" 'semantic-ia-complete-symbol-menu)
-    )
+    (define-key c++-mode-map "\M-/" 'semantic-ia-complete-symbol-menu))
 
   (defun atos-icare-c-mode ()
     "C++ mode with adjusted defaults for use with Atos Icare project."
     (interactive)
     (c++-mode)
-    (add-hook 'c++-mode-hook 'atos-icare-c++-mode-hook)
-    )
+    (add-hook 'c++-mode-hook 'atos-icare-c++-mode-hook))
 
-  (setq auto-mode-alist (cons '(".*/icareng.*\\.[ch]p*$" . atos-icare-c-mode)
-			      auto-mode-alist))
+  (setq auto-mode-alist
+        (cons '(".*/icareng.*\\.[ch]p*$" . atos-icare-c-mode) auto-mode-alist))
 
   (when (featurep 'activity)
-    (add-to-list 'available-activities
-		 (make-activity :name "Icare")))
+    (add-to-list 'available-activities (make-activity :name "Icare")))
 
-  (provide 'work-atos-icare)
-  )
+  (provide 'work-atos-icare))

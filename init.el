@@ -1,4 +1,7 @@
 ;;; init.el --- Configuration Emacs -*- lexical-binding: t; -*-
+;; Local variables:
+;; elisp-autofmt-load-packages-local: ("use-package" "use-package-core")
+;; end:
 ;; Emacs config file, Robert Jarzmik, oct. 1996
 
 (require 'cl)
@@ -13,7 +16,8 @@
  '(auto-save-file-name-transforms
    '(("\\`/[^/]*:\\(.+/\\)*\\(.*\\)" "/tmp/\\2")
      ("\\(.+/\\)*\\(.*\\)" "/tmp/\\2")))
- '(auto-save-list-file-prefix "~/.emacs.d/data/auto-backup/auto-save-list/.saves-")
+ '(auto-save-list-file-prefix
+   "~/.emacs.d/data/auto-backup/auto-save-list/.saves-")
  '(backup-directory-alist '((".*" . "~/.emacs.d/data/auto-backup/backup/")))
  '(battery-mode-line-format "[%b%p%%,%w,%t]")
  '(bbdb-file "~/.emacs.d/bbdb" t)
@@ -48,30 +52,30 @@
  '(hexl-iso "-iso")
  '(ibuffer-saved-filter-groups nil)
  '(ibuffer-saved-filters
-   '(("logs"
-      ((name . "\\*.*")))
-     ("gnus"
-      ((or
-	(mode . message-mode)
-	(mode . mail-mode)
-	(mode . gnus-group-mode)
-	(mode . gnus-summary-mode)
-	(mode . gnus-article-mode))))
-     ("programming"
-      ((or
-	(mode . emacs-lisp-mode)
-	(mode . cperl-mode)
-	(mode . c-mode)
-	(mode . java-mode)
-	(mode . idl-mode)
-	(mode . lisp-mode))))))
+   '(("logs" ((name . "\\*.*")))
+     ("gnus" ((or (mode . message-mode)
+           (mode . mail-mode)
+           (mode . gnus-group-mode)
+           (mode . gnus-summary-mode)
+           (mode . gnus-article-mode))))
+     ("programming" ((or (mode . emacs-lisp-mode)
+           (mode . cperl-mode)
+           (mode . c-mode)
+           (mode . java-mode)
+           (mode . idl-mode)
+           (mode . lisp-mode))))))
  '(ido-save-directory-list-file "~/.emacs.d/data/ido.last")
  '(inhibit-startup-screen t)
  '(ispell-highlight-face 'highlight)
  '(ispell-personal-dictionary nil)
  '(ispell-silently-savep t)
  '(jde-global-classpath
-   '("/usr/java/jdk1.3.1_01/connector.jar" "/usr/java/jdk1.3.1_01/src.jar" "/usr/java/jdk1.3.1_01/jta.jar" "/usr/java/jdk1.3.1_01/jaas.jar" "~rj/Basp/src/basp/adapter/ava/cci" "~rj/Basp/src/basp/adapter/ava/spi"))
+   '("/usr/java/jdk1.3.1_01/connector.jar"
+     "/usr/java/jdk1.3.1_01/src.jar"
+     "/usr/java/jdk1.3.1_01/jta.jar"
+     "/usr/java/jdk1.3.1_01/jaas.jar"
+     "~rj/Basp/src/basp/adapter/ava/cci"
+     "~rj/Basp/src/basp/adapter/ava/spi"))
  '(kill-whole-line nil)
  '(ldap-host-parameters-alist
    '(("aww.tlse.titn.alcatel.fr" base "o=tlse.titn.alcatel.fr")))
@@ -82,8 +86,16 @@
  '(magit-log-cutoff-length 30)
  '(magit-process-popup-time 2)
  '(mediawiki-site-alist
-   '(("Wikipedia" "http://en.wikipedia.org/w/" "username" "password" "Main Page")
-     ("belgarath" "http://belgarath.local/mediawiki/" "rjarzmik" "XXX" "Main Page")))
+   '(("Wikipedia"
+      "http://en.wikipedia.org/w/"
+      "username"
+      "password"
+      "Main Page")
+     ("belgarath"
+      "http://belgarath.local/mediawiki/"
+      "rjarzmik"
+      "XXX"
+      "Main Page")))
  '(menu-bar-mode t)
  '(message-directory "~/.emacs.d/gnus/Mail/")
  '(message-send-mail-function 'smtpmail-send-it)
@@ -93,23 +105,52 @@
    '(("gnu" . "http://elpa.gnu.org/packages/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(apache-mode bar-cursor bbdb bm boxquote browse-kill-ring company copilot
-		 copilot-chat csv-mode dap-mode diminish diminish-buffer
-		 eproject exec-path-from-shell flycheck flycheck-plantuml
-		 flycheck-rust folding git-commit gptel gptel-agent
-		 graphviz-dot-mode helm-ag helm-ispell helm-lsp helm-projectile
-		 htmlize initsplit json-mode lsp-java lsp-mode lsp-ui magit
-		 markdown-mode mutt-alias muttrc-mode persp-projectile
-		 perspective plantuml-mode pod-mode projectile rust-playground
-		 rustic rutils sbt-mode scala-mode session tabbar toml-mode
-		 use-package which-key yafolding yasnippet yasnippet-snippets))
+   '(company
+     copilot
+     copilot-chat
+     dap-mode
+     doxymacs
+     elisp-autofmt
+     exec-path-from-shell
+     flycheck-plantuml
+     flycheck-rust
+     gptel-agent
+     helm-ispell
+     helm-lsp
+     json-mode
+     lsp-ui
+     magit
+     nxml-mode-extensions
+     org-appear
+     org-jira
+     org-modern
+     persp-projectile
+     rust-playground
+     rustic
+     toml-mode
+     which-key
+     yafolding
+     yasnippet-snippets))
+ '(package-vc-selected-packages
+   '((nxml-mode-extensions
+      :vc-backend Git
+      :url "https://github.com/peterhoeg/nxml-mode-extensions")))
  '(project-list-file "~/.emacs.d/data/projects")
- '(projectile-known-projects-file "/Users/rj/.emacs.d/data/projectile-bookmarks.eld")
+ '(projectile-known-projects-file
+   "/Users/rj/.emacs.d/data/projectile-bookmarks.eld")
+ '(safe-local-variable-directories '("/Users/rj/work/sdv/update_agents/"))
+ '(safe-local-variable-values
+   '((elisp-autofmt-load-packages-local "use-package" "use-package-core")
+     (eval add-to-list
+           'lsp-file-watch-ignored-directories
+           "caros_update_agent_service/tests/feature/out.*|target/.*|.git/.*")
+     (lsp-rust-no-default-features . t) (lsp-rust-features . ["pcu_main_soc"])))
  '(sh-basic-offset 8)
  '(show-paren-mode t nil (paren))
  '(show-trailing-whitespace nil)
+ '(smtpmail-smtp-server "smtp.free.fr")
+ '(smtpmail-smtp-service 25)
  '(standard-indent 8)
- '(status-refresh-timer-delay 10)
  '(tramp-persistency-file-name "~/.emacs.d/data/tramp")
  '(transient-history-file "~/.emacs.d/data/transient/history.el")
  '(transient-mark-mode t)
@@ -123,10 +164,11 @@
 ;;emacs24  (setq 'user-emacs-directory "~/.emacs.d/"))
 
 ;; Ajouter .emacs.d, .emacs.d/site-lisp et tous ses sous-repertoires
-(dolist
-    (path
-     (delete-if-not 'file-directory-p
-		    (directory-files (concat user-emacs-directory "site-elisp") t directory-files-no-dot-files-regexp)))
+(dolist (path
+         (delete-if-not
+          'file-directory-p
+          (directory-files (concat user-emacs-directory "site-elisp")
+                           t directory-files-no-dot-files-regexp)))
   (add-to-list 'load-path path))
 (add-to-list 'load-path (concat user-emacs-directory "site-elisp"))
 (add-to-list 'load-path (concat user-emacs-directory "elisp"))
@@ -134,12 +176,18 @@
 ;; Fonts
 (modify-frame-parameters nil '((wait-for-wm . nil)))
 
-(defcustom package-to-load '(activity easymenu gnus-load magit git-commit-mode
-				      muse-mode muse-html muse-publish
-				      zoom-frm)
+(defcustom package-to-load
+  '(activity
+    easymenu
+    gnus-load
+    magit
+    git-commit-mode
+    muse-mode
+    muse-html
+    muse-publish
+    zoom-frm)
   "List of my prefered packages"
-  :group 'local
-  )
+  :group 'local)
 
 (package-initialize)
 
@@ -148,12 +196,25 @@
     (message (concat (symbol-name package) " package is not available"))))
 
 (defcustom config-to-load
-  '(my-buffers my-command-line my-dired my-emms my-git my-ispell
-	       my-lang my-mioa701 my-macos my-mu4e my-muse my-org my-pxa my-w3m
-	       my-work my-keyboard my-shells)
+  '(my-buffers
+    my-command-line
+    my-dired
+    my-emms
+    my-git
+    my-ispell
+    my-lang
+    my-mioa701
+    my-macos
+    my-mu4e
+    my-muse
+    my-org
+    my-pxa
+    my-w3m
+    my-work
+    my-keyboard
+    my-shells)
   "List of my configurations"
-  :group 'local
-  )
+  :group 'local)
 
 (dolist (config config-to-load)
   (when (not (require config nil t))
@@ -161,8 +222,8 @@
 
 ; Host specific configurations
 (dolist (my-host-el
-	 (file-expand-wildcards
-	  (format   "%selisp/my-host-%s*.el" user-emacs-directory (system-name))))
+         (file-expand-wildcards
+          (format "%selisp/my-host-%s*.el" user-emacs-directory (system-name))))
   (load my-host-el))
 
 ;; Start maximized
@@ -183,23 +244,44 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(gnus-header-subject ((((class color) (background light)) (:background "dark orange" :foreground "red4"))))
- '(gnus-summary-cancelled ((t (:inherit gnus-summary-root :background "black" :foreground "yellow"))))
- '(gnus-summary-high-ancient ((t (:foreground "RoyalBlue" :weight bold :inherit gnus-summary-root))))
- '(gnus-summary-high-read ((t (:foreground "DarkGreen" :weight bold :inherit gnus-summary-root))))
- '(gnus-summary-high-ticked ((t (:foreground "firebrick" :weight bold :inherit gnus-summary-root))))
+ '(gnus-header-subject
+   ((((class color) (background light))
+     (:background "dark orange" :foreground "red4"))))
+ '(gnus-summary-cancelled
+   ((t (:inherit gnus-summary-root :background "black" :foreground "yellow"))))
+ '(gnus-summary-high-ancient
+   ((t (:foreground "RoyalBlue" :weight bold :inherit gnus-summary-root))))
+ '(gnus-summary-high-read
+   ((t (:foreground "DarkGreen" :weight bold :inherit gnus-summary-root))))
+ '(gnus-summary-high-ticked
+   ((t (:foreground "firebrick" :weight bold :inherit gnus-summary-root))))
  '(gnus-summary-high-unread ((t (:inherit gnus-summary-root :weight bold))))
- '(gnus-summary-low-ancient ((t (:inherit gnus-summary-root :foreground "RoyalBlue" :slant italic))))
- '(gnus-summary-low-read ((t (:inherit gnus-summary-root :foreground "DarkGreen" :slant italic))))
- '(gnus-summary-low-undownloaded ((t (:inherit gnus-summary-root :foreground "cyan4" :slant italic :weight normal))))
+ '(gnus-summary-low-ancient
+   ((t (:inherit gnus-summary-root :foreground "RoyalBlue" :slant italic))))
+ '(gnus-summary-low-read
+   ((t (:inherit gnus-summary-root :foreground "DarkGreen" :slant italic))))
+ '(gnus-summary-low-undownloaded
+   ((t
+     (:inherit
+      gnus-summary-root
+      :foreground "cyan4"
+      :slant italic
+      :weight normal))))
  '(gnus-summary-low-unread ((t (:inherit gnus-summary-root :slant italic))))
- '(gnus-summary-normal-ancient ((t (:foreground "RoyalBlue" :inherit gnus-summary-root))))
- '(gnus-summary-normal-read ((t (:foreground "DarkGreen" :inherit gnus-summary-root))))
- '(gnus-summary-normal-ticked ((t (:foreground "firebrick" :inherit gnus-summary-root))))
+ '(gnus-summary-normal-ancient
+   ((t (:foreground "RoyalBlue" :inherit gnus-summary-root))))
+ '(gnus-summary-normal-read
+   ((t (:foreground "DarkGreen" :inherit gnus-summary-root))))
+ '(gnus-summary-normal-ticked
+   ((t (:foreground "firebrick" :inherit gnus-summary-root))))
  '(gnus-summary-normal-unread ((t (:inherit gnus-summary-root))))
  '(gnus-summary-selected ((t (:underline t))))
- '(highlight-changes ((((class color) (background light)) (:background "antique white" :foreground nil))))
- '(highlight-changes-delete ((((class color) (background light)) (:background "antique white" :foreground nil)))))
+ '(highlight-changes
+   ((((class color) (background light))
+     (:background "antique white" :foreground nil))))
+ '(highlight-changes-delete
+   ((((class color) (background light))
+     (:background "antique white" :foreground nil)))))
 
 ;; BUG Workaround : melpa package installation errors (emacs <= 26.3)
 (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")

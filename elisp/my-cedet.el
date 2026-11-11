@@ -1,4 +1,4 @@
-;;; my-cedet.el --- Configuration Emacs -*- lexical-binding: t; -*-
+;;; my-cedet.el --- Configuration Emacs -*- lexical-binding: t; elisp-autofmt-load-packages-local: ("use-package" "use-package-core"); -*-
 ;;; Robert Jarzmik
 ;;; 2008-03-28
 ;;; CEDET setup

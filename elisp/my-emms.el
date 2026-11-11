@@ -1,4 +1,4 @@
-;;; my-emms.el --- Configuration Emacs -*- lexical-binding: t; -*-
+;;; my-emms.el --- Configuration Emacs -*- lexical-binding: t; elisp-autofmt-load-packages-local: ("use-package" "use-package-core"); -*-
 ;; Copyright (C) 2010 Jérémy Compostella
 
 ;; Author: Jérémy Compostella <jeremy.compostella@gmail.com>
@@ -22,16 +22,16 @@
 ;;; Commentary:
 ;; My emacs EMMS configuration
 
-(when (and (require 'emms-setup nil t)
-	   (require 'emms-info-libtag nil t))
-  (setq emms-source-file-default-directory "~/Music/"
-	emms-info-asynchronously t
-	later-do-interval 0.0001
-	emms-info-functions '(emms-info-libtag)
-	emms-mode-line-format " %s "
-	emms-show-format "NP: %s"
-	emms-history-file (concat user-emacs-directory "data/emms-history")
-	emms-cache-file (concat user-emacs-directory "data/emms-cache"))
+(when (and (require 'emms-setup nil t) (require 'emms-info-libtag nil t))
+  (setq
+   emms-source-file-default-directory "~/Music/"
+   emms-info-asynchronously t
+   later-do-interval 0.0001
+   emms-info-functions '(emms-info-libtag)
+   emms-mode-line-format " %s "
+   emms-show-format "NP: %s"
+   emms-history-file (concat user-emacs-directory "data/emms-history")
+   emms-cache-file (concat user-emacs-directory "data/emms-cache"))
   (emms-devel)
   (emms-default-players))
 
@@ -40,11 +40,14 @@
     (let ((bufmode (symbol-name major-mode)))
       (string-match "^emms-" bufmode)))
 
-  (add-to-list 'available-activities
-	       (make-activity :name "emms"
-			      :open-hook (lambda ()
-					   (delete-other-windows)
-					   (emms-browser))
-			      :buffer-filter-p 'emms-filter-activity)))
+  (add-to-list
+   'available-activities
+   (make-activity
+    :name "emms"
+    :open-hook
+    (lambda ()
+      (delete-other-windows)
+      (emms-browser))
+    :buffer-filter-p 'emms-filter-activity)))
 
 (provide 'my-emms)

@@ -1,4 +1,4 @@
-;;; my-lsp.el --- Configuration Emacs -*- lexical-binding: t; -*-
+;;; my-lsp.el --- Configuration Emacs -*- lexical-binding: t; elisp-autofmt-load-packages-local: ("use-package" "use-package-core"); -*-
 ;;; My personnal LSP-MODE configuration
 
 (require 'use-package)
@@ -13,23 +13,23 @@
   (rust-ts-mode . lsp)
   (java-mode . lsp)
   (java-ts-mode . lsp)
-  :init
-  (setq lsp-diagnostics-provider :flycheck)
+  :init (setq lsp-diagnostics-provider :flycheck)
   :custom
   (lsp-clients-clangd-executable "clangd") ;; or use ccls package to get call
-                                         ;; hierarchy lsp extension
-  (lsp-auto-guess-root t)                ;; auto guess root
-  (lsp-prefer-capf t)                    ;; using `company-capf' by default
+  ;; hierarchy lsp extension
+  (lsp-auto-guess-root t) ;; auto guess root
+  (lsp-prefer-capf t) ;; using `company-capf' by default
   (lsp-keymap-prefix "C-c l")
   (lsp-eldoc-render-all nil)
   (lsp-idle-delay 2.0)
   :config
   (progn
     (lsp-register-client
-     (make-lsp-client :new-connection (lsp-tramp-connection "clangd")
-                      :major-modes '(c-mode c++-mode)
-                      :remote? t
-                      :server-id 'clangd-remote))))
+     (make-lsp-client
+      :new-connection (lsp-tramp-connection "clangd")
+      :major-modes '(c-mode c++-mode)
+      :remote? t
+      :server-id 'clangd-remote))))
 
 (use-package lsp-ui
   :ensure
@@ -53,25 +53,25 @@
   :ensure t
   :hook (prog-mode . company-mode)
   :bind
-  (:map company-active-map
-        ("C-n". company-select-next)
-        ("C-p". company-select-previous)
-        ("M-<". company-select-first)
-        ("M->". company-select-last))
-  (:map company-mode-map
-        ("<tab>". tab-indent-or-complete)
-        ("TAB". tab-indent-or-complete))
-  (:map company-mode-map
-        ([remap completion-at-point] . company-complete))
-  (:map lsp-mode-map
-	([remap xref-find-apropos] . helm-lsp-workspace-symbol))
+  (:map
+   company-active-map
+   ("C-n" . company-select-next)
+   ("C-p" . company-select-previous)
+   ("M-<" . company-select-first)
+   ("M->" . company-select-last))
+  (:map
+   company-mode-map
+   ("<tab>" . tab-indent-or-complete)
+   ("TAB" . tab-indent-or-complete))
+  (:map company-mode-map ([remap completion-at-point] . company-complete))
+  (:map lsp-mode-map ([remap xref-find-apropos] . helm-lsp-workspace-symbol))
   :custom
   (company-idle-delay 5)
   (company-echo-delay 0)
   (company-show-numbers t)
   (company-require-match nil)
   (company-tooltip-align-annotations t)
-  (company-tng-configure-default)        ; Tab cycle
+  (company-tng-configure-default) ; Tab cycle
   (setq company-selection-wrap-around t) ; Wrap around last/first
   (company-backends '(company-capf)))
 
@@ -88,16 +88,19 @@
 
 (defun company-yasnippet-or-completion ()
   (interactive)
-  (or (do-yas-expand)
-      (company-complete-common)))
+  (or (do-yas-expand) (company-complete-common)))
 
 (defun check-expansion ()
   (save-excursion
-    (if (looking-at "\\_>") t
+    (if (looking-at "\\_>")
+        t
       (backward-char 1)
-      (if (looking-at "\\.") t
+      (if (looking-at "\\.")
+          t
         (backward-char 1)
-        (if (looking-at "::") t nil)))))
+        (if (looking-at "::")
+            t
+          nil)))))
 
 (defun do-yas-expand ()
   (let ((yas/fallback-behavior 'return-nil))
@@ -107,11 +110,9 @@
   (interactive)
   (if (minibufferp)
       (minibuffer-complete)
-    (if (or (not yas/minor-mode)
-            (null (do-yas-expand)))
+    (if (or (not yas/minor-mode) (null (do-yas-expand)))
         (if (check-expansion)
             (company-complete-common)
           (indent-for-tab-command)))))
 
 (provide 'my-lsp)
-

@@ -1,4 +1,4 @@
-;;; activity.el --- Configuration Emacs -*- lexical-binding: t; -*-
+;;; activity.el --- Configuration Emacs -*- lexical-binding: t; elisp-autofmt-load-packages-local: ("use-package" "use-package-core"); -*-
 ;;; activity.el --- Activity management (named window configuration).
 
 ;; Copyright (C) 2010-2012 Jérémy Compostella
@@ -73,15 +73,15 @@
   "Activity management group"
   :group 'convenience)
 
-(defstruct activity
-  name
-  (open-hook 'ignore)		    ; Called on first activity open
-  (enable-hook 'ignore)	; Called when switching to this activity (even at open)
-  (disable-hook 'ignore)	   ; Called when exiting this activity
-  (buffer-filter-p 'ignore)	   ; Predicate for buffer filtering
-  ;; Internal data
-  (buffer-list '())   ; Complementary buffer list for buffer filtering
-  (wconf nil))	      ; Activity saved window configuration
+(defstruct
+ activity name
+ (open-hook 'ignore) ; Called on first activity open
+ (enable-hook 'ignore) ; Called when switching to this activity (even at open)
+ (disable-hook 'ignore) ; Called when exiting this activity
+ (buffer-filter-p 'ignore) ; Predicate for buffer filtering
+ ;; Internal data
+ (buffer-list '()) ; Complementary buffer list for buffer filtering
+ (wconf nil)) ; Activity saved window configuration
 
 (defcustom available-activities (list (make-activity :name "Default"))
   "Available activities list.
@@ -95,13 +95,15 @@ Add your personal activities in this list. "
 (defvar activity-stack (cons (car available-activities) nil)
   "Currently stacked activitities.")
 
-(defun current-activity () (first activity-stack))
+(defun current-activity ()
+  (first activity-stack))
 
 (defcustom activity-mode-line-format "(%s) "
   "Activity mode-line format"
   :group 'activity)
-  
-(defvar activity-current-name (format activity-mode-line-format (activity-name (current-activity)))
+
+(defvar activity-current-name
+  (format activity-mode-line-format (activity-name (current-activity)))
   "Current activity name, used by `activity-update-mode-line'.")
 
 (defun activity-push (&optional name)
@@ -111,7 +113,9 @@ NAME activity is in the `activity-stack', it will enable it and
 place it on top of the `activity-stack'.
 Otherwise, the NAME activity is started."
   (unless name
-    (setq name (completing-read "Activity name: " (mapcar 'activity-name available-activities))))
+    (setq name
+          (completing-read
+           "Activity name: " (mapcar 'activity-name available-activities))))
   (let ((new-activity (search-activity name)))
     (when new-activity
       (activity-save (current-activity))
@@ -125,14 +129,17 @@ Otherwise, the NAME activity is started."
   (interactive)
   (if (> (list-length activity-stack) 1)
       (progn
-	(activity-save (pop activity-stack))
-	(activity-restore (current-activity))
-	(activity-update-mode-line))
+        (activity-save (pop activity-stack))
+        (activity-restore (current-activity))
+        (activity-update-mode-line))
     (message "No more activity.")))
 
 (defun toggle-activity (&optional name)
   "Push NAME activity if not displayed, pop otherwise."
-  (interactive (list (completing-read "Activity name: " (mapcar 'activity-name available-activities))))
+  (interactive (list
+                (completing-read
+                 "Activity name: "
+                 (mapcar 'activity-name available-activities))))
   (if (string= name (activity-name (current-activity)))
       (activity-pop)
     (activity-push name))
@@ -143,12 +150,15 @@ Otherwise, the NAME activity is started."
   (interactive)
   (let ((frame-id-pos (memq 'mode-line-frame-identification mode-line-format)))
     (if (memq 'activity-current-name mode-line-format)
-	(setcdr frame-id-pos (cddr frame-id-pos))
+        (setcdr frame-id-pos (cddr frame-id-pos))
       (setcdr frame-id-pos (cons 'activity-current-name (cdr frame-id-pos))))))
 
 (defun activity-set-current-as (&optional name)
   "Save current window configuration as NAME activity"
-  (interactive (list (completing-read "Activity name: " (mapcar 'activity-name available-activities))))
+  (interactive (list
+                (completing-read
+                 "Activity name: "
+                 (mapcar 'activity-name available-activities))))
   (let ((activity (search-activity name)))
     (when activity
       (delq activity activity-stack)
@@ -157,45 +167,61 @@ Otherwise, the NAME activity is started."
       (activity-update-mode-line))))
 
 (defun activity-update-mode-line ()
-  (setq activity-current-name (format activity-mode-line-format (activity-name (current-activity)))))
-  
+  (setq activity-current-name
+        (format activity-mode-line-format (activity-name (current-activity)))))
+
 (defun activity-buffer-p (buf-name)
   (let ((activity (current-activity)))
     (or (not (activity-buffer-filter-p activity))
-	(funcall (activity-buffer-filter-p activity) buf-name)
-	(find buf-name (activity-buffer-list activity) :test 'string=))))
+        (funcall (activity-buffer-filter-p activity) buf-name)
+        (find buf-name (activity-buffer-list activity) :test 'string=))))
 
 (defun activity-iswitch-to-buffer ()
   (let ((iswitchb-make-buflist-hook
-	 (lambda () (setq iswitchb-temp-buflist
-			  (delete-if-not 'activity-buffer-p iswitchb-temp-buflist)))))
+         (lambda ()
+           (setq iswitchb-temp-buflist
+                 (delete-if-not 'activity-buffer-p iswitchb-temp-buflist)))))
     (switch-to-buffer (iswitchb-read-buffer "activity-switchb: "))))
 
 (defun activity-ido-switch-to-buffer ()
-  (let ((ido-ignore-buffers (delete-if 'activity-buffer-p (mapcar 'buffer-name (buffer-list)))))
+  (let ((ido-ignore-buffers
+         (delete-if 'activity-buffer-p (mapcar 'buffer-name (buffer-list)))))
     (ido-switch-buffer)))
 
 (defun activity-switch-to-buffer ()
   "Switch to another buffer. Buffer list filtered by activity."
   (interactive)
-  (cond (iswitchb-mode (activity-iswitch-to-buffer ))
-	((or (eq ido-mode 'buffer) (eq ido-mode 'both)) (activity-ido-switch-to-buffer ))
-	(t (completing-read (format "Switch to buffer (default %s): " (other-buffer (current-buffer)))
-			    (delete-if-not 'activity-buffer-p (mapcar 'buffer-name (buffer-list)))))))
+  (cond
+   (iswitchb-mode
+    (activity-iswitch-to-buffer))
+   ((or (eq ido-mode 'buffer) (eq ido-mode 'both))
+    (activity-ido-switch-to-buffer))
+   (t
+    (completing-read
+     (format "Switch to buffer (default %s): " (other-buffer (current-buffer)))
+     (delete-if-not 'activity-buffer-p (mapcar 'buffer-name (buffer-list)))))))
 
 (defun new-activity (name key)
-  (interactive (list (read-string "Activity name: ")
-		     (read-key-sequence "Key sequence: ")))
+  (interactive (list
+                (read-string "Activity name: ")
+                (read-key-sequence "Key sequence: ")))
   (if (search-activity name)
-    (error "\"%s\" activity already exists." name)
+      (error "\"%s\" activity already exists." name)
     (when (or (not (global-key-binding key))
-	      (y-or-n-p "This key sequence is already in use. Overwrite it ? "))
+              (y-or-n-p "This key sequence is already in use. Overwrite it ? "))
       (add-to-list 'available-activities (make-activity :name name))
-      (global-set-key key `(lambda () (interactive) (toggle-activity ,name)))
+      (global-set-key
+       key
+       `(lambda ()
+          (interactive)
+          (toggle-activity ,name)))
       (toggle-activity name))))
 
 (defun search-activity (name)
-  (find name available-activities :test '(lambda (x y) (string= x (activity-name y)))))
+  (find
+   name
+   available-activities
+   :test '(lambda (x y) (string= x (activity-name y)))))
 
 (defun activity-save (activity)
   (funcall (activity-disable-hook activity))
@@ -204,22 +230,28 @@ Otherwise, the NAME activity is started."
 (defun activity-restore (activity)
   (let ((wconf (activity-wconf activity)))
     (if (window-configuration-p wconf)
-	(progn (set-window-configuration wconf)
-	       (funcall (activity-enable-hook activity)))
-      (progn (funcall (activity-open-hook activity))
-	     (funcall (activity-enable-hook activity))))))
+        (progn
+          (set-window-configuration wconf)
+          (funcall (activity-enable-hook activity)))
+      (progn
+        (funcall (activity-open-hook activity))
+        (funcall (activity-enable-hook activity))))))
 
 (defun activity-add-buffer ()
   (interactive)
-  (flet ((add-buffer (window)
-		     (let ((buffer (window-buffer window)))     
-		       (unless (activity-buffer-p (buffer-name buffer))
-			 (push (buffer-name buffer) (activity-buffer-list (current-activity)))))))
-    (walk-windows 'add-buffer)))
+  (flet
+   ((add-buffer
+     (window)
+     (let ((buffer (window-buffer window)))
+       (unless (activity-buffer-p (buffer-name buffer))
+         (push
+          (buffer-name buffer) (activity-buffer-list (current-activity)))))))
+   (walk-windows 'add-buffer)))
 
 (defun activity-remove-buffer ()
   (interactive)
-  (delq (buffer-name (current-buffer)) (activity-buffer-list (current-activity))))
+  (delq
+   (buffer-name (current-buffer)) (activity-buffer-list (current-activity))))
 
 ;;;###autoload
 (add-to-list 'kill-buffer-hook 'activity-remove-buffer)

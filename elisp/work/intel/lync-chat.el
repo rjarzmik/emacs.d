@@ -1,4 +1,4 @@
-;;; lync-chat.el --- Configuration Emacs -*- lexical-binding: t; -*-
+;;; lync-chat.el --- Configuration Emacs -*- lexical-binding: t; elisp-autofmt-load-packages-local: ("use-package" "use-package-core"); -*-
 (require 'pidgin)
 
 ;;set name of existing directory for store history

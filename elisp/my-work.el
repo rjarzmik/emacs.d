@@ -1,4 +1,4 @@
-;;; my-work.el --- Configuration Emacs -*- lexical-binding: t; -*-
+;;; my-work.el --- Configuration Emacs -*- lexical-binding: t; elisp-autofmt-load-packages-local: ("use-package" "use-package-core"); -*-
 ;;; Robert Jarzmik
 ;;; 2011-07-15
 ;;; Definitions for work (Alcatel, Atos, ...)

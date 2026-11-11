@@ -1,4 +1,4 @@
-;;; tree-sitter.el --- Configuration Emacs -*- lexical-binding: t; -*-
+;;; tree-sitter.el --- Configuration Emacs -*- lexical-binding: t; elisp-autofmt-load-packages-local: ("use-package" "use-package-core"); -*-
 ;;; My personnal treesitter configuration
 
 (use-package treesit

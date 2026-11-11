@@ -1,4 +1,4 @@
-;;; my-command-line.el --- Configuration Emacs -*- lexical-binding: t; -*-
+;;; my-command-line.el --- Configuration Emacs -*- lexical-binding: t; elisp-autofmt-load-packages-local: ("use-package" "use-package-core"); -*-
 ;;; Robert Jarzmik
 ;;; 2010-04-12
 ;;; Command-line invocation utilities

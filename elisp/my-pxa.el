@@ -1,4 +1,4 @@
-;;; my-pxa.el --- Configuration Emacs -*- lexical-binding: t; -*-
+;;; my-pxa.el --- Configuration Emacs -*- lexical-binding: t; elisp-autofmt-load-packages-local: ("use-package" "use-package-core"); -*-
 ;;; Robert Jarzmik
 ;;; 2013-09-01
 
@@ -15,13 +15,20 @@
 
 (defun pxa-setup-bootargs (&optional extra-args)
   "Common bootargs to all launch types. Might be enhanced by pxa-extra-bootargs"
-  (concat "bootargs=\\\"\$bootargs " extra-args "\\\"\\\; " "global linux.bootargs.debug=\\\"" extra-args "\\\""))
+  (concat
+   "bootargs=\\\"\$bootargs "
+   extra-args
+   "\\\"\\\; "
+   "global linux.bootargs.debug=\\\""
+   extra-args
+   "\\\""))
 
 (defun belgarath-uart-log ()
   (interactive)
   (let ((buf (get-buffer-create "*belgarath-uart-log*")))
     (async-shell-command
-     "ssh belgarath \"socat /dev/serial/by-id/usb-Prolific_Technology_Inc._USB_2.0_To_COM_Device-if00-pt0,raw,echo=0 STDIO\"" buf)))
+     "ssh belgarath \"socat /dev/serial/by-id/usb-Prolific_Technology_Inc._USB_2.0_To_COM_Device-if00-pt0,raw,echo=0 STDIO\""
+     buf)))
 
 (dolist (package '(openocd))
   (when (not (require package nil t))
@@ -32,16 +39,37 @@
 (require 'device-control-pxa nil t)
 (defun lubbock ()
   (interactive)
-  (device-control-start "localhost" "pxa" "lubbock"
-			"belgarath" 3334 "belgarath" "192.168.1.230" 6660))
+  (device-control-start
+   "localhost"
+   "pxa"
+   "lubbock"
+   "belgarath"
+   3334
+   "belgarath"
+   "192.168.1.230"
+   6660))
 (defun mainstone ()
   (interactive)
-  (device-control-start "localhost" "pxa" "mainstone"
-			"belgarath" 3334 "belgarath" "192.168.1.231" 6661))
+  (device-control-start
+   "localhost"
+   "pxa"
+   "mainstone"
+   "belgarath"
+   3334
+   "belgarath"
+   "192.168.1.231"
+   6661))
 (defun zylonite ()
   (interactive)
-  (device-control-start "localhost" "pxa" "zylonite"
-			"belgarath" 3340 "belgarath" "192.168.1.232" 6662))
+  (device-control-start
+   "localhost"
+   "pxa"
+   "zylonite"
+   "belgarath"
+   3340
+   "belgarath"
+   "192.168.1.232"
+   6662))
 
 ;; Log-tools
 (require 'lt-serial-kernel nil t)

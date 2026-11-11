@@ -1,4 +1,4 @@
-;;; my-lang.el --- Configuration Emacs -*- lexical-binding: t; -*-
+;;; my-lang.el --- Configuration Emacs -*- lexical-binding: t; elisp-autofmt-load-packages-local: ("use-package" "use-package-core"); -*-
 ;;; Robert Jarzmik
 ;;; 2008-03-28
 ;;; Global language specific files
@@ -23,12 +23,11 @@ The hook is called without any argument.")
 
 (defun my-compile (arg)
   (interactive "P")
-  (let ((command
-	 (run-hook-with-args-until-success 'my-compile-command-hooks)))
+  (let ((command (run-hook-with-args-until-success 'my-compile-command-hooks)))
     (let ((current-prefix-arg arg))
       (if (and (not arg) command)
-	  (compile command)
-	(call-interactively 'compile)))))
+          (compile command)
+        (call-interactively 'compile)))))
 
 ;; Git
 (require 'git-blame)
