@@ -203,7 +203,6 @@
     my-git
     my-ispell
     my-lang
-    my-mioa701
     my-macos
     my-mu4e
     my-muse
